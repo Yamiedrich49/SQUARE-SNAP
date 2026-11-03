@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f8fa">
+<title>SQUARE SNAP — 隠れた正方形</title>
+<style>
+:root{color-scheme:light;--ink:#243549;--muted:#64798a;--teal:#0797a3;--border:#d8e4ed;--pale:#f3f8fa;--white:#fff}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(180deg,#edf6f8 0%,#f7f9fc 65%,#eef3f8 100%);color:var(--ink)}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #85cfe0;outline-offset:3px}
+.app{max-width:490px;margin:0 auto;padding:17px 14px max(24px,env(safe-area-inset-bottom))}
+.brand{display:flex;justify-content:space-between;align-items:center;margin:1px 2px 13px;gap:12px}.brand h1{font-size:18px;letter-spacing:.105em;margin:0;font-weight:820}.brand small{display:block;font-size:10px;font-weight:650;letter-spacing:.13em;color:#27919b;margin-bottom:3px}.tag{border:1px solid #bfe3e8;padding:6px 9px;border-radius:100px;font-size:10px;font-weight:750;color:#267983;background:#f4fdff;white-space:nowrap}
+.stagebar{display:flex;gap:7px;margin-bottom:11px}.stage{background:#fff9;color:#5c7585;border:1px solid var(--border);border-radius:12px;padding:10px 8px;flex:1;font-size:12px;font-weight:750;transition:background .17s,border .17s}.stage.active{color:#076c79;background:#dff6f8;border-color:#74c4cb}.stage small{display:block;font-size:10px;margin-top:3px;font-weight:550;color:inherit;opacity:.8}
+.panel{overflow:hidden;background:white;border:1px solid #dfe9ee;border-radius:19px;box-shadow:0 14px 36px #2d668018}
+.panelhead{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 11px;gap:8px}.panelhead .t{font-size:13px;font-weight:800;letter-spacing:.03em}.count{font-variant-numeric:tabular-nums;font-size:13px;color:#557180;font-weight:700}.count strong{color:#087c88;font-size:21px;letter-spacing:-.04em}.bar{height:3px;background:#edf3f6;margin:0 16px 12px;overflow:hidden;border-radius:8px}.barin{width:0%;height:100%;background:linear-gradient(90deg,#1dc5bb,#087a9f);transition:width .35s}
+.board-area{position:relative;margin:0 9px 0;background:#f8fbfd;border-radius:14px;overflow:hidden;border:1px solid #e3edf2}.board-area svg{display:block;width:100%;aspect-ratio:360/430;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.board-area svg:active{cursor:grabbing}.board-area[data-complete="yes"] svg{cursor:default}
+#toast{pointer-events:none;position:absolute;left:50%;top:11px;transform:translateX(-50%) translateY(-6px);background:#213f4bea;color:white;font-size:12px;white-space:nowrap;padding:8px 13px;border-radius:99px;font-weight:750;opacity:0;transition:opacity .2s,transform .2s;z-index:5}#toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+#finished{display:none;position:absolute;left:15px;right:15px;bottom:17px;z-index:4;text-align:center;border:1px solid #b4e6e4;background:#e8fbf9f5;box-shadow:0 6px 23px #537e8244;padding:14px;border-radius:14px}#finished.visible{display:block}#finished strong{display:block;color:#087f83;font-size:18px;letter-spacing:.07em}#finished p{margin:5px 0 10px;font-size:12px;color:#527178}#finished button{border:0;border-radius:11px;padding:11px 20px;background:#087e88;color:white;font-weight:800}
+.controls{display:flex;align-items:center;justify-content:space-between;padding:12px 15px 14px;gap:8px}.controlinfo{font-size:11px;color:#6c8291}.controls-right{display:flex;gap:8px} .softbtn{background:#f4f8fa;border:1px solid #d8e5eb;padding:8px 10px;border-radius:10px;color:#436578;font-weight:750;font-size:11px}.softbtn.on{background:#e2f8f7;color:#007e80;border-color:#8bd3d5}
+.legend{display:flex;justify-content:center;gap:11px 15px;flex-wrap:wrap;margin:14px 0 13px}.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:#556f7d;font-weight:640;white-space:nowrap}.legend b{font-size:16px;color:#188f9b;font-weight:680}
+.palette{border:1px solid #dbe7ed;border-radius:16px;background:#ffffffea;padding:13px 13px 12px}.palette-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.palette-top strong{font-size:12px}.palette-top span{color:#79909b;font-size:11px}.shapes{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:1px 0 4px}.shapes::-webkit-scrollbar{display:none}.shape{flex:0 0 61px;height:72px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;border:1px solid #dfe9ee;border-radius:11px;background:#f8fbfc;color:#52717b;padding:5px 2px}.shape.selected{border:2px solid #08a3ad;background:#e6f8f8;color:#087983;box-shadow:0 2px 8px #5abdbb2a}.shape svg{width:42px;height:42px}.shape small{font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.note{text-align:center;font-size:11px;line-height:1.7;color:#798f9c;margin:14px 8px 0}.note strong{font-weight:750;color:#507a85}
+@media (max-width:365px){.app{padding:12px 9px 22px}.stage{font-size:11px;padding:9px 5px}.legend{gap:5px 10px}.legend span{font-size:10px}.controls{padding:11px 10px 12px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<main class="app">
+  <header class="brand"><div><small>GEOMETRY PUZZLE / PROTOTYPE 01</small><h1>SQUARE SNAP</h1></div><span class="tag">すべての正方形を見つけよう</span></header>
+  <nav class="stagebar" id="stages" aria-label="ステージ選択"></nav>
+  <section class="panel" aria-label="正方形パズル盤面">
+    <div class="panelhead"><div class="t" id="levelTitle">LEVEL 01 / はじめて</div><div class="count"><strong id="foundCount">0</strong> / <span id="totalCount">2</span></div></div>
+    <div class="bar"><div class="barin" id="barin"></div></div>
+    <div class="board-area" id="boardArea"><svg id="board" viewBox="0 0 360 430" role="application" aria-label="正方形を移動・変形して点に合わせる盤面"></svg><div id="toast" role="status" aria-live="polite"></div><div id="finished"><strong>ALL FOUND!</strong><p>すべての正方形が見つかりました</p><button type="button" id="nextLevel">次のステージへ →</button></div></div>
+    <div class="controls"><span class="controlinfo" id="shapeSummary">向き 0° · 1辺 2.0</span><div class="controls-right"><button class="softbtn" type="button" id="hintBtn" aria-pressed="false">数字ヒント</button><button class="softbtn" type="button" id="guideBtn" aria-pressed="false">ガイド</button><button class="softbtn" type="button" id="resetBtn">リセット</button></div></div>
+  </section>
+  <div class="legend"><span><b>☝</b> 動かす</span><span><b>✌</b> ピンチ・回す</span><span><b>◇</b> 角を引っ張る</span></div>
+  <section class="palette" aria-label="正方形の形を選ぶ"><div class="palette-top"><strong>形の候補</strong><span>指操作の代わりにタップでも選べます</span></div><div class="shapes" id="shapes"></div></section>
+  <p class="note">線と点の間隔はすべて同じ。<strong>4つの角を格子点にぴったり合わせる</strong>と自動で発見します。<br>ガイドをONにすると、正解の位置が薄く見えます。</p>
+</main>
+<script>
+(()=>{'use strict';
+const N='http://www.w3.org/2000/svg', SX=44,SY=45,STEP=34,COLS=9,ROWS=11;
+// Each pair [a,b] means a side vector of a grid square; its other side is [-b,a].
+const SHAPES=[[2,0],[3,0],[1,1],[2,1],[1,2],[2,2],[3,1],[1,3],[3,2],[2,3]];
+const LEVELS=[
+ {name:'はじめて',points:[[3,3],[4,2],[4,4],[5,3],[4,6],[6,4],[6,6],[2,5],[6,3]],allowed:[[2,0],[3,0],[1,1],[2,1],[1,2]]},
+ {name:'かさなり',points:[[1,2],[2,4],[2,5],[2,6],[3,4],[3,6],[4,3],[4,4],[4,5],[4,6],[5,5],[6,2],[8,5]],allowed:[[2,0],[3,0],[1,1],[2,1],[1,2],[2,2],[3,1],[1,3]]},
+ {name:'ねじれ',points:[[2,6],[3,3],[5,7],[6,4],[3,6],[6,3],[6,6],[3,5],[4,3],[5,6],[4,6],[7,3],[7,6],[1,4],[6,8],[2,4],[5,3]],allowed:SHAPES}
+];
+const el=id=>document.getElementById(id), board=el('board');
+let levelIndex=0,level,solutions=[],pointKeys=new Set(),found=new Set(),shape={a:2,b:0},center={x:4,y:8},guide=false,hints=false;
+let pointers=new Map(),gesture=null,mode='move',singleOffset={x:0,y:0},handleAnchor=null,toastTimer=null;
+const key=(x,y)=>`${x},${y}`;
+const squareKey=pts=>pts.map(p=>key(Math.round(p.x),Math.round(p.y))).sort().join('|');
+const toSvg=([x,y])=>[SX+x*STEP,SY+y*STEP];
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function verts(c,s){const {a,b}=s;return [{x:c.x+(-a+b)/2,y:c.y+(-a-b)/2},{x:c.x+(a+b)/2,y:c.y+(b-a)/2},{x:c.x+(a-b)/2,y:c.y+(a+b)/2},{x:c.x+(-a-b)/2,y:c.y+(a-b)/2}];}
+// Compare exact integer vertices. No drawn "square" can count unless all four dots exist.
+function detectSquares(points){let out=new Map();const set=new Set(points.map(([x,y])=>key(x,y)));
+ for(const [x,y] of points)for(let a=1;a<COLS;a++)for(let b=0;b<ROWS;b++){
+  const pts=[{x,y},{x:x+a,y:y+b},{x:x+a-b,y:y+a+b},{x:x-b,y:y+a}];
+  if(pts.every(p=>set.has(key(p.x,p.y))))out.set(squareKey(pts),pts);
+ }return [...out.entries()].map(([id,points])=>({id,points}));}
+function snapCenter(c,s){const p0=verts({x:0,y:0},s)[0];let x=Math.round(c.x+p0.x)-p0.x,y=Math.round(c.y+p0.y)-p0.y;
+ let p=verts({x,y},s),minX=Math.min(...p.map(p=>p.x)),maxX=Math.max(...p.map(p=>p.x)),minY=Math.min(...p.map(p=>p.y)),maxY=Math.max(...p.map(p=>p.y));
+ if(minX<0)x+=Math.ceil(-minX);if(maxX>COLS-1)x-=Math.ceil(maxX-(COLS-1));if(minY<0)y+=Math.ceil(-minY);if(maxY>ROWS-1)y-=Math.ceil(maxY-(ROWS-1));return {x,y};}
+function ptrToBoard(e){const r=board.getBoundingClientRect(),x=(e.clientX-r.left)*360/r.width,y=(e.clientY-r.top)*430/r.height;return {x:(x-SX)/STEP,y:(y-SY)/STEP};}
+function perimeter(v){return v.map(p=>{const [x,y]=toSvg([p.x,p.y]);return `${x},${y}`;}).join(' ')}
+function fmtNum(n){return Number.isInteger(n)?n.toFixed(1):n.toFixed(2)}
+function nearestShape(length,angle){const π=Math.PI;const theta=((angle%(π/2))+(π/2))%(π/2);let best=shape,bestScore=Infinity;
+ const score=s=>{const dAngle=Math.abs(Math.atan2(s.b,s.a)-theta);const diff=Math.min(dAngle,π/2-dAngle);return Math.pow(diff/(π/13),2)+Math.pow(Math.log(Math.hypot(s.a,s.b)/Math.max(length,.2))/.27,2);};
+ for(const [a,b] of level.allowed){const s={a,b},sc=score(s);if(sc<bestScore){best=s;bestScore=sc;}}
+ // Resist switching between adjacent snap states because of tiny finger movements.
+ return best.a===shape.a&&best.b===shape.b?best:score(shape)<bestScore+.15?shape:best;
+}
+function nearestCorner(target,anchor){let best=shape,score=Infinity;
+ const err=s=>{const d=verts({x:0,y:0},s),p={x:anchor.x+d[2].x-d[0].x,y:anchor.y+d[2].y-d[0].y};return Math.hypot(target.x-p.x,target.y-p.y);};
+ for(const [a,b] of level.allowed){const s={a,b},sc=err(s);if(sc<score){best=s;score=sc;}}
+ return (best.a===shape.a&&best.b===shape.b)||err(shape)<score+.14?shape:best;
+}
+function inPoly(pt,poly){let ins=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.y>pt.y)!==(b.y>pt.y)&&pt.x<(b.x-a.x)*(pt.y-a.y)/(b.y-a.y)+a.x)ins=!ins;}return ins;}
+function pointDist(p,q){return Math.hypot(p.x-q.x,p.y-q.y)}
+function showToast(text){clearTimeout(toastTimer);const t=el('toast');t.textContent=text;t.classList.add('visible');toastTimer=setTimeout(()=>t.classList.remove('visible'),1250);}
+function completed(){return found.size===solutions.length}
+function setState(){el('foundCount').textContent=found.size;el('totalCount').textContent=solutions.length;el('barin').style.width=`${100*found.size/solutions.length}%`;
+ el('shapeSummary').textContent=`向き ${Math.round(Math.atan2(shape.b,shape.a)*180/Math.PI)}° · 1辺 ${fmtNum(Math.hypot(shape.a,shape.b))}`;
+ el('boardArea').dataset.complete=completed()?'yes':'no';el('finished').classList.toggle('visible',completed());el('nextLevel').textContent=levelIndex===LEVELS.length-1?'もう一度最初から →':'次のステージへ →';
+ document.querySelectorAll('.shape').forEach(b=>{const on=+b.dataset.a===shape.a&&+b.dataset.b===shape.b;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));});}
+function draw(){let html='';
+ // Light grid is always shown; the dot radius never changes.
+ for(let i=0;i<COLS;i++){const x=SX+i*STEP;html+=`<line x1="${x}" y1="${SY}" x2="${x}" y2="${SY+(ROWS-1)*STEP}" stroke="#dce8ee" stroke-width="1"/>`;}
+ for(let i=0;i<ROWS;i++){const y=SY+i*STEP;html+=`<line x1="${SX}" y1="${y}" x2="${SX+(COLS-1)*STEP}" y2="${y}" stroke="#dce8ee" stroke-width="1"/>`;}
+ // A guide is only a visual overlay; puzzle answers are still found by fitting the moving stamp.
+ if(guide)for(const sq of solutions)if(!found.has(sq.id))html+=`<polygon points="${perimeter(sq.points)}" fill="#9cb3ce" fill-opacity=".055" stroke="#8baab5" stroke-opacity=".65" stroke-width="1.6" stroke-dasharray="5 5" stroke-linejoin="round"/>`;
+ const palette=['#f0a34e','#a184df','#4e9fc1','#69b694','#e17990','#a5aa5b'];let fi=0;
+ for(const sq of solutions)if(found.has(sq.id)){const col=palette[fi++%palette.length];html+=`<polygon points="${perimeter(sq.points)}" fill="${col}" fill-opacity=".13" stroke="${col}" stroke-width="2.4" stroke-linejoin="round"/>`;}
+ const v=verts(center,shape);html+=`<polygon points="${perimeter(v)}" fill="#08aab4" fill-opacity=".17" stroke="#079eaa" stroke-width="2.7" stroke-linejoin="round"/>`;
+ // Solid dots are all identical; clue digits, if shown, are separate small labels.
+ const counts=new Map();for(const sq of solutions)if(!found.has(sq.id))for(const p of sq.points)counts.set(key(p.x,p.y),(counts.get(key(p.x,p.y))||0)+1);
+ const originalCounts=new Map();for(const sq of solutions)for(const p of sq.points)originalCounts.set(key(p.x,p.y),(originalCounts.get(key(p.x,p.y))||0)+1);
+ const ordered=[...originalCounts.entries()].sort((a,b)=>b[1]-a[1]);const clueKeys=new Set([...ordered.filter(x=>x[1]>1),...ordered.filter(x=>x[1]===1).slice(0,1)].slice(0,6).map(x=>x[0]));
+ if(hints)for(const [x,y] of level.points){const k=key(x,y);if(!clueKeys.has(k))continue;const [px,py]=toSvg([x,y]);const remain=counts.get(k)||0;html+=`<text x="${px+11}" y="${py-9}" font-family="-apple-system,sans-serif" font-size="11" fill="${remain?'#087e89':'#a0acb6'}" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#f8fbfd" stroke-width="3">${remain}</text>`;}
+ for(const [x,y] of level.points){const [px,py]=toSvg([x,y]);html+=`<circle cx="${px}" cy="${py}" r="6" fill="#263b51"/>`;}
+ // One distinguishable corner handle, not an enlarged puzzle dot. Drag it with one finger.
+ const h=v[2], [hx,hy]=toSvg([h.x,h.y]);html+=`<circle cx="${hx}" cy="${hy}" r="15" fill="#e7fbfa" fill-opacity=".86" stroke="#079eaa" stroke-width="1.8"/><circle cx="${hx}" cy="${hy}" r="4.5" fill="#079eaa"/><path d="M ${hx-6} ${hy-9} L ${hx+6} ${hy-9} M ${hx+9} ${hy-6} L ${hx+9} ${hy+6}" fill="none" stroke="#079eaa" stroke-width="1" opacity=".65"/>`;
+ board.innerHTML=html;setState();}
+function palette(){let html='';const allowed=level.allowed.slice().sort((s,t)=>Math.hypot(s[0],s[1])-Math.hypot(t[0],t[1])||Math.atan2(s[1],s[0])-Math.atan2(t[1],t[0]));
+ for(const [a,b] of allowed){const v=verts({x:0,y:0},{a,b}),lim=Math.max(...v.flatMap(p=>[Math.abs(p.x),Math.abs(p.y)])),f=15/lim;
+ const poly=v.map(p=>`${21+p.x*f},${21+p.y*f}`).join(' ');
+ html+=`<button class="shape" type="button" data-a="${a}" data-b="${b}" title="横${a}・縦${b}の形" aria-label="一辺の格子移動 横${a} 縦${b}"><svg viewBox="0 0 42 42" aria-hidden="true"><polygon points="${poly}" fill="#0db3b5" fill-opacity=".16" stroke="#0a9aa7" stroke-width="2.1" stroke-linejoin="round" /></svg><small>${a}・${b}</small></button>`;
+ }el('shapes').innerHTML=html;
+ for(const b of el('shapes').querySelectorAll('button'))b.addEventListener('click',()=>{shape={a:+b.dataset.a,b:+b.dataset.b};center=snapCenter(center,shape);tryFind();draw();});}
+function stages(){el('stages').innerHTML=LEVELS.map((l,i)=>`<button class="stage ${levelIndex===i?'active':''}" type="button" data-stage="${i}">0${i+1}<small>${l.name}</small></button>`).join('');
+ for(const b of el('stages').querySelectorAll('button'))b.addEventListener('click',()=>loadLevel(+b.dataset.stage));}
+function loadLevel(i){levelIndex=i;level=LEVELS[i];pointKeys=new Set(level.points.map(([x,y])=>key(x,y)));solutions=detectSquares(level.points);found=new Set();shape={a:2,b:0};center=snapCenter({x:4,y:8},shape);pointers.clear();gesture=null;mode='move';guide=false;hints=false;
+ el('levelTitle').textContent=`LEVEL 0${i+1} / ${level.name}`;el('guideBtn').classList.remove('on');el('hintBtn').classList.remove('on');el('guideBtn').setAttribute('aria-pressed','false');el('hintBtn').setAttribute('aria-pressed','false');
+ stages();palette();draw();if(solutions.length!==[2,3,4][i])console.warn('Unexpected number of squares',solutions.length);}
+function tryFind(){const v=verts(center,shape);if(v.some(p=>!Number.isInteger(p.x)||!Number.isInteger(p.y)||!pointKeys.has(key(p.x,p.y))))return false;
+ const id=squareKey(v);if(!solutions.some(s=>s.id===id))return false;if(found.has(id))return false;
+ found.add(id);showToast(completed()?'すべて発見！ ✦':`ぴったり！  ${found.size} / ${solutions.length}`);return true;}
+function getFirstTwo(){return [...pointers.values()].slice(0,2)}
+function startDual(){const [p1,p2]=getFirstTwo();if(!p1||!p2)return;const mid={x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};gesture={startMid:mid,startCenter:{...center},startAngle:Math.atan2(p2.y-p1.y,p2.x-p1.x),startDistance:Math.max(pointDist(p1,p2),.01),startShape:{...shape}};mode='dual';}
+function beginSingle(p){const v=verts(center,shape),handle=v[2];
+ if(pointDist(p,handle)<.70){mode='corner';handleAnchor={...v[0]};}
+ else{mode='move';singleOffset=inPoly(p,v)?{x:center.x-p.x,y:center.y-p.y}:{x:0,y:0};if(!inPoly(p,v)){center={x:p.x,y:p.y};draw();}}
+}
+function progress(){if(pointers.size>=2){if(!gesture)startDual();const [p1,p2]=getFirstTwo(),mid={x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2},angle=Math.atan2(p2.y-p1.y,p2.x-p1.x),dist=pointDist(p1,p2);
+ const orig=gesture.startShape,delta=angle-gesture.startAngle,len=Math.hypot(orig.a,orig.b)*clamp(dist/gesture.startDistance,.25,4),wantAngle=Math.atan2(orig.b,orig.a)+delta;
+ shape=nearestShape(len,wantAngle);center={x:gesture.startCenter.x+mid.x-gesture.startMid.x,y:gesture.startCenter.y+mid.y-gesture.startMid.y};
+ }else if(pointers.size===1){const p=[...pointers.values()][0];
+ if(mode==='corner'&&handleAnchor){shape=nearestCorner(p,handleAnchor);const relative=verts({x:0,y:0},shape)[0];center={x:handleAnchor.x-relative.x,y:handleAnchor.y-relative.y};}
+ else{center={x:p.x+singleOffset.x,y:p.y+singleOffset.y};}}
+ draw();}
+function finishGesture(){center=snapCenter(center,shape);const got=tryFind();draw();if(!got&&!completed()&&mode!=='move')showToast('格子にカチッと吸着');}
+board.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{board.setPointerCapture(e.pointerId)}catch(_){}
+ const p=ptrToBoard(e);pointers.set(e.pointerId,p);if(pointers.size===1){beginSingle(p)}else if(pointers.size===2)startDual();draw();});
+board.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();pointers.set(e.pointerId,ptrToBoard(e));progress();});
+function up(e,cancel=false){if(!pointers.has(e.pointerId))return;e.preventDefault();pointers.delete(e.pointerId);
+ if(pointers.size>=2)startDual();else if(pointers.size===1){gesture=null;mode='move';const p=[...pointers.values()][0];singleOffset={x:center.x-p.x,y:center.y-p.y};}
+ else{gesture=null;center=snapCenter(center,shape);if(!cancel)tryFind();draw();}}
+board.addEventListener('pointerup',e=>up(e));board.addEventListener('pointercancel',e=>up(e,true));board.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))up(e,true)});
+el('hintBtn').addEventListener('click',()=>{hints=!hints;el('hintBtn').classList.toggle('on',hints);el('hintBtn').setAttribute('aria-pressed',String(hints));draw();});
+el('guideBtn').addEventListener('click',()=>{guide=!guide;el('guideBtn').classList.toggle('on',guide);el('guideBtn').setAttribute('aria-pressed',String(guide));draw();});
+el('resetBtn').addEventListener('click',()=>{loadLevel(levelIndex);showToast('最初から');});
+el('nextLevel').addEventListener('click',()=>{loadLevel((levelIndex+1)%LEVELS.length);});
+// Desktop fallback: wheel cycles template sizes via the same discrete snap catalog.
+board.addEventListener('wheel',e=>{e.preventDefault();const order=level.allowed.slice().sort((a,b)=>Math.hypot(...a)-Math.hypot(...b));let i=order.findIndex(([a,b])=>a===shape.a&&b===shape.b);i=(i+(e.deltaY>0?1:-1)+order.length)%order.length;shape={a:order[i][0],b:order[i][1]};center=snapCenter(center,shape);tryFind();draw();},{passive:false});
+loadLevel(0);
+})();
+</script>
+</body>
+</html>
