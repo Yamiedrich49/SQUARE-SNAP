@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#f4f8fa">
 <title>SQUARE SNAP — 隠れた正方形</title>
 <style>
@@ -14,7 +15,10 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .stagebar{display:flex;gap:7px;margin-bottom:11px}.stage{background:#fff9;color:#5c7585;border:1px solid var(--border);border-radius:12px;padding:10px 8px;flex:1;font-size:12px;font-weight:750;transition:background .17s,border .17s}.stage.active{color:#076c79;background:#dff6f8;border-color:#74c4cb}.stage small{display:block;font-size:10px;margin-top:3px;font-weight:550;color:inherit;opacity:.8}
 .panel{overflow:hidden;background:white;border:1px solid #dfe9ee;border-radius:19px;box-shadow:0 14px 36px #2d668018}
 .panelhead{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 11px;gap:8px}.panelhead .t{font-size:13px;font-weight:800;letter-spacing:.03em}.count{font-variant-numeric:tabular-nums;font-size:13px;color:#557180;font-weight:700}.count strong{color:#087c88;font-size:21px;letter-spacing:-.04em}.bar{height:3px;background:#edf3f6;margin:0 16px 12px;overflow:hidden;border-radius:8px}.barin{width:0%;height:100%;background:linear-gradient(90deg,#1dc5bb,#087a9f);transition:width .35s}
-.board-area{position:relative;margin:0 9px 0;background:#f8fbfd;border-radius:14px;overflow:hidden;border:1px solid #e3edf2}.board-area svg{display:block;width:100%;aspect-ratio:360/430;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}.board-area svg:active{cursor:grabbing}.board-area[data-complete="yes"] svg{cursor:default}
+/* Lock native scrolling/zoom ONLY inside the interactive playfield, not the page. */
+.board-area{position:relative;margin:0 9px 0;background:#f8fbfd;border-radius:14px;overflow:hidden;border:1px solid #e3edf2;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.board-area svg{display:block;width:100%;aspect-ratio:360/430;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.board-area svg *{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.board-area svg:active{cursor:grabbing}.board-area[data-complete="yes"] svg{cursor:default}
 #toast{pointer-events:none;position:absolute;left:50%;top:11px;transform:translateX(-50%) translateY(-6px);background:#213f4bea;color:white;font-size:12px;white-space:nowrap;padding:8px 13px;border-radius:99px;font-weight:750;opacity:0;transition:opacity .2s,transform .2s;z-index:5}#toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
 #finished{display:none;position:absolute;left:15px;right:15px;bottom:17px;z-index:4;text-align:center;border:1px solid #b4e6e4;background:#e8fbf9f5;box-shadow:0 6px 23px #537e8244;padding:14px;border-radius:14px}#finished.visible{display:block}#finished strong{display:block;color:#087f83;font-size:18px;letter-spacing:.07em}#finished p{margin:5px 0 10px;font-size:12px;color:#527178}#finished button{border:0;border-radius:11px;padding:11px 20px;background:#087e88;color:white;font-weight:800}
 .controls{display:flex;align-items:center;justify-content:space-between;padding:12px 15px 14px;gap:8px}.controlinfo{font-size:11px;color:#6c8291}.controls-right{display:flex;gap:8px} .softbtn{background:#f4f8fa;border:1px solid #d8e5eb;padding:8px 10px;border-radius:10px;color:#436578;font-weight:750;font-size:11px}.softbtn.on{background:#e2f8f7;color:#007e80;border-color:#8bd3d5}
@@ -32,7 +36,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
   <section class="panel" aria-label="正方形パズル盤面">
     <div class="panelhead"><div class="t" id="levelTitle">LEVEL 01 / はじめて</div><div class="count"><strong id="foundCount">0</strong> / <span id="totalCount">2</span></div></div>
     <div class="bar"><div class="barin" id="barin"></div></div>
-    <div class="board-area" id="boardArea"><svg id="board" viewBox="0 0 360 430" role="application" aria-label="正方形を移動・変形して点に合わせる盤面"></svg><div id="toast" role="status" aria-live="polite"></div><div id="finished"><strong>ALL FOUND!</strong><p>すべての正方形が見つかりました</p><button type="button" id="nextLevel">次のステージへ →</button></div></div>
+    <div class="board-area" id="boardArea"><svg id="board" viewBox="0 0 360 430" role="application" aria-label="正方形を移動・変形して点に合わせる盤面"><g id="boardVisuals" pointer-events="none"></g><rect id="touchSurface" x="0" y="0" width="360" height="430" fill="transparent" pointer-events="all"></rect></svg><div id="toast" role="status" aria-live="polite"></div><div id="finished"><strong>ALL FOUND!</strong><p>すべての正方形が見つかりました</p><button type="button" id="nextLevel">次のステージへ →</button></div></div>
     <div class="controls"><span class="controlinfo" id="shapeSummary">向き 0° · 1辺 2.0</span><div class="controls-right"><button class="softbtn" type="button" id="hintBtn" aria-pressed="false">数字ヒント</button><button class="softbtn" type="button" id="guideBtn" aria-pressed="false">ガイド</button><button class="softbtn" type="button" id="resetBtn">リセット</button></div></div>
   </section>
   <div class="legend"><span><b>☝</b> 動かす</span><span><b>✌</b> ピンチ・回す</span><span><b>◇</b> 角を引っ張る</span></div>
@@ -49,7 +53,7 @@ const LEVELS=[
  {name:'かさなり',points:[[1,2],[2,4],[2,5],[2,6],[3,4],[3,6],[4,3],[4,4],[4,5],[4,6],[5,5],[6,2],[8,5]],allowed:[[2,0],[3,0],[1,1],[2,1],[1,2],[2,2],[3,1],[1,3]]},
  {name:'ねじれ',points:[[2,6],[3,3],[5,7],[6,4],[3,6],[6,3],[6,6],[3,5],[4,3],[5,6],[4,6],[7,3],[7,6],[1,4],[6,8],[2,4],[5,3]],allowed:SHAPES}
 ];
-const el=id=>document.getElementById(id), board=el('board');
+const el=id=>document.getElementById(id), board=el('board'), visual=el('boardVisuals');
 let levelIndex=0,level,solutions=[],pointKeys=new Set(),found=new Set(),shape={a:2,b:0},center={x:4,y:8},guide=false,hints=false;
 let pointers=new Map(),gesture=null,mode='move',singleOffset={x:0,y:0},handleAnchor=null,toastTimer=null;
 const key=(x,y)=>`${x},${y}`;
@@ -105,7 +109,7 @@ function draw(){let html='';
  for(const [x,y] of level.points){const [px,py]=toSvg([x,y]);html+=`<circle cx="${px}" cy="${py}" r="6" fill="#263b51"/>`;}
  // One distinguishable corner handle, not an enlarged puzzle dot. Drag it with one finger.
  const h=v[2], [hx,hy]=toSvg([h.x,h.y]);html+=`<circle cx="${hx}" cy="${hy}" r="15" fill="#e7fbfa" fill-opacity=".86" stroke="#079eaa" stroke-width="1.8"/><circle cx="${hx}" cy="${hy}" r="4.5" fill="#079eaa"/><path d="M ${hx-6} ${hy-9} L ${hx+6} ${hy-9} M ${hx+9} ${hy-6} L ${hx+9} ${hy+6}" fill="none" stroke="#079eaa" stroke-width="1" opacity=".65"/>`;
- board.innerHTML=html;setState();}
+ visual.innerHTML=html;setState();}
 function palette(){let html='';const allowed=level.allowed.slice().sort((s,t)=>Math.hypot(s[0],s[1])-Math.hypot(t[0],t[1])||Math.atan2(s[1],s[0])-Math.atan2(t[1],t[0]));
  for(const [a,b] of allowed){const v=verts({x:0,y:0},{a,b}),lim=Math.max(...v.flatMap(p=>[Math.abs(p.x),Math.abs(p.y)])),f=15/lim;
  const poly=v.map(p=>`${21+p.x*f},${21+p.y*f}`).join(' ');
@@ -134,13 +138,86 @@ function progress(){if(pointers.size>=2){if(!gesture)startDual();const [p1,p2]=g
  else{center={x:p.x+singleOffset.x,y:p.y+singleOffset.y};}}
  draw();}
 function finishGesture(){center=snapCenter(center,shape);const got=tryFind();draw();if(!got&&!completed()&&mode!=='move')showToast('格子にカチッと吸着');}
-board.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{board.setPointerCapture(e.pointerId)}catch(_){}
- const p=ptrToBoard(e);pointers.set(e.pointerId,p);if(pointers.size===1){beginSingle(p)}else if(pointers.size===2)startDual();draw();});
-board.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();pointers.set(e.pointerId,ptrToBoard(e));progress();});
-function up(e,cancel=false){if(!pointers.has(e.pointerId))return;e.preventDefault();pointers.delete(e.pointerId);
- if(pointers.size>=2)startDual();else if(pointers.size===1){gesture=null;mode='move';const p=[...pointers.values()][0];singleOffset={x:center.x-p.x,y:center.y-p.y};}
- else{gesture=null;center=snapCenter(center,shape);if(!cancel)tryFind();draw();}}
-board.addEventListener('pointerup',e=>up(e));board.addEventListener('pointercancel',e=>up(e,true));board.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))up(e,true)});
+// Safari can reserve pinch, scroll, long-press and double-tap for the browser.
+// We deliberately handle finger touches via non-passive Touch Events on the BOARD,
+// leaving normal Safari accessibility and scrolling untouched elsewhere.
+function contactStart(id,p){
+ if(pointers.has(id))return;
+ pointers.set(id,p);
+ if(pointers.size===1)beginSingle(p);
+ else if(pointers.size===2)startDual();
+ draw();
+}
+function contactMove(updates){
+ let changed=false;
+ for(const [id,p] of updates){if(!pointers.has(id))continue;pointers.set(id,p);changed=true;}
+ if(changed)progress();
+}
+function contactEnd(ids,cancel){
+ let changed=false;
+ for(const id of ids){if(pointers.delete(id))changed=true;}
+ if(!changed)return;
+ if(pointers.size>=2)startDual();
+ else if(pointers.size===1){
+  gesture=null;mode='move';
+  const p=[...pointers.values()][0];singleOffset={x:center.x-p.x,y:center.y-p.y};
+  draw();
+ }else{
+  gesture=null;center=snapCenter(center,shape);
+  if(!cancel)tryFind();
+  draw();
+ }
+}
+// Native Touch Events are used for fingers, because iOS Safari's browser gestures
+// may cancel Pointer Events when two fingers move. No viewport-wide zoom disable.
+const touchSupported=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+if(touchSupported){
+ board.addEventListener('touchstart',e=>{
+  if(e.cancelable)e.preventDefault();
+  for(const t of e.changedTouches)contactStart('t'+t.identifier,ptrToBoard(t));
+ },{passive:false});
+ board.addEventListener('touchmove',e=>{
+  if(e.cancelable)e.preventDefault();
+  const updates=[];
+  for(const t of e.touches)updates.push(['t'+t.identifier,ptrToBoard(t)]);
+  contactMove(updates);
+ },{passive:false});
+ board.addEventListener('touchend',e=>{
+  if(e.cancelable)e.preventDefault();
+  contactEnd(Array.from(e.changedTouches,t=>'t'+t.identifier),false);
+ },{passive:false});
+ board.addEventListener('touchcancel',e=>{
+  if(e.cancelable)e.preventDefault();
+  contactEnd(Array.from(e.changedTouches,t=>'t'+t.identifier),true);
+ },{passive:false});
+}
+// Pointer Events remain active for desktop mice and pens, but NOT iOS fingers
+// (which are handled exclusively above and must never count twice).
+board.addEventListener('pointerdown',e=>{
+ if(touchSupported&&e.pointerType==='touch')return;
+ if(e.pointerType==='mouse'&&e.button!==0)return;
+ e.preventDefault();
+ try{board.setPointerCapture(e.pointerId)}catch(_){}
+ contactStart('p'+e.pointerId,ptrToBoard(e));
+});
+board.addEventListener('pointermove',e=>{
+ const id='p'+e.pointerId;if(!pointers.has(id))return;
+ e.preventDefault();contactMove([[id,ptrToBoard(e)]]);
+});
+board.addEventListener('pointerup',e=>{
+ if(!pointers.has('p'+e.pointerId))return;
+ e.preventDefault();contactEnd(['p'+e.pointerId],false);
+});
+board.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));
+board.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));
+// These non-standard Safari events still fire on some iPhone/iPad versions.
+// Stop browser zoom only when the gesture starts within the playfield.
+for(const eventName of ['gesturestart','gesturechange','gestureend']){
+ document.addEventListener(eventName,e=>{
+  if(el('boardArea').contains(e.target)&&e.cancelable)e.preventDefault();
+ },{passive:false});
+}
+board.addEventListener('contextmenu',e=>e.preventDefault());
 el('hintBtn').addEventListener('click',()=>{hints=!hints;el('hintBtn').classList.toggle('on',hints);el('hintBtn').setAttribute('aria-pressed',String(hints));draw();});
 el('guideBtn').addEventListener('click',()=>{guide=!guide;el('guideBtn').classList.toggle('on',guide);el('guideBtn').setAttribute('aria-pressed',String(guide));draw();});
 el('resetBtn').addEventListener('click',()=>{loadLevel(levelIndex);showToast('最初から');});
