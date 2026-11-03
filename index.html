@@ -3,228 +3,184 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f6f9f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f4f8fa">
-<title>SQUARE SNAP — 隠れた正方形</title>
+<title>SQUARE SNAP | 隠れた正方形</title>
 <style>
-:root{color-scheme:light;--ink:#243549;--muted:#64798a;--teal:#0797a3;--border:#d8e4ed;--pale:#f3f8fa;--white:#fff}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;background:linear-gradient(180deg,#edf6f8 0%,#f7f9fc 65%,#eef3f8 100%);color:var(--ink)}
-button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:3px solid #85cfe0;outline-offset:3px}
-.app{max-width:490px;margin:0 auto;padding:17px 14px max(24px,env(safe-area-inset-bottom))}
-.brand{display:flex;justify-content:space-between;align-items:center;margin:1px 2px 13px;gap:12px}.brand h1{font-size:18px;letter-spacing:.105em;margin:0;font-weight:820}.brand small{display:block;font-size:10px;font-weight:650;letter-spacing:.13em;color:#27919b;margin-bottom:3px}.tag{border:1px solid #bfe3e8;padding:6px 9px;border-radius:100px;font-size:10px;font-weight:750;color:#267983;background:#f4fdff;white-space:nowrap}
-.stagebar{display:flex;gap:7px;margin-bottom:11px}.stage{background:#fff9;color:#5c7585;border:1px solid var(--border);border-radius:12px;padding:10px 8px;flex:1;font-size:12px;font-weight:750;transition:background .17s,border .17s}.stage.active{color:#076c79;background:#dff6f8;border-color:#74c4cb}.stage small{display:block;font-size:10px;margin-top:3px;font-weight:550;color:inherit;opacity:.8}
-.panel{overflow:hidden;background:white;border:1px solid #dfe9ee;border-radius:19px;box-shadow:0 14px 36px #2d668018}
-.panelhead{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 11px;gap:8px}.panelhead .t{font-size:13px;font-weight:800;letter-spacing:.03em}.count{font-variant-numeric:tabular-nums;font-size:13px;color:#557180;font-weight:700}.count strong{color:#087c88;font-size:21px;letter-spacing:-.04em}.bar{height:3px;background:#edf3f6;margin:0 16px 12px;overflow:hidden;border-radius:8px}.barin{width:0%;height:100%;background:linear-gradient(90deg,#1dc5bb,#087a9f);transition:width .35s}
-/* Lock native scrolling/zoom ONLY inside the interactive playfield, not the page. */
-.board-area{position:relative;margin:0 9px 0;background:#f8fbfd;border-radius:14px;overflow:hidden;border:1px solid #e3edf2;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.board-area svg{display:block;width:100%;aspect-ratio:360/430;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
-.board-area svg *{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.board-area svg:active{cursor:grabbing}.board-area[data-complete="yes"] svg{cursor:default}
-#toast{pointer-events:none;position:absolute;left:50%;top:11px;transform:translateX(-50%) translateY(-6px);background:#213f4bea;color:white;font-size:12px;white-space:nowrap;padding:8px 13px;border-radius:99px;font-weight:750;opacity:0;transition:opacity .2s,transform .2s;z-index:5}#toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
-#finished{display:none;position:absolute;left:15px;right:15px;bottom:17px;z-index:4;text-align:center;border:1px solid #b4e6e4;background:#e8fbf9f5;box-shadow:0 6px 23px #537e8244;padding:14px;border-radius:14px}#finished.visible{display:block}#finished strong{display:block;color:#087f83;font-size:18px;letter-spacing:.07em}#finished p{margin:5px 0 10px;font-size:12px;color:#527178}#finished button{border:0;border-radius:11px;padding:11px 20px;background:#087e88;color:white;font-weight:800}
-.controls{display:flex;align-items:center;justify-content:space-between;padding:12px 15px 14px;gap:8px}.controlinfo{font-size:11px;color:#6c8291}.controls-right{display:flex;gap:8px} .softbtn{background:#f4f8fa;border:1px solid #d8e5eb;padding:8px 10px;border-radius:10px;color:#436578;font-weight:750;font-size:11px}.softbtn.on{background:#e2f8f7;color:#007e80;border-color:#8bd3d5}
-.legend{display:flex;justify-content:center;gap:11px 15px;flex-wrap:wrap;margin:14px 0 13px}.legend span{display:flex;align-items:center;gap:5px;font-size:11px;color:#556f7d;font-weight:640;white-space:nowrap}.legend b{font-size:16px;color:#188f9b;font-weight:680}
-.palette{border:1px solid #dbe7ed;border-radius:16px;background:#ffffffea;padding:13px 13px 12px}.palette-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.palette-top strong{font-size:12px}.palette-top span{color:#79909b;font-size:11px}.shapes{display:flex;gap:8px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:1px 0 4px}.shapes::-webkit-scrollbar{display:none}.shape{flex:0 0 61px;height:72px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:3px;border:1px solid #dfe9ee;border-radius:11px;background:#f8fbfc;color:#52717b;padding:5px 2px}.shape.selected{border:2px solid #08a3ad;background:#e6f8f8;color:#087983;box-shadow:0 2px 8px #5abdbb2a}.shape svg{width:42px;height:42px}.shape small{font-size:10px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
-.note{text-align:center;font-size:11px;line-height:1.7;color:#798f9c;margin:14px 8px 0}.note strong{font-weight:750;color:#507a85}
-@media (max-width:365px){.app{padding:12px 9px 22px}.stage{font-size:11px;padding:9px 5px}.legend{gap:5px 10px}.legend span{font-size:10px}.controls{padding:11px 10px 12px}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+:root{color-scheme:light;--ink:#1d3541;--sub:#6b838b;--cyan:#0a9da7;--line:#d6e6e8}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#f6f9f8;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;-webkit-text-size-adjust:100%}
+button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid #6cc7ca;outline-offset:2px}
+.shell{max-width:480px;margin:0 auto;padding:16px 13px max(18px,env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;margin:0 3px 15px;min-height:32px}
+.logo{display:flex;align-items:center;gap:9px;font-size:14px;letter-spacing:.13em;font-weight:850}
+.mark{display:inline-block;width:16px;height:16px;border:2px solid #0ba1ab;border-radius:2px;transform:rotate(-18deg);box-shadow:4px -3px 0 -1px #f6f9f8,4px -3px 0 0 #9bdadd}
+.submark{font-size:10px;font-weight:680;letter-spacing:.06em;color:#81989f}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}
+.level{border:1px solid #dee9e9;background:#fff;padding:10px 4px 9px;border-radius:12px;color:#758e95;min-width:0;transition:background .14s,border-color .14s,transform .14s}
+.level:active{transform:scale(.975)}
+.level b{font-weight:850;font-size:13px;letter-spacing:.025em}
+.level span{margin-left:5px;font-size:10px;font-weight:600}
+.level.on{background:#e5f6f5;border-color:#6ec6c7;color:#047e88}
+.paper{background:white;border:1px solid #dfeaea;border-radius:21px;box-shadow:0 16px 42px rgba(35,76,86,.055);overflow:hidden}
+.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding:16px 17px 8px}
+.eyebrow{font-size:10px;letter-spacing:.11em;font-weight:820;color:#799099;margin-bottom:5px}
+.heading h1{margin:0;font-weight:840;font-size:18px;letter-spacing:-.035em;line-height:1.35}
+.count{white-space:nowrap;display:flex;align-items:baseline;gap:4px;line-height:1;font-variant-numeric:tabular-nums}
+.count strong{font-size:35px;font-weight:850;color:var(--cyan);transition:transform .18s}
+.count strong.bump{animation:bump .38s ease}
+.count span{font-size:16px;font-weight:780;color:#9aafb5}
+.count small{font-size:11px;color:#9aafb5}
+.progress{display:flex;gap:4px;margin:8px 17px 12px}
+.progress i{flex:1;height:3px;border-radius:4px;background:#e9f0f1;transition:background .3s}
+.progress i.on{background:#0babb2}
+.clue{display:flex;justify-content:space-between;align-items:center;gap:5px;margin:0 16px 11px;font-size:11px;color:#68818a;font-weight:600}
+.clue-label{display:flex;align-items:center;gap:7px}
+.demo{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:#178e9a;color:white;font-size:11px;font-weight:800}
+.minibtn{border:0;background:transparent;color:#7c989f;padding:4px 5px;font-size:10px;font-weight:760;white-space:nowrap}
+.minibtn[aria-pressed="true"]{color:#078b96}
+.boardWrap{position:relative;margin:0 8px 0;border:1px solid #e6eeee;border-radius:14px;overflow:hidden;background:#fcfdfd;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.boardWrap svg{width:100%;aspect-ratio:360/482;display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab}
+.boardWrap svg *{touch-action:none;user-select:none;-webkit-user-select:none}
+.boardWrap svg:active{cursor:grabbing}
+#input{pointer-events:all}
+#toast{pointer-events:none;position:absolute;z-index:2;top:14px;left:50%;transform:translate(-50%,-6px);opacity:0;transition:opacity .14s,transform .16s;background:rgba(26,68,77,.93);border-radius:100px;padding:8px 17px;color:white;font-size:12px;font-weight:750;white-space:nowrap;box-shadow:0 8px 20px #204a5430}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.win{display:none;position:absolute;z-index:3;bottom:12px;left:12px;right:12px;padding:11px 12px;background:#ffffffee;border:1px solid #b3dedd;border-radius:14px;box-shadow:0 10px 40px #0d3e4e20;align-items:center;gap:10px;justify-content:space-between;backdrop-filter:blur(9px)}
+.win.visible{display:flex}
+.win strong{font-size:14px;color:#147f86}
+.win small{display:block;margin-top:3px;font-size:10px;color:#7b9298}
+.win button{border:0;border-radius:10px;background:#0b9aa5;color:white;font-size:12px;font-weight:760;padding:11px 13px;white-space:nowrap}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 16px 13px}
+.tip{margin:0;font-size:10.5px;font-weight:550;color:#7b9299;line-height:1.5}
+.actions{display:flex;gap:5px;white-space:nowrap}
+.action{border:1px solid #e1eaeb;background:#f8fbfb;color:#66828c;border-radius:9px;font-size:11px;font-weight:720;padding:9px 10px}
+.action:active{transform:scale(.96)}
+.below{text-align:center;color:#91a4aa;font-size:10px;font-weight:600;margin:12px 4px 0;line-height:1.7}
+#fx .trace{fill:none;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:trace .55s cubic-bezier(.22,.61,.25,1) forwards}
+#fx .veil{opacity:0;animation:veil .52s ease-out forwards}
+#fx .ring{fill:none;stroke-width:2.5;opacity:0;animation:ring .56s ease-out forwards;transform-box:fill-box;transform-origin:center}
+@keyframes trace{to{stroke-dashoffset:0}}
+@keyframes veil{0%{opacity:0}55%{opacity:0}100%{opacity:.12}}
+@keyframes ring{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(2.4)}}
+@keyframes bump{0%{transform:scale(.85)}55%{transform:scale(1.17)}100%{transform:scale(1)}}
+@media(max-width:360px){.shell{padding:11px 8px 14px}.top{margin-bottom:10px}.heading{padding:13px 12px 7px}.heading h1{font-size:16px}.clue{margin:0 12px 9px;font-size:10px}.boardWrap{margin:0 6px}.foot{padding:9px 11px 12px}.tip{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<main class="app">
-  <header class="brand"><div><small>GEOMETRY PUZZLE / PROTOTYPE 01</small><h1>SQUARE SNAP</h1></div><span class="tag">すべての正方形を見つけよう</span></header>
-  <nav class="stagebar" id="stages" aria-label="ステージ選択"></nav>
-  <section class="panel" aria-label="正方形パズル盤面">
-    <div class="panelhead"><div class="t" id="levelTitle">LEVEL 01 / はじめて</div><div class="count"><strong id="foundCount">0</strong> / <span id="totalCount">2</span></div></div>
-    <div class="bar"><div class="barin" id="barin"></div></div>
-    <div class="board-area" id="boardArea"><svg id="board" viewBox="0 0 360 430" role="application" aria-label="正方形を移動・変形して点に合わせる盤面"><g id="boardVisuals" pointer-events="none"></g><rect id="touchSurface" x="0" y="0" width="360" height="430" fill="transparent" pointer-events="all"></rect></svg><div id="toast" role="status" aria-live="polite"></div><div id="finished"><strong>ALL FOUND!</strong><p>すべての正方形が見つかりました</p><button type="button" id="nextLevel">次のステージへ →</button></div></div>
-    <div class="controls"><span class="controlinfo" id="shapeSummary">向き 0° · 1辺 2.0</span><div class="controls-right"><button class="softbtn" type="button" id="hintBtn" aria-pressed="false">数字ヒント</button><button class="softbtn" type="button" id="guideBtn" aria-pressed="false">ガイド</button><button class="softbtn" type="button" id="resetBtn">リセット</button></div></div>
-  </section>
-  <div class="legend"><span><b>☝</b> 動かす</span><span><b>✌</b> ピンチ・回す</span><span><b>◇</b> 角を引っ張る</span></div>
-  <section class="palette" aria-label="正方形の形を選ぶ"><div class="palette-top"><strong>形の候補</strong><span>指操作の代わりにタップでも選べます</span></div><div class="shapes" id="shapes"></div></section>
-  <p class="note">線と点の間隔はすべて同じ。<strong>4つの角を格子点にぴったり合わせる</strong>と自動で発見します。<br>ガイドをONにすると、正解の位置が薄く見えます。</p>
+<main class="shell">
+<header class="top"><div class="logo"><span class="mark" aria-hidden="true"></span>SQUARE SNAP</div><span class="submark">HIDDEN SQUARES</span></header>
+<nav class="levels" id="levels" aria-label="問題選択"></nav>
+<section class="paper" aria-label="隠れた正方形パズル">
+  <div class="heading"><div><div class="eyebrow" id="stageText">LEVEL 01</div><h1 id="goalText">正方形を5個見つけよう</h1></div><div class="count"><strong id="score">0</strong><span>/</span><span id="goalNum">5</span></div></div>
+  <div class="progress" id="progress" aria-label="発見状況"></div>
+  <div class="clue"><div class="clue-label"><span class="demo">2</span><span>数字は、その点に残る正方形の数</span></div><button type="button" class="minibtn" id="hints" aria-pressed="true">数字 ON</button></div>
+  <div class="boardWrap" id="wrap">
+    <svg id="board" viewBox="0 0 360 482" aria-label="指で正方形を移動・回転・拡大縮小して頂点を合わせるゲーム"><g id="scene" pointer-events="none"></g><g id="fx" pointer-events="none"></g><rect id="input" width="360" height="482" fill="transparent"/></svg>
+    <div id="toast" aria-live="polite" role="status"></div>
+    <div class="win" id="win"><div><strong>すべて発見！ ✦</strong><small>見えなかった形が、つながった。</small></div><button type="button" id="next">次の問題へ →</button></div>
+  </div>
+  <div class="foot"><p class="tip">指で動かす・角を引く<br>2本指で拡大・回転</p><div class="actions"><button id="sound" class="action" type="button" aria-pressed="true">♪ ON</button><button id="reset" class="action" type="button">↺ 最初から</button></div></div>
+</section>
+<p class="below">4つの角が点に重なると、正方形が姿を現します。</p>
 </main>
 <script>
 (()=>{'use strict';
-const N='http://www.w3.org/2000/svg', SX=44,SY=45,STEP=34,COLS=9,ROWS=11;
-// Each pair [a,b] means a side vector of a grid square; its other side is [-b,a].
-const SHAPES=[[2,0],[3,0],[1,1],[2,1],[1,2],[2,2],[3,1],[1,3],[3,2],[2,3]];
-const LEVELS=[
- {name:'はじめて',points:[[3,3],[4,2],[4,4],[5,3],[4,6],[6,4],[6,6],[2,5],[6,3]],allowed:[[2,0],[3,0],[1,1],[2,1],[1,2]]},
- {name:'かさなり',points:[[1,2],[2,4],[2,5],[2,6],[3,4],[3,6],[4,3],[4,4],[4,5],[4,6],[5,5],[6,2],[8,5]],allowed:[[2,0],[3,0],[1,1],[2,1],[1,2],[2,2],[3,1],[1,3]]},
- {name:'ねじれ',points:[[2,6],[3,3],[5,7],[6,4],[3,6],[6,3],[6,6],[3,5],[4,3],[5,6],[4,6],[7,3],[7,6],[1,4],[6,8],[2,4],[5,3]],allowed:SHAPES}
-];
-const el=id=>document.getElementById(id), board=el('board'), visual=el('boardVisuals');
-let levelIndex=0,level,solutions=[],pointKeys=new Set(),found=new Set(),shape={a:2,b:0},center={x:4,y:8},guide=false,hints=false;
-let pointers=new Map(),gesture=null,mode='move',singleOffset={x:0,y:0},handleAnchor=null,toastTimer=null;
+const LEVELS=[{"label":"みつける","cols":11,"rows":14,"points":[[0,1],[0,10],[1,5],[3,3],[3,4],[3,7],[3,13],[4,0],[4,11],[5,4],[5,5],[6,4],[6,7],[6,10],[8,13],[10,9]],"squares":5,"shapes":[[3,0],[2,2],[3,3],[4,2],[4,-1]]},{"label":"ひらめく","cols":14,"rows":17,"points":[[0,7],[2,9],[3,6],[4,2],[5,8],[5,10],[5,11],[5,16],[6,3],[6,7],[7,2],[9,6],[9,7],[9,8],[9,14],[10,0],[11,6],[11,10],[11,16],[13,4],[13,8],[13,10]],"squares":7,"shapes":[[6,0],[4,4],[6,2],[3,1],[2,2],[5,4],[4,-3]]},{"label":"たんきゅう","cols":16,"rows":19,"points":[[0,17],[1,7],[1,9],[1,13],[2,4],[3,7],[3,9],[4,18],[5,8],[5,9],[5,13],[5,14],[6,1],[6,16],[8,12],[9,2],[9,5],[9,13],[9,15],[12,2],[12,5],[12,10],[12,16],[13,7],[13,9],[14,4],[15,6],[15,13]],"squares":9,"shapes":[[4,0],[4,4],[4,-3],[4,1],[3,0],[3,-1],[3,3],[2,0],[2,-1]]}];
+const VW=360,VH=482;
+const el=id=>document.getElementById(id),svg=el('board'),scene=el('scene'),fx=el('fx');
 const key=(x,y)=>`${x},${y}`;
-const squareKey=pts=>pts.map(p=>key(Math.round(p.x),Math.round(p.y))).sort().join('|');
-const toSvg=([x,y])=>[SX+x*STEP,SY+y*STEP];
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const sqKey=ps=>ps.map(p=>key(p.x,p.y)).sort().join('|');
+const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
+let lv=0,level,solutions=[],dots=new Set(),found=new Set(),shape={a:2,b:0},center={x:3,y:3};
+let step=24,ox=20,oy=22,hints=true,sound=true,audio=null,pointMap=new Map(),shapes=[];
+let touch=new Map(),gesture=null,mode='move',offset={x:0,y:0},anchor=null,toastTimer=null,fxTimer=null,lastFound=null,changeTick=0,stampHidden=false;
+const PALETTE=['#069da8','#e1a05b','#6b8cbd','#9a81c5','#61a59b','#da8293','#b5934c','#627fb0','#6d9d83'];
+function computeSize(){step=Math.min(318/(level.cols-1),420/(level.rows-1));ox=(VW-step*(level.cols-1))/2;oy=(VH-step*(level.rows-1))/2;}
+function xy(p){return [ox+p.x*step,oy+p.y*step]}
 function verts(c,s){const {a,b}=s;return [{x:c.x+(-a+b)/2,y:c.y+(-a-b)/2},{x:c.x+(a+b)/2,y:c.y+(b-a)/2},{x:c.x+(a-b)/2,y:c.y+(a+b)/2},{x:c.x+(-a-b)/2,y:c.y+(a-b)/2}];}
-// Compare exact integer vertices. No drawn "square" can count unless all four dots exist.
-function detectSquares(points){let out=new Map();const set=new Set(points.map(([x,y])=>key(x,y)));
- for(const [x,y] of points)for(let a=1;a<COLS;a++)for(let b=0;b<ROWS;b++){
-  const pts=[{x,y},{x:x+a,y:y+b},{x:x+a-b,y:y+a+b},{x:x-b,y:y+a}];
-  if(pts.every(p=>set.has(key(p.x,p.y))))out.set(squareKey(pts),pts);
- }return [...out.entries()].map(([id,points])=>({id,points}));}
-function snapCenter(c,s){const p0=verts({x:0,y:0},s)[0];let x=Math.round(c.x+p0.x)-p0.x,y=Math.round(c.y+p0.y)-p0.y;
- let p=verts({x,y},s),minX=Math.min(...p.map(p=>p.x)),maxX=Math.max(...p.map(p=>p.x)),minY=Math.min(...p.map(p=>p.y)),maxY=Math.max(...p.map(p=>p.y));
- if(minX<0)x+=Math.ceil(-minX);if(maxX>COLS-1)x-=Math.ceil(maxX-(COLS-1));if(minY<0)y+=Math.ceil(-minY);if(maxY>ROWS-1)y-=Math.ceil(maxY-(ROWS-1));return {x,y};}
-function ptrToBoard(e){const r=board.getBoundingClientRect(),x=(e.clientX-r.left)*360/r.width,y=(e.clientY-r.top)*430/r.height;return {x:(x-SX)/STEP,y:(y-SY)/STEP};}
-function perimeter(v){return v.map(p=>{const [x,y]=toSvg([p.x,p.y]);return `${x},${y}`;}).join(' ')}
-function fmtNum(n){return Number.isInteger(n)?n.toFixed(1):n.toFixed(2)}
-function nearestShape(length,angle){const π=Math.PI;const theta=((angle%(π/2))+(π/2))%(π/2);let best=shape,bestScore=Infinity;
- const score=s=>{const dAngle=Math.abs(Math.atan2(s.b,s.a)-theta);const diff=Math.min(dAngle,π/2-dAngle);return Math.pow(diff/(π/13),2)+Math.pow(Math.log(Math.hypot(s.a,s.b)/Math.max(length,.2))/.27,2);};
- for(const [a,b] of level.allowed){const s={a,b},sc=score(s);if(sc<bestScore){best=s;bestScore=sc;}}
- // Resist switching between adjacent snap states because of tiny finger movements.
- return best.a===shape.a&&best.b===shape.b?best:score(shape)<bestScore+.15?shape:best;
-}
-function nearestCorner(target,anchor){let best=shape,score=Infinity;
- const err=s=>{const d=verts({x:0,y:0},s),p={x:anchor.x+d[2].x-d[0].x,y:anchor.y+d[2].y-d[0].y};return Math.hypot(target.x-p.x,target.y-p.y);};
- for(const [a,b] of level.allowed){const s={a,b},sc=err(s);if(sc<score){best=s;score=sc;}}
- return (best.a===shape.a&&best.b===shape.b)||err(shape)<score+.14?shape:best;
-}
-function inPoly(pt,poly){let ins=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if((a.y>pt.y)!==(b.y>pt.y)&&pt.x<(b.x-a.x)*(pt.y-a.y)/(b.y-a.y)+a.x)ins=!ins;}return ins;}
-function pointDist(p,q){return Math.hypot(p.x-q.x,p.y-q.y)}
-function showToast(text){clearTimeout(toastTimer);const t=el('toast');t.textContent=text;t.classList.add('visible');toastTimer=setTimeout(()=>t.classList.remove('visible'),1250);}
-function completed(){return found.size===solutions.length}
-function setState(){el('foundCount').textContent=found.size;el('totalCount').textContent=solutions.length;el('barin').style.width=`${100*found.size/solutions.length}%`;
- el('shapeSummary').textContent=`向き ${Math.round(Math.atan2(shape.b,shape.a)*180/Math.PI)}° · 1辺 ${fmtNum(Math.hypot(shape.a,shape.b))}`;
- el('boardArea').dataset.complete=completed()?'yes':'no';el('finished').classList.toggle('visible',completed());el('nextLevel').textContent=levelIndex===LEVELS.length-1?'もう一度最初から →':'次のステージへ →';
- document.querySelectorAll('.shape').forEach(b=>{const on=+b.dataset.a===shape.a&&+b.dataset.b===shape.b;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',String(on));});}
-function draw(){let html='';
- // Light grid is always shown; the dot radius never changes.
- for(let i=0;i<COLS;i++){const x=SX+i*STEP;html+=`<line x1="${x}" y1="${SY}" x2="${x}" y2="${SY+(ROWS-1)*STEP}" stroke="#dce8ee" stroke-width="1"/>`;}
- for(let i=0;i<ROWS;i++){const y=SY+i*STEP;html+=`<line x1="${SX}" y1="${y}" x2="${SX+(COLS-1)*STEP}" y2="${y}" stroke="#dce8ee" stroke-width="1"/>`;}
- // A guide is only a visual overlay; puzzle answers are still found by fitting the moving stamp.
- if(guide)for(const sq of solutions)if(!found.has(sq.id))html+=`<polygon points="${perimeter(sq.points)}" fill="#9cb3ce" fill-opacity=".055" stroke="#8baab5" stroke-opacity=".65" stroke-width="1.6" stroke-dasharray="5 5" stroke-linejoin="round"/>`;
- const palette=['#f0a34e','#a184df','#4e9fc1','#69b694','#e17990','#a5aa5b'];let fi=0;
- for(const sq of solutions)if(found.has(sq.id)){const col=palette[fi++%palette.length];html+=`<polygon points="${perimeter(sq.points)}" fill="${col}" fill-opacity=".13" stroke="${col}" stroke-width="2.4" stroke-linejoin="round"/>`;}
- const v=verts(center,shape);html+=`<polygon points="${perimeter(v)}" fill="#08aab4" fill-opacity=".17" stroke="#079eaa" stroke-width="2.7" stroke-linejoin="round"/>`;
- // Solid dots are all identical; clue digits, if shown, are separate small labels.
- const counts=new Map();for(const sq of solutions)if(!found.has(sq.id))for(const p of sq.points)counts.set(key(p.x,p.y),(counts.get(key(p.x,p.y))||0)+1);
- const originalCounts=new Map();for(const sq of solutions)for(const p of sq.points)originalCounts.set(key(p.x,p.y),(originalCounts.get(key(p.x,p.y))||0)+1);
- const ordered=[...originalCounts.entries()].sort((a,b)=>b[1]-a[1]);const clueKeys=new Set([...ordered.filter(x=>x[1]>1),...ordered.filter(x=>x[1]===1).slice(0,1)].slice(0,6).map(x=>x[0]));
- if(hints)for(const [x,y] of level.points){const k=key(x,y);if(!clueKeys.has(k))continue;const [px,py]=toSvg([x,y]);const remain=counts.get(k)||0;html+=`<text x="${px+11}" y="${py-9}" font-family="-apple-system,sans-serif" font-size="11" fill="${remain?'#087e89':'#a0acb6'}" font-weight="800" text-anchor="middle" paint-order="stroke" stroke="#f8fbfd" stroke-width="3">${remain}</text>`;}
- for(const [x,y] of level.points){const [px,py]=toSvg([x,y]);html+=`<circle cx="${px}" cy="${py}" r="6" fill="#263b51"/>`;}
- // One distinguishable corner handle, not an enlarged puzzle dot. Drag it with one finger.
- const h=v[2], [hx,hy]=toSvg([h.x,h.y]);html+=`<circle cx="${hx}" cy="${hy}" r="15" fill="#e7fbfa" fill-opacity=".86" stroke="#079eaa" stroke-width="1.8"/><circle cx="${hx}" cy="${hy}" r="4.5" fill="#079eaa"/><path d="M ${hx-6} ${hy-9} L ${hx+6} ${hy-9} M ${hx+9} ${hy-6} L ${hx+9} ${hy+6}" fill="none" stroke="#079eaa" stroke-width="1" opacity=".65"/>`;
- visual.innerHTML=html;setState();}
-function palette(){let html='';const allowed=level.allowed.slice().sort((s,t)=>Math.hypot(s[0],s[1])-Math.hypot(t[0],t[1])||Math.atan2(s[1],s[0])-Math.atan2(t[1],t[0]));
- for(const [a,b] of allowed){const v=verts({x:0,y:0},{a,b}),lim=Math.max(...v.flatMap(p=>[Math.abs(p.x),Math.abs(p.y)])),f=15/lim;
- const poly=v.map(p=>`${21+p.x*f},${21+p.y*f}`).join(' ');
- html+=`<button class="shape" type="button" data-a="${a}" data-b="${b}" title="横${a}・縦${b}の形" aria-label="一辺の格子移動 横${a} 縦${b}"><svg viewBox="0 0 42 42" aria-hidden="true"><polygon points="${poly}" fill="#0db3b5" fill-opacity=".16" stroke="#0a9aa7" stroke-width="2.1" stroke-linejoin="round" /></svg><small>${a}・${b}</small></button>`;
- }el('shapes').innerHTML=html;
- for(const b of el('shapes').querySelectorAll('button'))b.addEventListener('click',()=>{shape={a:+b.dataset.a,b:+b.dataset.b};center=snapCenter(center,shape);tryFind();draw();});}
-function stages(){el('stages').innerHTML=LEVELS.map((l,i)=>`<button class="stage ${levelIndex===i?'active':''}" type="button" data-stage="${i}">0${i+1}<small>${l.name}</small></button>`).join('');
- for(const b of el('stages').querySelectorAll('button'))b.addEventListener('click',()=>loadLevel(+b.dataset.stage));}
-function loadLevel(i){levelIndex=i;level=LEVELS[i];pointKeys=new Set(level.points.map(([x,y])=>key(x,y)));solutions=detectSquares(level.points);found=new Set();shape={a:2,b:0};center=snapCenter({x:4,y:8},shape);pointers.clear();gesture=null;mode='move';guide=false;hints=false;
- el('levelTitle').textContent=`LEVEL 0${i+1} / ${level.name}`;el('guideBtn').classList.remove('on');el('hintBtn').classList.remove('on');el('guideBtn').setAttribute('aria-pressed','false');el('hintBtn').setAttribute('aria-pressed','false');
- stages();palette();draw();if(solutions.length!==[2,3,4][i])console.warn('Unexpected number of squares',solutions.length);}
-function tryFind(){const v=verts(center,shape);if(v.some(p=>!Number.isInteger(p.x)||!Number.isInteger(p.y)||!pointKeys.has(key(p.x,p.y))))return false;
- const id=squareKey(v);if(!solutions.some(s=>s.id===id))return false;if(found.has(id))return false;
- found.add(id);showToast(completed()?'すべて発見！ ✦':`ぴったり！  ${found.size} / ${solutions.length}`);return true;}
-function getFirstTwo(){return [...pointers.values()].slice(0,2)}
-function startDual(){const [p1,p2]=getFirstTwo();if(!p1||!p2)return;const mid={x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2};gesture={startMid:mid,startCenter:{...center},startAngle:Math.atan2(p2.y-p1.y,p2.x-p1.x),startDistance:Math.max(pointDist(p1,p2),.01),startShape:{...shape}};mode='dual';}
-function beginSingle(p){const v=verts(center,shape),handle=v[2];
- if(pointDist(p,handle)<.70){mode='corner';handleAnchor={...v[0]};}
- else{mode='move';singleOffset=inPoly(p,v)?{x:center.x-p.x,y:center.y-p.y}:{x:0,y:0};if(!inPoly(p,v)){center={x:p.x,y:p.y};draw();}}
-}
-function progress(){if(pointers.size>=2){if(!gesture)startDual();const [p1,p2]=getFirstTwo(),mid={x:(p1.x+p2.x)/2,y:(p1.y+p2.y)/2},angle=Math.atan2(p2.y-p1.y,p2.x-p1.x),dist=pointDist(p1,p2);
- const orig=gesture.startShape,delta=angle-gesture.startAngle,len=Math.hypot(orig.a,orig.b)*clamp(dist/gesture.startDistance,.25,4),wantAngle=Math.atan2(orig.b,orig.a)+delta;
- shape=nearestShape(len,wantAngle);center={x:gesture.startCenter.x+mid.x-gesture.startMid.x,y:gesture.startCenter.y+mid.y-gesture.startMid.y};
- }else if(pointers.size===1){const p=[...pointers.values()][0];
- if(mode==='corner'&&handleAnchor){shape=nearestCorner(p,handleAnchor);const relative=verts({x:0,y:0},shape)[0];center={x:handleAnchor.x-relative.x,y:handleAnchor.y-relative.y};}
- else{center={x:p.x+singleOffset.x,y:p.y+singleOffset.y};}}
- draw();}
-function finishGesture(){center=snapCenter(center,shape);const got=tryFind();draw();if(!got&&!completed()&&mode!=='move')showToast('格子にカチッと吸着');}
-// Safari can reserve pinch, scroll, long-press and double-tap for the browser.
-// We deliberately handle finger touches via non-passive Touch Events on the BOARD,
-// leaving normal Safari accessibility and scrolling untouched elsewhere.
-function contactStart(id,p){
- if(pointers.has(id))return;
- pointers.set(id,p);
- if(pointers.size===1)beginSingle(p);
- else if(pointers.size===2)startDual();
- draw();
-}
-function contactMove(updates){
- let changed=false;
- for(const [id,p] of updates){if(!pointers.has(id))continue;pointers.set(id,p);changed=true;}
- if(changed)progress();
-}
-function contactEnd(ids,cancel){
- let changed=false;
- for(const id of ids){if(pointers.delete(id))changed=true;}
- if(!changed)return;
- if(pointers.size>=2)startDual();
- else if(pointers.size===1){
-  gesture=null;mode='move';
-  const p=[...pointers.values()][0];singleOffset={x:center.x-p.x,y:center.y-p.y};
-  draw();
- }else{
-  gesture=null;center=snapCenter(center,shape);
-  if(!cancel)tryFind();
-  draw();
+function asPoints(v){return v.map(p=>xy(p).map(z=>z.toFixed(2)).join(',')).join(' ')}
+function distance(p,q){return Math.hypot(p.x-q.x,p.y-q.y)}
+function detect(points){const s=new Set(points.map(p=>key(...p))),out=new Map();for(const [x,y] of points)for(const [xx,yy] of points){if(x===xx&&y===yy)continue;const dx=xx-x,dy=yy-y;for(const k of [-1,1]){const bx=-k*dy,by=k*dx;const ps=[{x,y},{x:xx,y:yy},{x:xx+bx,y:yy+by},{x:x+bx,y:y+by}];if(ps.every(p=>s.has(key(p.x,p.y))))out.set(sqKey(ps),{id:sqKey(ps),points:ps});}}return [...out.values()];}
+function snapCenter(c,s){const d=verts({x:0,y:0},s)[0];let x=Math.round(c.x+d.x)-d.x,y=Math.round(c.y+d.y)-d.y;let p=verts({x,y},s);const xs=p.map(p=>p.x),ys=p.map(p=>p.y);let minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);if(minX<0)x+=Math.ceil(-minX);if(maxX>level.cols-1)x-=Math.ceil(maxX-level.cols+1);if(minY<0)y+=Math.ceil(-minY);if(maxY>level.rows-1)y-=Math.ceil(maxY-level.rows+1);return{x,y};}
+function boardPoint(e){const r=svg.getBoundingClientRect(),sx=(e.clientX-r.left)*VW/r.width,sy=(e.clientY-r.top)*VH/r.height;return{x:(sx-ox)/step,y:(sy-oy)/step};}
+function nearestShape(length,angle){const wrap=d=>Math.abs(((d+Math.PI/4)%(Math.PI/2)+(Math.PI/2))%(Math.PI/2)-Math.PI/4);let best=shape,bestScore=Infinity;const rate=s=>Math.pow(wrap(angle-Math.atan2(s.b,s.a))/.22,2)+Math.pow(Math.log(Math.max(length,.1)/Math.hypot(s.a,s.b))/.30,2);for(const s of shapes){const n=rate(s);if(n<bestScore){best=s;bestScore=n;}}return rate(shape)<bestScore+.22?shape:best;}
+function nearestCorner(p,origin){let best=shape,min=Infinity;const rate=s=>{const v=verts({x:0,y:0},s);return distance(p,{x:origin.x+v[2].x-v[0].x,y:origin.y+v[2].y-v[0].y});};for(const s of shapes){const d=rate(s);if(d<min){best=s;min=d;}}return rate(shape)<min+.13?shape:best;}
+function hitPolygon(p,v){let inside=false;for(let i=0,j=v.length-1;i<v.length;j=i++){const a=v[i],b=v[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)inside=!inside;}return inside;}
+function play(kind){if(!sound)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(kind==='snap'?730:560,t);o.frequency.exponentialRampToValueAtTime(kind==='snap'?590:460,t+.055);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(kind==='snap'?.015:.007,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+.085);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.09);}catch(_){}}
+function toast(s){const t=el('toast');clearTimeout(toastTimer);t.textContent=s;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),950)}
+function updateHeader(){el('score').textContent=found.size;el('goalNum').textContent=solutions.length;el('progress').innerHTML=solutions.map((s,i)=>`<i class="${i<found.size?'on':''}"></i>`).join('');const win=found.size===solutions.length;el('win').classList.toggle('visible',win);el('next').textContent=lv===LEVELS.length-1?'最初から遊ぶ →':'次の問題へ →'}
+function render(){let out='';
+ out+=`<rect x="0" y="0" width="360" height="482" fill="#fcfdfd"/>`;
+ for(let i=0;i<level.cols;i++){let x=ox+i*step;out+=`<path d="M ${x.toFixed(2)} ${(oy-8).toFixed(2)} V ${(oy+step*(level.rows-1)+8).toFixed(2)}" stroke="${i%5===0?'#d8e5e8':'#e7eff0'}" stroke-width="${i%5===0?1.2:.85}"/>`}
+ for(let j=0;j<level.rows;j++){let y=oy+j*step;out+=`<path d="M ${(ox-8).toFixed(2)} ${y.toFixed(2)} H ${(ox+step*(level.cols-1)+8).toFixed(2)}" stroke="${j%5===0?'#d8e5e8':'#e7eff0'}" stroke-width="${j%5===0?1.2:.85}"/>`}
+ let fi=0;for(const sq of solutions){if(!found.has(sq.id))continue;const color=PALETTE[fi++%PALETTE.length];if(sq.id===lastFound)continue;out+=`<polygon points="${asPoints(sq.points)}" fill="${color}" fill-opacity=".085" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`;}
+ const v=verts(center,shape),s=snapCenter(center,shape),sv=verts(s,shape),dist=distance(center,s);
+ const allMatched=sv.every(p=>pointMap.has(key(p.x,p.y))),ready=dist<.42&&allMatched&&!found.has(sqKey(sv));
+ if(!stampHidden)out+=`<polygon points="${asPoints(v)}" fill="${ready?'#13c1bd':'#0aa4b0'}" fill-opacity="${ready?'.15':'.065'}" stroke="${ready?'#00a6a0':'#11a1ac'}" stroke-width="${ready?3:2.2}" stroke-linejoin="round" stroke-dasharray="${ready?'':'5 4'}"/>`;
+ // All marked points have precisely the same diameter. Shared-point numbers live INSIDE the dots.
+ for(const [x,y] of level.points){const k=key(x,y),n=solutions.reduce((acc,s)=>acc+(!found.has(s.id)&&s.points.some(p=>p.x===x&&p.y===y)?1:0),0),initial=pointMap.get(k);const [px,py]=xy({x,y});const shared=initial>1;
+  let color=n===0?'#b4c5c9':shared&&hints?'#108e9b':'#2d4350';
+  if(ready&&sv.some(p=>p.x===x&&p.y===y))color='#00a8a1';
+  out+=`<circle cx="${px}" cy="${py}" r="7" fill="${color}" stroke="white" stroke-width="1.7"/>`;
+  if(hints&&shared){out+=`<text x="${px}" y="${py+3.4}" text-anchor="middle" font-size="10.5" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">${n}</text>`;}
  }
+ // A single distinct round manipulation knob; not a grid-point or a shape selector.
+ const handle=v[2],[hx,hy]=xy(handle);if(!stampHidden)out+=`<circle cx="${hx}" cy="${hy}" r="13" fill="#ffffffed" stroke="#069ca6" stroke-width="2.3"/>`;
+ if(!stampHidden)out+=`<path d="M ${hx-5} ${hy+4} L ${hx+4} ${hy-5} M ${hx-2} ${hy-5} H ${hx+4} V ${hy+1}" stroke="#069ca6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+ scene.innerHTML=out;updateHeader();}
+function animateFound(sq,color){fx.innerHTML='';const pts=asPoints(sq.points);const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},[px,py]=xy(c);
+ fx.innerHTML=`<polygon class="veil" points="${pts}" fill="${color}"/><polygon class="trace" points="${pts}" pathLength="100" stroke="${color}"/><circle class="ring" cx="${px}" cy="${py}" r="19" stroke="${color}"/>`;
+ clearTimeout(fxTimer);fxTimer=setTimeout(()=>{fx.innerHTML='';lastFound=null;render();},610);
 }
-// Native Touch Events are used for fingers, because iOS Safari's browser gestures
-// may cancel Pointer Events when two fingers move. No viewport-wide zoom disable.
-const touchSupported=('ontouchstart' in window)||navigator.maxTouchPoints>0;
-if(touchSupported){
- board.addEventListener('touchstart',e=>{
-  if(e.cancelable)e.preventDefault();
-  for(const t of e.changedTouches)contactStart('t'+t.identifier,ptrToBoard(t));
- },{passive:false});
- board.addEventListener('touchmove',e=>{
-  if(e.cancelable)e.preventDefault();
-  const updates=[];
-  for(const t of e.touches)updates.push(['t'+t.identifier,ptrToBoard(t)]);
-  contactMove(updates);
- },{passive:false});
- board.addEventListener('touchend',e=>{
-  if(e.cancelable)e.preventDefault();
-  contactEnd(Array.from(e.changedTouches,t=>'t'+t.identifier),false);
- },{passive:false});
- board.addEventListener('touchcancel',e=>{
-  if(e.cancelable)e.preventDefault();
-  contactEnd(Array.from(e.changedTouches,t=>'t'+t.identifier),true);
- },{passive:false});
-}
-// Pointer Events remain active for desktop mice and pens, but NOT iOS fingers
-// (which are handled exclusively above and must never count twice).
-board.addEventListener('pointerdown',e=>{
- if(touchSupported&&e.pointerType==='touch')return;
- if(e.pointerType==='mouse'&&e.button!==0)return;
- e.preventDefault();
- try{board.setPointerCapture(e.pointerId)}catch(_){}
- contactStart('p'+e.pointerId,ptrToBoard(e));
-});
-board.addEventListener('pointermove',e=>{
- const id='p'+e.pointerId;if(!pointers.has(id))return;
- e.preventDefault();contactMove([[id,ptrToBoard(e)]]);
-});
-board.addEventListener('pointerup',e=>{
- if(!pointers.has('p'+e.pointerId))return;
- e.preventDefault();contactEnd(['p'+e.pointerId],false);
-});
-board.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));
-board.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));
-// These non-standard Safari events still fire on some iPhone/iPad versions.
-// Stop browser zoom only when the gesture starts within the playfield.
-for(const eventName of ['gesturestart','gesturechange','gestureend']){
- document.addEventListener(eventName,e=>{
-  if(el('boardArea').contains(e.target)&&e.cancelable)e.preventDefault();
- },{passive:false});
-}
-board.addEventListener('contextmenu',e=>e.preventDefault());
-el('hintBtn').addEventListener('click',()=>{hints=!hints;el('hintBtn').classList.toggle('on',hints);el('hintBtn').setAttribute('aria-pressed',String(hints));draw();});
-el('guideBtn').addEventListener('click',()=>{guide=!guide;el('guideBtn').classList.toggle('on',guide);el('guideBtn').setAttribute('aria-pressed',String(guide));draw();});
-el('resetBtn').addEventListener('click',()=>{loadLevel(levelIndex);showToast('最初から');});
-el('nextLevel').addEventListener('click',()=>{loadLevel((levelIndex+1)%LEVELS.length);});
-// Desktop fallback: wheel cycles template sizes via the same discrete snap catalog.
-board.addEventListener('wheel',e=>{e.preventDefault();const order=level.allowed.slice().sort((a,b)=>Math.hypot(...a)-Math.hypot(...b));let i=order.findIndex(([a,b])=>a===shape.a&&b===shape.b);i=(i+(e.deltaY>0?1:-1)+order.length)%order.length;shape={a:order[i][0],b:order[i][1]};center=snapCenter(center,shape);tryFind();draw();},{passive:false});
-loadLevel(0);
+function tryFind(){const v=verts(center,shape);if(v.some(p=>!Number.isInteger(p.x)||!Number.isInteger(p.y)||!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);lastFound=id;stampHidden=true;const color=PALETTE[(found.size-1)%PALETTE.length];play('snap');if(navigator.vibrate)navigator.vibrate(12);animateFound(sq,color);toast(found.size===solutions.length?'すべて見つけた！ ✦':'ぴったり！ ✦');el('score').classList.remove('bump');void el('score').offsetWidth;el('score').classList.add('bump');return true;}
+function changeShape(s){if(shape.a!==s.a||shape.b!==s.b){shape=s;let now=performance.now();if(now-changeTick>80){play('shift');changeTick=now;}}}
+function begin(p){const v=verts(center,shape);if(distance(p,v[2])<(24/step)){mode='corner';anchor={...v[0]};}
+ else{mode='move';if(hitPolygon(p,v))offset={x:center.x-p.x,y:center.y-p.y};else{offset={x:0,y:0};center={x:p.x,y:p.y};}}}
+function dualBegin(){const p=[...touch.values()];if(p.length<2)return;const a=p[0],b=p[1];gesture={mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),distance:Math.max(distance(a,b),.01),shape:{...shape}};mode='dual'}
+function drag(){if(touch.size>=2){if(!gesture)dualBegin();const [a,b]=[...touch.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},ang=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(gesture.shape.a,gesture.shape.b)*clamp(distance(a,b)/gesture.distance,.35,3.5);changeShape(nearestShape(len,Math.atan2(gesture.shape.b,gesture.shape.a)+ang-gesture.angle));center={x:gesture.center.x+mid.x-gesture.mid.x,y:gesture.center.y+mid.y-gesture.mid.y};}
+ else if(touch.size===1){const p=[...touch.values()][0];if(mode==='corner'&&anchor){changeShape(nearestCorner(p,anchor));const rel=verts({x:0,y:0},shape)[0];center={x:anchor.x-rel.x,y:anchor.y-rel.y};}
+ else{center={x:p.x+offset.x,y:p.y+offset.y};}}
+ render();}
+function contactStart(k,p){if(touch.has(k))return;const wasHidden=stampHidden;if(wasHidden){stampHidden=false;center={x:p.x,y:p.y};}touch.set(k,p);if(touch.size===1){if(wasHidden){mode='move';offset={x:0,y:0};}else begin(p);}else if(touch.size===2)dualBegin();render()}
+function contactMove(items){let did=false;for(const [k,p] of items)if(touch.has(k)){touch.set(k,p);did=true;}if(did)drag()}
+function contactEnd(ids,cancel=false){let removed=false;for(const k of ids)removed=touch.delete(k)||removed;if(!removed)return;
+ if(touch.size>=2)dualBegin();else if(touch.size===1){gesture=null;mode='move';const p=[...touch.values()][0];offset={x:center.x-p.x,y:center.y-p.y};render();}
+ else{gesture=null;center=snapCenter(center,shape);if(!cancel)tryFind();render();}}
+function load(i){clearTimeout(fxTimer);clearTimeout(toastTimer);el('toast').classList.remove('show');fx.innerHTML='';lastFound=null;stampHidden=false;lv=i;level=LEVELS[i];computeSize();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);found.clear();pointMap=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)for(const p of sq.points)pointMap.set(key(p.x,p.y),pointMap.get(key(p.x,p.y))+1);
+ shapes=level.shapes.map(([a,b])=>({a,b}));shapes.sort((s,t)=>Math.hypot(s.a,s.b)-Math.hypot(t.a,t.b));shape={...shapes[0]};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.75},shape);touch.clear();gesture=null;
+ el('stageText').textContent=`LEVEL 0${i+1}  ·  ${level.points.length} POINTS`;
+ el('goalText').textContent=`正方形を${solutions.length}個見つけよう`;
+ el('levels').innerHTML=LEVELS.map((l,j)=>`<button class="level ${j===i?'on':''}" data-level="${j}" type="button"><b>0${j+1}</b><span>${l.label}</span></button>`).join('');
+ for(const b of el('levels').querySelectorAll('button'))b.addEventListener('click',()=>load(+b.dataset.level));
+ if(solutions.length!==level.squares)console.error('Unexpected squares',i,solutions.length,level.squares);
+ // Integrity check: each actual square must have a realizable stamp shape.
+ for(const sq of solutions){const ps=sq.points;let valid=false;for(const s of shapes){const c={x:ps.reduce((a,p)=>a+p.x,0)/4,y:ps.reduce((a,p)=>a+p.y,0)/4};if(sqKey(verts(c,s))===sq.id){valid=true;break;}}if(!valid)console.error('Unreachable square',i,sq);}
+ render();}
+// Event handlers are confined to the board to preserve normal iPhone navigation elsewhere.
+const hasTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
+if(hasTouch){svg.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)contactStart('t'+t.identifier,boardPoint(t));},{passive:false});
+ svg.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();contactMove([...e.touches].map(t=>['t'+t.identifier,boardPoint(t)]));},{passive:false});
+ svg.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});
+ svg.addEventListener('touchcancel',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
+svg.addEventListener('pointerdown',e=>{if(hasTouch&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}contactStart('p'+e.pointerId,boardPoint(e));});
+svg.addEventListener('pointermove',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactMove([['p'+e.pointerId,boardPoint(e)]])}});
+svg.addEventListener('pointerup',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactEnd(['p'+e.pointerId])}});
+svg.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));
+svg.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));
+svg.addEventListener('contextmenu',e=>e.preventDefault());
+for(const n of ['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if(el('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
+el('next').addEventListener('click',()=>load((lv+1)%LEVELS.length));
+el('reset').addEventListener('click',()=>{load(lv);toast('もう一度')});
+el('hints').addEventListener('click',()=>{hints=!hints;el('hints').setAttribute('aria-pressed',String(hints));el('hints').textContent=hints?'数字 ON':'数字 OFF';render()});
+el('sound').addEventListener('click',()=>{sound=!sound;el('sound').setAttribute('aria-pressed',String(sound));el('sound').textContent=sound?'♪ ON':'♪ OFF';if(sound)play('shift')});
+// Desktop fallback for quick verification: rotate/resize via wheel.
+svg.addEventListener('wheel',e=>{e.preventDefault();let n=shapes.findIndex(s=>s.a===shape.a&&s.b===shape.b);n=(n+(e.deltaY>0?1:-1)+shapes.length)%shapes.length;changeShape(shapes[n]);center=snapCenter(center,shape);render()},{passive:false});
+// Tiny deterministic diagnostics used solely for checking geometry / all reachable states.
+window.__SQUARE_SNAP_TEST__={state:()=>({stage:lv,dots:level.points.length,target:solutions.length,found:found.size,stamp:{...shape},center:{...center},allReachable:solutions.every(sq=>shapes.some(s=>sqKey(verts({x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s))===sq.id))}),testSolve:()=>{for(const s of solutions){const c={x:s.points.reduce((a,p)=>a+p.x,0)/4,y:s.points.reduce((a,p)=>a+p.y,0)/4},sh=shapes.find(t=>sqKey(verts(c,t))===s.id);if(sh){shape={...sh};center=c;tryFind();lastFound=null;}}render();return found.size;},load};
+load(0);
 })();
 </script>
 </body>
