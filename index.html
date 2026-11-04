@@ -2,185 +2,185 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f6f9f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>SQUARE SNAP | 隠れた正方形</title>
+<title>SQUARE SNAP | 30 puzzles</title>
 <style>
-:root{color-scheme:light;--ink:#1d3541;--sub:#6b838b;--cyan:#0a9da7;--line:#d6e6e8}
+:root{color-scheme:light;--ink:#213b46;--sub:#7d9198;--cyan:#069eaa;--dark:#344954;--line:#e2ecec;--pale:#f7faf9}
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#f6f9f8;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;-webkit-text-size-adjust:100%}
-button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 button:focus-visible{outline:3px solid #6cc7ca;outline-offset:2px}
-.shell{max-width:480px;margin:0 auto;padding:16px 13px max(18px,env(safe-area-inset-bottom))}
-.top{display:flex;align-items:center;justify-content:space-between;margin:0 3px 15px;min-height:32px}
-.logo{display:flex;align-items:center;gap:9px;font-size:14px;letter-spacing:.13em;font-weight:850}
-.mark{display:inline-block;width:16px;height:16px;border:2px solid #0ba1ab;border-radius:2px;transform:rotate(-18deg);box-shadow:4px -3px 0 -1px #f6f9f8,4px -3px 0 0 #9bdadd}
-.submark{font-size:10px;font-weight:680;letter-spacing:.06em;color:#81989f}
-.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:13px}
-.level{border:1px solid #dee9e9;background:#fff;padding:10px 4px 9px;border-radius:12px;color:#758e95;min-width:0;transition:background .14s,border-color .14s,transform .14s}
-.level:active{transform:scale(.975)}
-.level b{font-weight:850;font-size:13px;letter-spacing:.025em}
-.level span{margin-left:5px;font-size:10px;font-weight:600}
-.level.on{background:#e5f6f5;border-color:#6ec6c7;color:#047e88}
+.shell{max-width:480px;margin:0 auto;padding:13px 12px max(20px,env(safe-area-inset-bottom))}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:32px;margin:0 3px 11px}
+.logo{display:flex;align-items:center;gap:8px;font-size:14px;letter-spacing:.12em;font-weight:860;white-space:nowrap}
+.mark{display:block;width:16px;height:16px;border:2px solid #0ba1ab;border-radius:2px;transform:rotate(-18deg);box-shadow:4px -3px 0 -1px #f6f9f8,4px -3px 0 0 #9bdadd}
+.beta{color:#91a2a7;font-weight:730;font-size:10px;letter-spacing:.12em;white-space:nowrap}
+.nav{display:grid;grid-template-columns:42px 1fr 42px;gap:8px;margin-bottom:11px}
+.nav button{height:42px;border:1px solid #e0ebec;background:#fff;border-radius:12px;color:#516b74;font-weight:800;font-size:17px;box-shadow:0 2px 10px #294d5410}
+.nav button:active{background:#e9f8f8;transform:scale(.98)}
+#choose{font-size:12px;letter-spacing:.08em;color:#247d84}
+#choose span{color:#a1b0b4;font-weight:730;margin-left:5px}
+.picker{border:1px solid #dce9e9;border-radius:15px;background:white;padding:10px;margin-bottom:11px;box-shadow:0 8px 16px #20464c0b}
+.picker[hidden]{display:none!important}
+.pickerTop{display:flex;justify-content:space-between;align-items:center;color:#8da0a6;font-size:10px;font-weight:800;margin:0 3px 9px}
+.stageGrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.stageBtn{min-width:0;height:39px;background:#f8fbfb;border:1px solid #e8f0f1;border-radius:9px;font-size:11px;color:#6f858d;font-weight:850;position:relative}
+.stageBtn.done{background:#e6f7f3;border-color:#c1e7df;color:#058c84}
+.stageBtn.partial{background:#f2fbfb;color:#1d8993}
+.stageBtn.current{border-color:#099fac;box-shadow:inset 0 0 0 1px #099fac;color:#007d88}
+.stageBtn.done:after{content:'✓';font-size:8px;position:absolute;top:1px;right:3px}
 .paper{background:white;border:1px solid #dfeaea;border-radius:21px;box-shadow:0 16px 42px rgba(35,76,86,.055);overflow:hidden}
-.heading{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding:16px 17px 8px}
-.eyebrow{font-size:10px;letter-spacing:.11em;font-weight:820;color:#799099;margin-bottom:5px}
-.heading h1{margin:0;font-weight:840;font-size:18px;letter-spacing:-.035em;line-height:1.35}
-.count{white-space:nowrap;display:flex;align-items:baseline;gap:4px;line-height:1;font-variant-numeric:tabular-nums}
-.count strong{font-size:35px;font-weight:850;color:var(--cyan);transition:transform .18s}
-.count strong.bump{animation:bump .38s ease}
-.count span{font-size:16px;font-weight:780;color:#9aafb5}
-.count small{font-size:11px;color:#9aafb5}
-.progress{display:flex;gap:4px;margin:8px 17px 12px}
-.progress i{flex:1;height:3px;border-radius:4px;background:#e9f0f1;transition:background .3s}
-.progress i.on{background:#0babb2}
-.clue{display:flex;justify-content:space-between;align-items:center;gap:5px;margin:0 16px 11px;font-size:11px;color:#68818a;font-weight:600}
-.clue-label{display:flex;align-items:center;gap:7px}
-.demo{width:20px;height:20px;display:grid;place-items:center;border-radius:50%;background:#178e9a;color:white;font-size:11px;font-weight:800}
-.minibtn{border:0;background:transparent;color:#7c989f;padding:4px 5px;font-size:10px;font-weight:760;white-space:nowrap}
-.minibtn[aria-pressed="true"]{color:#078b96}
-.boardWrap{position:relative;margin:0 8px 0;border:1px solid #e6eeee;border-radius:14px;overflow:hidden;background:#fcfdfd;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.heading{padding:17px 17px 9px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.eyebrow{font-size:10px;letter-spacing:.10em;font-weight:840;color:#839aa0;margin-bottom:5px}
+.heading h1{margin:0;font-size:17px;letter-spacing:-.035em;font-weight:850;line-height:1.3}
+.count{display:flex;align-items:baseline;gap:7px;line-height:1;white-space:nowrap}
+.count strong{font-size:36px;color:#0b9aa6;letter-spacing:-.06em;font-weight:870;font-variant-numeric:tabular-nums}
+.count strong.bump{animation:bump .39s ease}
+.count small{font-size:10px;font-weight:790;letter-spacing:.05em;color:#8da4aa}
+.fulfillment{padding:0 17px 10px}
+.fulfillmentTop{display:flex;align-items:center;justify-content:space-between;font-size:10px;color:#93a5aa;font-weight:750;margin:2px 0 7px}
+.fulfillmentTop strong{color:#739097;font-variant-numeric:tabular-nums;font-weight:790}
+.track{height:4px;background:#e7efef;border-radius:9px;overflow:hidden}
+.bar{height:100%;width:0;background:linear-gradient(90deg,#7bd1c9,#039fa7);border-radius:9px;transition:width .36s cubic-bezier(.19,1,.22,1)}
+.legend{display:flex;gap:16px;align-items:center;margin:1px 17px 10px;font-size:11px;font-weight:720;color:#637d85;white-space:nowrap}
+.legendItem{display:flex;gap:6px;align-items:center}
+.legend .dot{width:13px;height:13px;display:inline-block;border-radius:50%;background:#334953}
+.legend .dot.shared{background:#0d9eaa}
+.legend .dim{margin-left:auto;color:#a8b5b9;font-size:10px;font-weight:650;overflow:hidden;text-overflow:ellipsis}
+.boardWrap{position:relative;margin:0 8px;border:1px solid #e5eeee;border-radius:14px;overflow:hidden;background:#fcfdfd;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 .boardWrap svg{width:100%;aspect-ratio:360/482;display:block;touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;cursor:grab}
 .boardWrap svg *{touch-action:none;user-select:none;-webkit-user-select:none}
 .boardWrap svg:active{cursor:grabbing}
 #input{pointer-events:all}
-#toast{pointer-events:none;position:absolute;z-index:2;top:14px;left:50%;transform:translate(-50%,-6px);opacity:0;transition:opacity .14s,transform .16s;background:rgba(26,68,77,.93);border-radius:100px;padding:8px 17px;color:white;font-size:12px;font-weight:750;white-space:nowrap;box-shadow:0 8px 20px #204a5430}
+#toast{pointer-events:none;position:absolute;z-index:2;top:13px;left:50%;transform:translate(-50%,-5px);opacity:0;transition:opacity .14s,transform .16s;background:rgba(25,68,77,.94);border-radius:100px;padding:8px 15px;color:white;font-size:12px;font-weight:770;white-space:nowrap;box-shadow:0 8px 20px #204a542b}
 #toast.show{opacity:1;transform:translate(-50%,0)}
-.win{display:none;position:absolute;z-index:3;bottom:12px;left:12px;right:12px;padding:11px 12px;background:#ffffffee;border:1px solid #b3dedd;border-radius:14px;box-shadow:0 10px 40px #0d3e4e20;align-items:center;gap:10px;justify-content:space-between;backdrop-filter:blur(9px)}
+.win{display:none;position:relative;z-index:3;margin:10px 9px 0;padding:12px 11px;background:#ffffffed;border:1px solid #a9dbd6;border-radius:14px;box-shadow:0 10px 40px #0d3e4e20;align-items:center;gap:8px;justify-content:space-between;backdrop-filter:blur(9px)}
 .win.visible{display:flex}
-.win strong{font-size:14px;color:#147f86}
-.win small{display:block;margin-top:3px;font-size:10px;color:#7b9298}
-.win button{border:0;border-radius:10px;background:#0b9aa5;color:white;font-size:12px;font-weight:760;padding:11px 13px;white-space:nowrap}
-.foot{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 16px 13px}
-.tip{margin:0;font-size:10.5px;font-weight:550;color:#7b9299;line-height:1.5}
+.win strong{font-size:14px;color:#11858a}
+.win small{display:block;margin-top:4px;font-size:10px;color:#789098}
+.win button{border:0;border-radius:10px;background:#069ca5;color:white;font-size:12px;font-weight:790;padding:11px 13px;white-space:nowrap}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:5px;padding:12px 13px 13px}
+.tip{margin:0;font-size:10.5px;color:#7b9299;line-height:1.6;font-weight:590}
 .actions{display:flex;gap:5px;white-space:nowrap}
-.action{border:1px solid #e1eaeb;background:#f8fbfb;color:#66828c;border-radius:9px;font-size:11px;font-weight:720;padding:9px 10px}
+.action{border:1px solid #e1eaeb;background:#f8fbfb;color:#67828b;border-radius:9px;font-size:10.5px;font-weight:770;padding:10px 9px}
 .action:active{transform:scale(.96)}
-.below{text-align:center;color:#91a4aa;font-size:10px;font-weight:600;margin:12px 4px 0;line-height:1.7}
+.below{text-align:center;color:#8ea3a9;font-size:10px;font-weight:600;margin:12px 6px 0;line-height:1.8}
 #fx .trace{fill:none;stroke-width:4;stroke-linejoin:round;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:100;animation:trace .55s cubic-bezier(.22,.61,.25,1) forwards}
 #fx .veil{opacity:0;animation:veil .52s ease-out forwards}
 #fx .ring{fill:none;stroke-width:2.5;opacity:0;animation:ring .56s ease-out forwards;transform-box:fill-box;transform-origin:center}
+.hintRing{fill:none;stroke:#e59e54;stroke-width:3.3;stroke-dasharray:3 4;animation:hintRing 1.0s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
 @keyframes trace{to{stroke-dashoffset:0}}
 @keyframes veil{0%{opacity:0}55%{opacity:0}100%{opacity:.12}}
 @keyframes ring{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(2.4)}}
 @keyframes bump{0%{transform:scale(.85)}55%{transform:scale(1.17)}100%{transform:scale(1)}}
-@media(max-width:360px){.shell{padding:11px 8px 14px}.top{margin-bottom:10px}.heading{padding:13px 12px 7px}.heading h1{font-size:16px}.clue{margin:0 12px 9px;font-size:10px}.boardWrap{margin:0 6px}.foot{padding:9px 11px 12px}.tip{font-size:10px}}
+@keyframes hintRing{0%,100%{opacity:.75;transform:scale(.83)}50%{opacity:1;transform:scale(1.13)}}
+@media(max-width:375px){.shell{padding:11px 8px 14px}.heading{padding:14px 12px 9px}.heading h1{font-size:16px}.fulfillment{padding:0 12px 9px}.legend{margin:1px 12px 9px;gap:9px;font-size:10px}.boardWrap{margin:0 6px}.foot{padding:9px 10px 12px}.action{padding:9px 7px}.tip{font-size:9.5px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <main class="shell">
-<header class="top"><div class="logo"><span class="mark" aria-hidden="true"></span>SQUARE SNAP</div><span class="submark">HIDDEN SQUARES</span></header>
-<nav class="levels" id="levels" aria-label="問題選択"></nav>
-<section class="paper" aria-label="隠れた正方形パズル">
-  <div class="heading"><div><div class="eyebrow" id="stageText">LEVEL 01</div><h1 id="goalText">正方形を5個見つけよう</h1></div><div class="count"><strong id="score">0</strong><span>/</span><span id="goalNum">5</span></div></div>
-  <div class="progress" id="progress" aria-label="発見状況"></div>
-  <div class="clue"><div class="clue-label"><span class="demo">2</span><span>数字は、その点に残る正方形の数</span></div><button type="button" class="minibtn" id="hints" aria-pressed="true">数字 ON</button></div>
-  <div class="boardWrap" id="wrap">
-    <svg id="board" viewBox="0 0 360 482" aria-label="指で正方形を移動・回転・拡大縮小して頂点を合わせるゲーム"><g id="scene" pointer-events="none"></g><g id="fx" pointer-events="none"></g><rect id="input" width="360" height="482" fill="transparent"/></svg>
-    <div id="toast" aria-live="polite" role="status"></div>
-    <div class="win" id="win"><div><strong>すべて発見！ ✦</strong><small>見えなかった形が、つながった。</small></div><button type="button" id="next">次の問題へ →</button></div>
-  </div>
-  <div class="foot"><p class="tip">指で動かす・角を引く<br>2本指で拡大・回転</p><div class="actions"><button id="sound" class="action" type="button" aria-pressed="true">♪ ON</button><button id="reset" class="action" type="button">↺ 最初から</button></div></div>
-</section>
-<p class="below">4つの角が点に重なると、正方形が姿を現します。</p>
+  <header class="top"><div class="logo"><span class="mark" aria-hidden="true"></span>SQUARE SNAP</div><span class="beta">30 PUZZLES · BETA</span></header>
+  <nav class="nav" aria-label="問題の切り替え"><button id="prev" type="button" aria-label="前の問題">‹</button><button id="choose" type="button" aria-expanded="false">STAGE <b id="stageIdx">01</b> <span>/ 30 ▾</span></button><button id="nextStage" type="button" aria-label="次の問題">›</button></nav>
+  <section id="picker" class="picker" hidden><div class="pickerTop"><span>遊びたい問題を選ぶ</span><span>✓ クリア済み</span></div><div id="stageGrid" class="stageGrid"></div></section>
+  <section class="paper" aria-label="隠れた正方形パズル">
+    <div class="heading"><div><div class="eyebrow" id="stageText">28 POINTS</div><h1>すべての点を満たそう</h1></div><div class="count"><strong id="score">0</strong><small>発見</small></div></div>
+    <div class="fulfillment"><div class="fulfillmentTop"><span>点の条件を満たした数</span><strong id="fulfilled">0 / 28</strong></div><div class="track"><div id="fulfillBar" class="bar"></div></div></div>
+    <div class="legend"><span class="legendItem"><i class="dot"></i>1回だけ</span><span class="legendItem"><i class="dot shared"></i>2回以上</span><span class="dim">薄い点は達成済み</span></div>
+    <div class="boardWrap" id="wrap">
+      <svg id="board" viewBox="0 0 360 482" aria-label="正方形を指で移動、回転、拡大縮小して点の位置に重ねる"><g id="scene" pointer-events="none"></g><g id="fx" pointer-events="none"></g><rect id="input" width="360" height="482" fill="transparent"/></svg>
+      <div id="toast" aria-live="polite" role="status"></div>
+    </div>
+    <div class="win" id="win"><div><strong>すべての点がつながった ✦</strong><small id="winSub">新しい正方形を発見した！</small></div><button type="button" id="next">次の問題へ →</button></div>
+    <div class="foot"><p class="tip">指で移動 · 角を引いて変形<br>2本指で拡大・回転</p><div class="actions"><button id="hint" class="action" type="button">ヒント</button><button id="sound" class="action" type="button" aria-pressed="true">♪ ON</button><button id="reset" class="action" type="button">↺</button></div></div>
+  </section>
+  <p class="below">正方形の総数は秘密。<br>黒い点を1回、シアンの点を2回以上使うとクリア。</p>
 </main>
 <script>
 (()=>{'use strict';
-const LEVELS=[{"label":"みつける","cols":11,"rows":14,"points":[[0,1],[0,10],[1,5],[3,3],[3,4],[3,7],[3,13],[4,0],[4,11],[5,4],[5,5],[6,4],[6,7],[6,10],[8,13],[10,9]],"squares":5,"shapes":[[3,0],[2,2],[3,3],[4,2],[4,-1]]},{"label":"ひらめく","cols":14,"rows":17,"points":[[0,7],[2,9],[3,6],[4,2],[5,8],[5,10],[5,11],[5,16],[6,3],[6,7],[7,2],[9,6],[9,7],[9,8],[9,14],[10,0],[11,6],[11,10],[11,16],[13,4],[13,8],[13,10]],"squares":7,"shapes":[[6,0],[4,4],[6,2],[3,1],[2,2],[5,4],[4,-3]]},{"label":"たんきゅう","cols":16,"rows":19,"points":[[0,17],[1,7],[1,9],[1,13],[2,4],[3,7],[3,9],[4,18],[5,8],[5,9],[5,13],[5,14],[6,1],[6,16],[8,12],[9,2],[9,5],[9,13],[9,15],[12,2],[12,5],[12,10],[12,16],[13,7],[13,9],[14,4],[15,6],[15,13]],"squares":9,"shapes":[[4,0],[4,4],[4,-3],[4,1],[3,0],[3,-1],[3,3],[2,0],[2,-1]]}];
+const LEVELS=[{"points":[[0,7],[1,5],[1,7],[2,3],[3,2],[4,12],[5,0],[5,6],[5,8],[5,9],[5,10],[6,4],[6,5],[6,9],[6,13],[7,8],[7,10],[7,11],[8,3],[8,5],[8,6],[8,7],[8,9],[10,4],[10,5]],"expected":9,"cols":11,"rows":14},{"points":[[0,5],[1,8],[1,10],[2,2],[2,10],[3,2],[3,7],[3,8],[4,5],[4,7],[4,9],[5,3],[5,4],[6,5],[6,6],[6,9],[6,13],[7,0],[8,2],[8,7],[9,1],[9,3],[9,5],[9,8],[10,2]],"expected":10,"cols":11,"rows":14},{"points":[[0,11],[1,3],[1,6],[1,9],[1,12],[1,14],[2,4],[2,12],[3,1],[3,5],[3,7],[3,9],[3,10],[3,12],[3,14],[4,6],[4,9],[5,1],[5,5],[6,2],[6,7],[7,5],[7,9],[8,10],[8,12],[9,1],[9,5],[10,0],[10,2],[11,1],[11,8]],"expected":11,"cols":12,"rows":15},{"points":[[0,8],[2,5],[2,7],[2,8],[3,5],[3,7],[3,8],[4,4],[5,0],[5,3],[5,9],[5,13],[6,1],[6,9],[6,10],[6,13],[7,4],[8,2],[8,5],[8,6],[9,1],[9,3],[9,11],[10,5],[10,8],[11,7],[11,8],[11,9]],"expected":11,"cols":12,"rows":14},{"points":[[0,13],[2,8],[3,10],[3,16],[5,9],[6,8],[6,10],[6,13],[7,1],[7,4],[7,5],[7,7],[8,1],[8,6],[8,12],[9,3],[9,4],[10,0],[10,9],[10,10],[11,1],[11,2],[11,5],[11,9],[11,11],[12,6],[12,10],[14,6]],"expected":11,"cols":15,"rows":17},{"points":[[0,6],[1,5],[1,6],[3,8],[3,10],[4,1],[4,3],[4,5],[4,10],[5,0],[5,1],[5,3],[5,6],[5,8],[5,9],[5,10],[6,5],[6,6],[6,9],[7,8],[7,12],[8,7],[8,9],[9,5],[9,6],[9,8],[9,9],[10,1]],"expected":11,"cols":11,"rows":13},{"points":[[0,8],[1,12],[2,3],[2,11],[2,13],[3,12],[3,14],[4,7],[5,7],[5,10],[5,11],[6,0],[6,7],[6,10],[6,15],[7,7],[7,16],[8,4],[8,15],[8,16],[9,4],[9,7],[9,12],[10,7],[10,9],[11,3],[11,10],[11,15],[12,6],[12,11],[13,12]],"expected":12,"cols":14,"rows":17},{"points":[[0,9],[2,5],[2,7],[2,10],[3,2],[3,4],[3,5],[3,11],[4,0],[4,8],[4,12],[5,2],[5,4],[5,6],[5,8],[6,13],[7,2],[7,5],[7,8],[7,10],[8,6],[8,9],[8,10],[8,13],[9,1],[9,4],[9,5],[10,2],[10,4],[10,5],[10,8]],"expected":12,"cols":11,"rows":14},{"points":[[0,8],[1,12],[2,4],[2,6],[3,4],[4,1],[4,4],[4,6],[4,8],[4,9],[5,3],[5,9],[5,13],[5,15],[6,9],[7,0],[7,1],[7,4],[7,6],[7,8],[8,1],[8,7],[8,8],[8,11],[9,5],[9,12],[10,8],[11,0],[11,4],[11,5],[11,6]],"expected":12,"cols":12,"rows":16},{"points":[[0,3],[0,5],[1,9],[2,0],[2,3],[2,5],[2,8],[2,9],[3,4],[3,8],[3,11],[3,12],[4,2],[4,7],[5,5],[5,8],[5,12],[6,5],[6,8],[6,9],[6,11],[7,0],[7,5],[8,6],[8,13],[9,3],[9,8],[9,10]],"expected":12,"cols":10,"rows":14},{"points":[[0,10],[0,13],[1,6],[1,7],[2,8],[3,1],[3,2],[3,4],[3,7],[3,9],[3,10],[3,13],[4,5],[4,6],[5,1],[5,4],[5,7],[6,7],[6,9],[6,10],[6,12],[7,0],[7,5],[7,7],[7,8],[8,1],[8,4],[8,9]],"expected":12,"cols":9,"rows":14},{"points":[[0,11],[1,10],[1,12],[2,7],[2,10],[2,11],[2,14],[3,4],[4,4],[5,0],[5,6],[5,7],[5,9],[5,10],[6,1],[6,5],[6,9],[6,10],[6,13],[7,6],[7,14],[8,8],[9,2],[9,3],[9,5],[10,9],[10,13],[11,9]],"expected":12,"cols":12,"rows":15},{"points":[[0,11],[0,12],[1,9],[2,9],[3,8],[3,10],[3,13],[4,5],[4,7],[4,11],[5,3],[5,6],[5,12],[5,16],[6,5],[6,8],[6,11],[7,12],[7,16],[8,8],[9,8],[9,10],[9,11],[10,0],[10,11],[10,15],[11,5],[11,14],[12,4],[12,6],[13,5]],"expected":13,"cols":14,"rows":17},{"points":[[0,9],[0,10],[1,4],[1,9],[1,10],[1,13],[2,4],[2,10],[3,8],[4,2],[4,5],[4,6],[4,7],[4,9],[4,14],[5,2],[5,11],[6,4],[6,6],[6,7],[6,9],[7,5],[7,6],[7,10],[7,12],[9,0],[9,11],[10,5],[10,9],[11,5],[11,9]],"expected":13,"cols":12,"rows":15},{"points":[[0,3],[0,5],[1,8],[1,10],[3,4],[3,8],[3,10],[4,6],[4,7],[4,13],[5,0],[5,3],[5,4],[5,13],[6,0],[6,9],[7,4],[7,8],[7,10],[8,4],[8,5],[8,9],[9,1],[9,5],[9,6],[9,12],[10,1],[12,9]],"expected":13,"cols":13,"rows":14},{"points":[[0,2],[1,9],[2,0],[2,4],[2,5],[3,4],[3,5],[4,2],[4,12],[4,14],[5,1],[5,14],[6,6],[6,8],[6,10],[6,12],[6,14],[7,3],[7,5],[7,15],[8,3],[8,7],[8,13],[9,4],[9,11],[9,13],[11,11],[11,13],[11,14],[12,6],[13,9]],"expected":13,"cols":14,"rows":16},{"points":[[0,4],[1,5],[1,6],[1,8],[1,12],[2,9],[4,3],[4,5],[4,9],[5,0],[5,4],[5,5],[5,8],[5,12],[6,1],[6,9],[7,0],[7,2],[7,6],[7,8],[7,12],[8,1],[8,7],[9,5],[9,6],[10,3],[10,4],[10,5],[10,7],[11,2]],"expected":13,"cols":12,"rows":13},{"points":[[0,7],[0,9],[1,5],[1,8],[2,3],[2,4],[2,8],[3,6],[3,10],[3,13],[4,0],[4,2],[4,3],[4,4],[5,11],[5,15],[6,9],[6,11],[7,0],[7,3],[7,4],[7,6],[7,8],[7,13],[7,14],[8,0],[8,1],[8,4],[9,6],[11,5],[11,10]],"expected":13,"cols":12,"rows":16},{"points":[[0,6],[0,11],[2,8],[2,13],[3,4],[3,5],[4,2],[4,10],[5,5],[5,6],[5,8],[5,11],[5,15],[6,3],[6,10],[6,12],[7,7],[7,11],[7,12],[8,0],[8,2],[8,5],[8,8],[8,10],[8,12],[9,5],[9,9],[9,11],[10,8],[11,7],[13,3]],"expected":13,"cols":14,"rows":16},{"points":[[0,7],[0,8],[1,2],[1,3],[1,5],[1,7],[1,8],[2,13],[3,0],[3,4],[4,5],[4,9],[4,12],[5,2],[6,2],[6,6],[6,7],[7,2],[7,4],[7,8],[7,12],[8,3],[8,6],[9,8],[9,14],[10,5],[11,5],[11,9]],"expected":13,"cols":12,"rows":15},{"points":[[0,6],[0,7],[2,3],[3,1],[3,8],[3,10],[3,12],[4,3],[4,5],[4,12],[5,0],[5,3],[5,4],[5,8],[5,9],[6,2],[6,6],[6,7],[6,9],[7,0],[7,6],[7,7],[7,8],[7,12],[8,4],[9,4],[9,8],[10,5]],"expected":13,"cols":11,"rows":13},{"points":[[0,0],[0,2],[1,7],[2,0],[2,2],[3,1],[3,3],[3,10],[4,2],[5,9],[6,5],[6,7],[6,8],[7,0],[7,3],[7,5],[7,8],[8,6],[8,10],[8,14],[9,3],[9,4],[9,5],[9,7],[9,8],[10,7],[10,8],[11,4],[12,4],[12,7],[12,9]],"expected":14,"cols":13,"rows":15},{"points":[[0,4],[0,6],[0,7],[0,11],[1,7],[1,9],[1,10],[2,1],[2,4],[2,7],[3,4],[3,5],[3,7],[3,9],[4,11],[4,13],[5,8],[6,0],[6,9],[6,10],[7,3],[7,4],[7,5],[7,11],[7,14],[8,5],[8,8],[11,5],[11,7],[11,8],[12,10]],"expected":14,"cols":13,"rows":15},{"points":[[0,11],[1,4],[1,6],[1,8],[2,2],[2,4],[2,10],[3,0],[3,7],[4,3],[4,5],[5,4],[5,6],[5,7],[5,12],[6,3],[6,5],[6,7],[6,13],[7,2],[7,6],[7,9],[8,1],[9,8],[9,9],[10,4],[10,5],[11,8]],"expected":14,"cols":12,"rows":14},{"points":[[0,6],[2,3],[2,10],[4,3],[4,5],[4,8],[4,9],[4,11],[4,12],[5,0],[5,1],[5,2],[5,6],[5,7],[5,13],[6,0],[6,1],[7,3],[7,5],[7,9],[7,11],[7,12],[8,0],[8,3],[8,6],[8,10],[9,2],[9,4],[9,7],[10,3],[10,8]],"expected":14,"cols":11,"rows":14},{"points":[[0,4],[1,9],[2,8],[2,9],[3,1],[3,2],[3,4],[3,8],[3,9],[4,0],[4,2],[4,4],[4,11],[4,14],[5,1],[5,8],[6,3],[6,6],[6,7],[6,11],[6,12],[7,8],[7,9],[7,10],[8,5],[8,6],[9,7],[9,8],[9,11],[10,11]],"expected":14,"cols":11,"rows":15},{"points":[[0,7],[1,12],[3,9],[4,2],[4,5],[4,6],[5,5],[5,6],[5,9],[6,7],[6,11],[7,3],[7,10],[7,11],[8,2],[8,5],[8,6],[8,8],[8,10],[9,0],[9,3],[9,9],[9,12],[10,2],[11,5],[12,5],[12,6],[12,8]],"expected":14,"cols":13,"rows":13},{"points":[[0,1],[0,3],[1,4],[2,1],[2,3],[2,7],[3,8],[4,5],[4,7],[5,0],[5,2],[5,8],[6,3],[6,7],[6,12],[7,2],[7,4],[7,6],[7,8],[7,10],[7,11],[8,4],[8,7],[9,4],[9,5],[9,7],[10,3],[10,5],[10,6],[11,6],[11,10]],"expected":15,"cols":12,"rows":13},{"points":[[0,6],[2,3],[2,5],[3,8],[4,5],[4,9],[4,12],[5,4],[5,5],[5,8],[5,10],[5,11],[6,7],[6,13],[7,9],[7,12],[7,15],[8,0],[8,3],[8,5],[8,7],[8,13],[9,6],[9,9],[11,0],[11,3],[11,10],[11,13],[12,6],[12,9],[13,4]],"expected":15,"cols":14,"rows":16},{"points":[[0,9],[1,4],[1,5],[1,11],[1,13],[2,5],[2,8],[3,10],[4,9],[5,2],[5,4],[5,9],[5,14],[6,0],[6,1],[6,3],[6,5],[6,9],[6,14],[7,4],[7,6],[7,8],[7,9],[7,12],[8,6],[8,7],[8,9],[9,12],[10,5],[10,9],[12,7]],"expected":15,"cols":13,"rows":15}];
 const VW=360,VH=482;
 const el=id=>document.getElementById(id),svg=el('board'),scene=el('scene'),fx=el('fx');
 const key=(x,y)=>`${x},${y}`;
 const sqKey=ps=>ps.map(p=>key(p.x,p.y)).sort().join('|');
 const clamp=(x,a,b)=>Math.min(b,Math.max(a,x));
-let lv=0,level,solutions=[],dots=new Set(),found=new Set(),shape={a:2,b:0},center={x:3,y:3};
-let step=24,ox=20,oy=22,hints=true,sound=true,audio=null,pointMap=new Map(),shapes=[];
-let touch=new Map(),gesture=null,mode='move',offset={x:0,y:0},anchor=null,toastTimer=null,fxTimer=null,lastFound=null,changeTick=0,stampHidden=false;
-const PALETTE=['#069da8','#e1a05b','#6b8cbd','#9a81c5','#61a59b','#da8293','#b5934c','#627fb0','#6d9d83'];
+const distance=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
+let lv=-1,level,solutions=[],dots=new Set(),found=new Set(),used=new Map(),degree=new Map(),shape={a:2,b:0},center={x:3,y:3};
+let step=24,ox=20,oy=22,sound=true,audio=null,shapes=[],levelsSolved=new Set();
+let touch=new Map(),gesture=null,mode='move',offset={x:0,y:0},anchor=null,toastTimer=null,fxTimer=null,hintTimer=null,hintPoint=null,lastFound=null,changeTick=0,stampHidden=false;
+const PALETTE=['#0aa7ad','#e1a05b','#6b8cbd','#9a81c5','#61a59b','#da8293','#b5934c','#627fb0','#6d9d83'];
+const STORAGE='square_snap_30_puzzles_v1';
+let saved={idx:0,boards:{}};
+try{const s=JSON.parse(localStorage.getItem(STORAGE)||'null');if(s&&typeof s==='object'&&s.boards)saved=s;}catch(_){}
+for(const [i,b] of LEVELS.entries()){if(Array.isArray(saved.boards[String(i)])&&saved.boards[String(i)].length===b.expected)levelsSolved.add(i);}
+function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(saved))}catch(_){}}
 function computeSize(){step=Math.min(318/(level.cols-1),420/(level.rows-1));ox=(VW-step*(level.cols-1))/2;oy=(VH-step*(level.rows-1))/2;}
-function xy(p){return [ox+p.x*step,oy+p.y*step]}
+function xy(p){return[ox+p.x*step,oy+p.y*step]}
 function verts(c,s){const {a,b}=s;return [{x:c.x+(-a+b)/2,y:c.y+(-a-b)/2},{x:c.x+(a+b)/2,y:c.y+(b-a)/2},{x:c.x+(a-b)/2,y:c.y+(a+b)/2},{x:c.x+(-a-b)/2,y:c.y+(a-b)/2}];}
 function asPoints(v){return v.map(p=>xy(p).map(z=>z.toFixed(2)).join(',')).join(' ')}
-function distance(p,q){return Math.hypot(p.x-q.x,p.y-q.y)}
-function detect(points){const s=new Set(points.map(p=>key(...p))),out=new Map();for(const [x,y] of points)for(const [xx,yy] of points){if(x===xx&&y===yy)continue;const dx=xx-x,dy=yy-y;for(const k of [-1,1]){const bx=-k*dy,by=k*dx;const ps=[{x,y},{x:xx,y:yy},{x:xx+bx,y:yy+by},{x:x+bx,y:y+by}];if(ps.every(p=>s.has(key(p.x,p.y))))out.set(sqKey(ps),{id:sqKey(ps),points:ps});}}return [...out.values()];}
+function detect(points){const s=new Set(points.map(p=>key(...p))),out=new Map();for(const [x,y] of points)for(const[xx,yy]of points){if(x===xx&&y===yy)continue;const dx=xx-x,dy=yy-y;for(const k of [-1,1]){const bx=-k*dy,by=k*dx,ps=[{x,y},{x:xx,y:yy},{x:xx+bx,y:yy+by},{x:x+bx,y:y+by}];if(ps.every(p=>s.has(key(p.x,p.y))))out.set(sqKey(ps),{id:sqKey(ps),points:ps});}}return[...out.values()];}
 function snapCenter(c,s){const d=verts({x:0,y:0},s)[0];let x=Math.round(c.x+d.x)-d.x,y=Math.round(c.y+d.y)-d.y;let p=verts({x,y},s);const xs=p.map(p=>p.x),ys=p.map(p=>p.y);let minX=Math.min(...xs),maxX=Math.max(...xs),minY=Math.min(...ys),maxY=Math.max(...ys);if(minX<0)x+=Math.ceil(-minX);if(maxX>level.cols-1)x-=Math.ceil(maxX-level.cols+1);if(minY<0)y+=Math.ceil(-minY);if(maxY>level.rows-1)y-=Math.ceil(maxY-level.rows+1);return{x,y};}
 function boardPoint(e){const r=svg.getBoundingClientRect(),sx=(e.clientX-r.left)*VW/r.width,sy=(e.clientY-r.top)*VH/r.height;return{x:(sx-ox)/step,y:(sy-oy)/step};}
-function nearestShape(length,angle){const wrap=d=>Math.abs(((d+Math.PI/4)%(Math.PI/2)+(Math.PI/2))%(Math.PI/2)-Math.PI/4);let best=shape,bestScore=Infinity;const rate=s=>Math.pow(wrap(angle-Math.atan2(s.b,s.a))/.22,2)+Math.pow(Math.log(Math.max(length,.1)/Math.hypot(s.a,s.b))/.30,2);for(const s of shapes){const n=rate(s);if(n<bestScore){best=s;bestScore=n;}}return rate(shape)<bestScore+.22?shape:best;}
+function nearestShape(length,angle){const q=Math.PI/2,theta=((angle+Math.PI/4)%q+q)%q-Math.PI/4;const ta=Math.max(.01,length)*Math.cos(theta),tb=Math.max(.01,length)*Math.sin(theta),rate=s=>(s.a-ta)**2+(s.b-tb)**2;let best=shape,bestScore=Infinity;for(const s of shapes){const n=rate(s);if(n<bestScore){best=s;bestScore=n;}}return rate(shape)<=bestScore+.16?shape:best;}
+function allLatticeShapes(cols,rows){const extent=Math.min(cols-1,rows-1),out=[];for(let a=1;a<=extent;a++){const limit=Math.min(a,extent-a);for(let b=-limit;b<=limit;b++){if(b===-a)continue;out.push({a,b});}}return out;}
 function nearestCorner(p,origin){let best=shape,min=Infinity;const rate=s=>{const v=verts({x:0,y:0},s);return distance(p,{x:origin.x+v[2].x-v[0].x,y:origin.y+v[2].y-v[0].y});};for(const s of shapes){const d=rate(s);if(d<min){best=s;min=d;}}return rate(shape)<min+.13?shape:best;}
 function hitPolygon(p,v){let inside=false;for(let i=0,j=v.length-1;i<v.length;j=i++){const a=v[i],b=v[j];if((a.y>p.y)!==(b.y>p.y)&&p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x)inside=!inside;}return inside;}
-function play(kind){if(!sound)return;try{audio=audio||new (window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();const t=audio.currentTime,o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(kind==='snap'?730:560,t);o.frequency.exponentialRampToValueAtTime(kind==='snap'?590:460,t+.055);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(kind==='snap'?.015:.007,t+.006);g.gain.exponentialRampToValueAtTime(.0001,t+.085);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.09);}catch(_){}}
-function toast(s){const t=el('toast');clearTimeout(toastTimer);t.textContent=s;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),950)}
-function updateHeader(){el('score').textContent=found.size;el('goalNum').textContent=solutions.length;el('progress').innerHTML=solutions.map((s,i)=>`<i class="${i<found.size?'on':''}"></i>`).join('');const win=found.size===solutions.length;el('win').classList.toggle('visible',win);el('next').textContent=lv===LEVELS.length-1?'最初から遊ぶ →':'次の問題へ →'}
-function render(){let out='';
- out+=`<rect x="0" y="0" width="360" height="482" fill="#fcfdfd"/>`;
- for(let i=0;i<level.cols;i++){let x=ox+i*step;out+=`<path d="M ${x.toFixed(2)} ${(oy-8).toFixed(2)} V ${(oy+step*(level.rows-1)+8).toFixed(2)}" stroke="${i%5===0?'#d8e5e8':'#e7eff0'}" stroke-width="${i%5===0?1.2:.85}"/>`}
- for(let j=0;j<level.rows;j++){let y=oy+j*step;out+=`<path d="M ${(ox-8).toFixed(2)} ${y.toFixed(2)} H ${(ox+step*(level.cols-1)+8).toFixed(2)}" stroke="${j%5===0?'#d8e5e8':'#e7eff0'}" stroke-width="${j%5===0?1.2:.85}"/>`}
- let fi=0;for(const sq of solutions){if(!found.has(sq.id))continue;const color=PALETTE[fi++%PALETTE.length];if(sq.id===lastFound)continue;out+=`<polygon points="${asPoints(sq.points)}" fill="${color}" fill-opacity=".085" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>`;}
- const v=verts(center,shape),s=snapCenter(center,shape),sv=verts(s,shape),dist=distance(center,s);
- const allMatched=sv.every(p=>pointMap.has(key(p.x,p.y))),ready=dist<.42&&allMatched&&!found.has(sqKey(sv));
- if(!stampHidden)out+=`<polygon points="${asPoints(v)}" fill="${ready?'#13c1bd':'#0aa4b0'}" fill-opacity="${ready?'.15':'.065'}" stroke="${ready?'#00a6a0':'#11a1ac'}" stroke-width="${ready?3:2.2}" stroke-linejoin="round" stroke-dasharray="${ready?'':'5 4'}"/>`;
- // All marked points have precisely the same diameter. Shared-point numbers live INSIDE the dots.
- for(const [x,y] of level.points){const k=key(x,y),n=solutions.reduce((acc,s)=>acc+(!found.has(s.id)&&s.points.some(p=>p.x===x&&p.y===y)?1:0),0),initial=pointMap.get(k);const [px,py]=xy({x,y});const shared=initial>1;
-  let color=n===0?'#b4c5c9':shared&&hints?'#108e9b':'#2d4350';
-  if(ready&&sv.some(p=>p.x===x&&p.y===y))color='#00a8a1';
-  out+=`<circle cx="${px}" cy="${py}" r="7" fill="${color}" stroke="white" stroke-width="1.7"/>`;
-  if(hints&&shared){out+=`<text x="${px}" y="${py+3.4}" text-anchor="middle" font-size="10.5" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,sans-serif" fill="#fff">${n}</text>`;}
- }
- // A single distinct round manipulation knob; not a grid-point or a shape selector.
- const handle=v[2],[hx,hy]=xy(handle);if(!stampHidden)out+=`<circle cx="${hx}" cy="${hy}" r="13" fill="#ffffffed" stroke="#069ca6" stroke-width="2.3"/>`;
- if(!stampHidden)out+=`<path d="M ${hx-5} ${hy+4} L ${hx+4} ${hy-5} M ${hx-2} ${hy-5} H ${hx+4} V ${hy+1}" stroke="#069ca6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
- scene.innerHTML=out;updateHeader();}
-function animateFound(sq,color){fx.innerHTML='';const pts=asPoints(sq.points);const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},[px,py]=xy(c);
- fx.innerHTML=`<polygon class="veil" points="${pts}" fill="${color}"/><polygon class="trace" points="${pts}" pathLength="100" stroke="${color}"/><circle class="ring" cx="${px}" cy="${py}" r="19" stroke="${color}"/>`;
- clearTimeout(fxTimer);fxTimer=setTimeout(()=>{fx.innerHTML='';lastFound=null;render();},610);
+let tickBuffer=null,lastTick=-1;
+function play(kind){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{});const t=audio.currentTime;if(kind==='shift'){if(t-lastTick<.075)return;lastTick=t;if(!tickBuffer){const len=Math.ceil(audio.sampleRate*.025);tickBuffer=audio.createBuffer(1,len,audio.sampleRate);const d=tickBuffer.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(audio.sampleRate*.005));}const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),g=audio.createGain();src.buffer=tickBuffer;filter.type='lowpass';filter.frequency.value=1250;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.018,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.024);src.connect(filter);filter.connect(g);g.connect(audio.destination);src.start(t);src.stop(t+.026);}else{for(const [mult,volume]of[[1,.035],[2,.003]]){const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(587.33*mult,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+.009);g.gain.exponentialRampToValueAtTime(volume*.55,t+.035);g.gain.exponentialRampToValueAtTime(.0001,t+.175);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.185);}}}catch(_){}}
+function toast(s){const t=el('toast');clearTimeout(toastTimer);t.textContent=s;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),1050);}
+function pointTarget(k){return degree.get(k)>=2?2:1;}
+function satisfied(){let n=0;for(const p of level.points){const k=key(...p);if((used.get(k)||0)>=pointTarget(k))n++;}return n;}
+function isWon(){return satisfied()===level.points.length;}
+function updateHeader(){const n=satisfied(),win=isWon();el('score').textContent=found.size;el('fulfilled').textContent=`${n} / ${level.points.length}`;el('fulfillBar').style.width=(n/level.points.length*100).toFixed(1)+'%';el('win').classList.toggle('visible',win);el('winSub').textContent=`${found.size}個の正方形を発見！`;el('next').textContent=lv===LEVELS.length-1?'最初の問題へ →':'次の問題へ →';}
+function render(){let out='';out+='<rect x="0" y="0" width="360" height="482" fill="#fcfdfd"/>';
+for(let i=0;i<level.cols;i++){const x=ox+i*step;out+=`<path d="M ${x.toFixed(2)} ${(oy-8).toFixed(2)} V ${(oy+step*(level.rows-1)+8).toFixed(2)}" stroke="${i%5===0?'#dbe7e8':'#eaf1f1'}" stroke-width="${i%5===0?1.15:.8}"/>`;}
+for(let j=0;j<level.rows;j++){const y=oy+j*step;out+=`<path d="M ${(ox-8).toFixed(2)} ${y.toFixed(2)} H ${(ox+step*(level.cols-1)+8).toFixed(2)}" stroke="${j%5===0?'#dbe7e8':'#eaf1f1'}" stroke-width="${j%5===0?1.15:.8}"/>`;}
+let fi=0;for(const sq of solutions){if(!found.has(sq.id))continue;const color=PALETTE[fi++%PALETTE.length];if(sq.id===lastFound)continue;out+=`<polygon points="${asPoints(sq.points)}" fill="${color}" fill-opacity=".075" stroke="${color}" stroke-opacity=".8" stroke-width="2.05" stroke-linejoin="round"/>`;}
+const v=verts(center,shape),s=snapCenter(center,shape),sv=verts(s,shape),dist=distance(center,s),id=sqKey(sv);
+const allMatched=sv.every(p=>dots.has(key(p.x,p.y))),ready=dist<.42&&allMatched&&!found.has(id);
+if(!stampHidden&&!isWon())out+=`<polygon points="${asPoints(v)}" fill="${ready?'#10bdb7':'#0aa4b0'}" fill-opacity="${ready?'.15':'.06'}" stroke="${ready?'#00a6a0':'#11a1ac'}" stroke-width="${ready?3:2.2}" stroke-linejoin="round" stroke-dasharray="${ready?'':'5 4'}"/>`;
+for(const [x,y] of level.points){const k=key(x,y),deg=degree.get(k),u=used.get(k)||0,fulfilled=u>=(deg>=2?2:1),[px,py]=xy({x,y});let color=fulfilled?'#b6cacf':deg>=2?'#0d9eaa':'#334953';if(ready&&sv.some(p=>p.x===x&&p.y===y))color='#00afa8';out+=`<circle cx="${px}" cy="${py}" r="7.1" fill="${color}" stroke="#fff" stroke-width="1.45"/>`;
+ if(deg>=2&&u===1){out+=`<circle cx="${px}" cy="${py}" r="3.0" fill="#fff" opacity=".93"/>`;}
+ if(fulfilled){out+=`<circle cx="${px}" cy="${py}" r="3" fill="#fcfdfd" opacity=".72"/>`;}
 }
-function tryFind(){const v=verts(center,shape);if(v.some(p=>!Number.isInteger(p.x)||!Number.isInteger(p.y)||!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);lastFound=id;stampHidden=true;const color=PALETTE[(found.size-1)%PALETTE.length];play('snap');if(navigator.vibrate)navigator.vibrate(12);animateFound(sq,color);toast(found.size===solutions.length?'すべて見つけた！ ✦':'ぴったり！ ✦');el('score').classList.remove('bump');void el('score').offsetWidth;el('score').classList.add('bump');return true;}
-function changeShape(s){if(shape.a!==s.a||shape.b!==s.b){shape=s;let now=performance.now();if(now-changeTick>80){play('shift');changeTick=now;}}}
-function begin(p){const v=verts(center,shape);if(distance(p,v[2])<(24/step)){mode='corner';anchor={...v[0]};}
- else{mode='move';if(hitPolygon(p,v))offset={x:center.x-p.x,y:center.y-p.y};else{offset={x:0,y:0};center={x:p.x,y:p.y};}}}
-function dualBegin(){const p=[...touch.values()];if(p.length<2)return;const a=p[0],b=p[1];gesture={mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),distance:Math.max(distance(a,b),.01),shape:{...shape}};mode='dual'}
-function drag(){if(touch.size>=2){if(!gesture)dualBegin();const [a,b]=[...touch.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},ang=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(gesture.shape.a,gesture.shape.b)*clamp(distance(a,b)/gesture.distance,.35,3.5);changeShape(nearestShape(len,Math.atan2(gesture.shape.b,gesture.shape.a)+ang-gesture.angle));center={x:gesture.center.x+mid.x-gesture.mid.x,y:gesture.center.y+mid.y-gesture.mid.y};}
- else if(touch.size===1){const p=[...touch.values()][0];if(mode==='corner'&&anchor){changeShape(nearestCorner(p,anchor));const rel=verts({x:0,y:0},shape)[0];center={x:anchor.x-rel.x,y:anchor.y-rel.y};}
- else{center={x:p.x+offset.x,y:p.y+offset.y};}}
- render();}
-function contactStart(k,p){if(touch.has(k))return;const wasHidden=stampHidden;if(wasHidden){stampHidden=false;center={x:p.x,y:p.y};}touch.set(k,p);if(touch.size===1){if(wasHidden){mode='move';offset={x:0,y:0};}else begin(p);}else if(touch.size===2)dualBegin();render()}
-function contactMove(items){let did=false;for(const [k,p] of items)if(touch.has(k)){touch.set(k,p);did=true;}if(did)drag()}
-function contactEnd(ids,cancel=false){let removed=false;for(const k of ids)removed=touch.delete(k)||removed;if(!removed)return;
- if(touch.size>=2)dualBegin();else if(touch.size===1){gesture=null;mode='move';const p=[...touch.values()][0];offset={x:center.x-p.x,y:center.y-p.y};render();}
- else{gesture=null;center=snapCenter(center,shape);if(!cancel)tryFind();render();}}
-function load(i){clearTimeout(fxTimer);clearTimeout(toastTimer);el('toast').classList.remove('show');fx.innerHTML='';lastFound=null;stampHidden=false;lv=i;level=LEVELS[i];computeSize();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);found.clear();pointMap=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)for(const p of sq.points)pointMap.set(key(p.x,p.y),pointMap.get(key(p.x,p.y))+1);
- shapes=level.shapes.map(([a,b])=>({a,b}));shapes.sort((s,t)=>Math.hypot(s.a,s.b)-Math.hypot(t.a,t.b));shape={...shapes[0]};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.75},shape);touch.clear();gesture=null;
- el('stageText').textContent=`LEVEL 0${i+1}  ·  ${level.points.length} POINTS`;
- el('goalText').textContent=`正方形を${solutions.length}個見つけよう`;
- el('levels').innerHTML=LEVELS.map((l,j)=>`<button class="level ${j===i?'on':''}" data-level="${j}" type="button"><b>0${j+1}</b><span>${l.label}</span></button>`).join('');
- for(const b of el('levels').querySelectorAll('button'))b.addEventListener('click',()=>load(+b.dataset.level));
- if(solutions.length!==level.squares)console.error('Unexpected squares',i,solutions.length,level.squares);
- // Integrity check: each actual square must have a realizable stamp shape.
- for(const sq of solutions){const ps=sq.points;let valid=false;for(const s of shapes){const c={x:ps.reduce((a,p)=>a+p.x,0)/4,y:ps.reduce((a,p)=>a+p.y,0)/4};if(sqKey(verts(c,s))===sq.id){valid=true;break;}}if(!valid)console.error('Unreachable square',i,sq);}
- render();}
-// Event handlers are confined to the board to preserve normal iPhone navigation elsewhere.
-const hasTouch=('ontouchstart' in window)||navigator.maxTouchPoints>0;
-if(hasTouch){svg.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)contactStart('t'+t.identifier,boardPoint(t));},{passive:false});
- svg.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();contactMove([...e.touches].map(t=>['t'+t.identifier,boardPoint(t)]));},{passive:false});
- svg.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});
- svg.addEventListener('touchcancel',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
-svg.addEventListener('pointerdown',e=>{if(hasTouch&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}contactStart('p'+e.pointerId,boardPoint(e));});
-svg.addEventListener('pointermove',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactMove([['p'+e.pointerId,boardPoint(e)]])}});
-svg.addEventListener('pointerup',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactEnd(['p'+e.pointerId])}});
-svg.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));
-svg.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));
-svg.addEventListener('contextmenu',e=>e.preventDefault());
-for(const n of ['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if(el('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
-el('next').addEventListener('click',()=>load((lv+1)%LEVELS.length));
-el('reset').addEventListener('click',()=>{load(lv);toast('もう一度')});
-el('hints').addEventListener('click',()=>{hints=!hints;el('hints').setAttribute('aria-pressed',String(hints));el('hints').textContent=hints?'数字 ON':'数字 OFF';render()});
-el('sound').addEventListener('click',()=>{sound=!sound;el('sound').setAttribute('aria-pressed',String(sound));el('sound').textContent=sound?'♪ ON':'♪ OFF';if(sound)play('shift')});
-// Desktop fallback for quick verification: rotate/resize via wheel.
-svg.addEventListener('wheel',e=>{e.preventDefault();let n=shapes.findIndex(s=>s.a===shape.a&&s.b===shape.b);n=(n+(e.deltaY>0?1:-1)+shapes.length)%shapes.length;changeShape(shapes[n]);center=snapCenter(center,shape);render()},{passive:false});
-// Tiny deterministic diagnostics used solely for checking geometry / all reachable states.
-window.__SQUARE_SNAP_TEST__={state:()=>({stage:lv,dots:level.points.length,target:solutions.length,found:found.size,stamp:{...shape},center:{...center},allReachable:solutions.every(sq=>shapes.some(s=>sqKey(verts({x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s))===sq.id))}),testSolve:()=>{for(const s of solutions){const c={x:s.points.reduce((a,p)=>a+p.x,0)/4,y:s.points.reduce((a,p)=>a+p.y,0)/4},sh=shapes.find(t=>sqKey(verts(c,t))===s.id);if(sh){shape={...sh};center=c;tryFind();lastFound=null;}}render();return found.size;},load};
-load(0);
+if(hintPoint){const[px,py]=xy({x:hintPoint[0],y:hintPoint[1]});out+=`<circle class="hintRing" cx="${px}" cy="${py}" r="17"/>`;}
+if(!stampHidden&&!isWon()){const handle=v[2],[hx,hy]=xy(handle);out+=`<circle cx="${hx}" cy="${hy}" r="13" fill="#fffffff0" stroke="#069ca6" stroke-width="2.3"/><path d="M ${hx-5} ${hy+4} L ${hx+4} ${hy-5} M ${hx-2} ${hy-5} H ${hx+4} V ${hy+1}" stroke="#069ca6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;}
+scene.innerHTML=out;}
+function animateFound(sq,color){fx.innerHTML='';const pts=asPoints(sq.points),c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},[px,py]=xy(c);fx.innerHTML=`<polygon class="veil" points="${pts}" fill="${color}"/><polygon class="trace" points="${pts}" pathLength="100" stroke="${color}"/><circle class="ring" cx="${px}" cy="${py}" r="19" stroke="${color}"/>`;clearTimeout(fxTimer);fxTimer=setTimeout(()=>{fx.innerHTML='';lastFound=null;render();},610);}
+function saveBoard(){if(lv<0)return;saved.boards[String(lv)]=[...found];saved.idx=lv;persist();}
+function tryFind(){const v=verts(center,shape);if(v.some(p=>!Number.isInteger(p.x)||!Number.isInteger(p.y)||!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}saveBoard();lastFound=id;stampHidden=true;const color=PALETTE[(found.size-1)%PALETTE.length];play('snap');if(navigator.vibrate)navigator.vibrate(12);animateFound(sq,color);if(isWon()){levelsSolved.add(lv);toast('すべての点を満たした！ ✦');}else{toast('ぴったり！ ✦');}updatePicker();el('score').classList.remove('bump');void el('score').offsetWidth;el('score').classList.add('bump');updateHeader();return true;}
+function changeShape(s){if(shape.a!==s.a||shape.b!==s.b){shape=s;const now=performance.now();if(now-changeTick>80){play('shift');changeTick=now;}}}
+function begin(p){const v=verts(center,shape);if(distance(p,v[2])<(24/step)){mode='corner';anchor={...v[0]};}else{mode='move';if(hitPolygon(p,v))offset={x:center.x-p.x,y:center.y-p.y};else{offset={x:0,y:0};center={x:p.x,y:p.y};}}}
+function dualBegin(){const p=[...touch.values()];if(p.length<2)return;const a=p[0],b=p[1];gesture={mid:{x:(a.x+b.x)/2,y:(a.y+b.y)/2},center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),distance:Math.max(distance(a,b),.01),shape:{...shape}};mode='dual';}
+function drag(){if(touch.size>=2){if(!gesture)dualBegin();const[a,b]=[...touch.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},ang=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(gesture.shape.a,gesture.shape.b)*clamp(distance(a,b)/gesture.distance,.18,12);changeShape(nearestShape(len,Math.atan2(gesture.shape.b,gesture.shape.a)+ang-gesture.angle));center={x:gesture.center.x+mid.x-gesture.mid.x,y:gesture.center.y+mid.y-gesture.mid.y};}else if(touch.size===1){const p=[...touch.values()][0];if(mode==='corner'&&anchor){changeShape(nearestCorner(p,anchor));const rel=verts({x:0,y:0},shape)[0];center={x:anchor.x-rel.x,y:anchor.y-rel.y};}else{center={x:p.x+offset.x,y:p.y+offset.y};}}render();}
+function contactStart(k,p){if(touch.has(k))return;const wasHidden=stampHidden;if(wasHidden){stampHidden=false;center={x:p.x,y:p.y};}touch.set(k,p);if(touch.size===1){if(wasHidden){mode='move';offset={x:0,y:0};}else begin(p);}else if(touch.size===2)dualBegin();render();}
+function contactMove(items){let did=false;for(const[k,p]of items)if(touch.has(k)){touch.set(k,p);did=true;}if(did)drag();}
+function contactEnd(ids,cancel=false){let removed=false;for(const k of ids)removed=touch.delete(k)||removed;if(!removed)return;if(touch.size>=2)dualBegin();else if(touch.size===1){gesture=null;mode='move';const p=[...touch.values()][0];offset={x:center.x-p.x,y:center.y-p.y};render();}else{gesture=null;center=snapCenter(center,shape);if(!cancel)tryFind();render();}}
+function updatePicker(){el('stageGrid').innerHTML=LEVELS.map((b,j)=>{const rec=saved.boards[String(j)]||[],done=levelsSolved.has(j);return `<button type="button" class="stageBtn ${j===lv?'current':''} ${done?'done':rec.length?'partial':''}" data-level="${j}" aria-label="問題${j+1}${done?'クリア済み':''}">${String(j+1).padStart(2,'0')}</button>`;}).join('');}
+function stopHint(){clearTimeout(hintTimer);hintPoint=null;}
+function load(i,savePrevious=true){if(lv>=0&&savePrevious)saveBoard();clearTimeout(fxTimer);clearTimeout(toastTimer);stopHint();el('toast').classList.remove('show');fx.innerHTML='';lastFound=null;stampHidden=false;lv=(i+LEVELS.length)%LEVELS.length;level=LEVELS[lv];computeSize();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);degree=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)for(const p of sq.points)degree.set(key(p.x,p.y),(degree.get(key(p.x,p.y))||0)+1);
+ const row=saved.boards[String(lv)]||[];const ids=new Set(solutions.map(s=>s.id));found=new Set(row.filter(k=>ids.has(k)));used=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)if(found.has(sq.id))for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}
+ if(isWon())levelsSolved.add(lv);else levelsSolved.delete(lv);
+ shapes=allLatticeShapes(level.cols,level.rows);shapes.sort((s,t)=>Math.hypot(s.a,s.b)-Math.hypot(t.a,t.b)||s.b-t.b);
+ shape={a:3,b:0};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.73},shape);touch.clear();gesture=null;
+ el('stageIdx').textContent=String(lv+1).padStart(2,'0');el('stageText').textContent=`${level.points.length} POINTS  ·  ${lv<10?'EXPLORER':lv<20?'DISCOVERY':'CHALLENGE'}`;
+ // Integrity check: every square is forced by at least one point with true degree <=2.
+ if(solutions.length!==level.expected||solutions.some(s=>!s.points.some(p=>degree.get(key(p.x,p.y))<=2))||[...degree.values()].includes(0))console.error('Board failed mathematical integrity check',lv);
+ updatePicker();updateHeader();render();saved.idx=lv;persist();}
+function showHint(){if(isWon()){toast('この問題はクリア済み ✦');return;}const unfulfilled=level.points.filter(p=>(used.get(key(...p))||0)<pointTarget(key(...p)));if(!unfulfilled.length)return;const singles=unfulfilled.filter(p=>degree.get(key(...p))===1);const opts=singles.length?singles:unfulfilled;const p=opts[(found.size+lv)%opts.length];stopHint();hintPoint=p;render();toast('この点を使う正方形を探そう');hintTimer=setTimeout(()=>{hintPoint=null;render();},2700);}
+const hasTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0;
+if(hasTouch){svg.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)contactStart('t'+t.identifier,boardPoint(t));},{passive:false});svg.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();contactMove([...e.touches].map(t=>['t'+t.identifier,boardPoint(t)]));},{passive:false});svg.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});svg.addEventListener('touchcancel',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
+svg.addEventListener('pointerdown',e=>{if(hasTouch&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}contactStart('p'+e.pointerId,boardPoint(e));});svg.addEventListener('pointermove',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactMove([['p'+e.pointerId,boardPoint(e)]])}});svg.addEventListener('pointerup',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactEnd(['p'+e.pointerId])}});svg.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));svg.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));svg.addEventListener('contextmenu',e=>e.preventDefault());for(const n of['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if(el('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
+el('choose').addEventListener('click',()=>{const p=el('picker');p.hidden=!p.hidden;el('choose').setAttribute('aria-expanded',String(!p.hidden));});
+el('stageGrid').addEventListener('click',e=>{const b=e.target.closest('button[data-level]');if(!b)return;load(+b.dataset.level);el('picker').hidden=true;el('choose').setAttribute('aria-expanded','false');});
+el('prev').addEventListener('click',()=>load(lv-1));el('nextStage').addEventListener('click',()=>load(lv+1));el('next').addEventListener('click',()=>load(lv+1));
+el('reset').addEventListener('click',()=>{saved.boards[String(lv)]=[];persist();load(lv,false);toast('この問題を最初から');});
+el('hint').addEventListener('click',showHint);el('sound').addEventListener('click',()=>{sound=!sound;el('sound').setAttribute('aria-pressed',String(sound));el('sound').textContent=sound?'♪ ON':'♪ OFF';if(sound)play('shift');});
+svg.addEventListener('wheel',e=>{e.preventDefault();let n=shapes.findIndex(s=>s.a===shape.a&&s.b===shape.b);n=(n+(e.deltaY>0?1:-1)+shapes.length)%shapes.length;changeShape(shapes[n]);center=snapCenter(center,shape);render();},{passive:false});
+window.__SQUARE_SNAP_TEST__={state:()=>({stage:lv+1,dots:level.points.length,actualSquares:solutions.length,found:found.size,fulfilled:satisfied(),won:isWon(),allReachable:solutions.every(sq=>shapes.some(s=>sqKey(verts({x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s))===sq.id)),allForced:solutions.every(sq=>sq.points.some(p=>degree.get(key(p.x,p.y))<=2))}),testSolve:()=>{for(const sq of solutions){if(found.has(sq.id))continue;const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},sh=shapes.find(s=>sqKey(verts(c,s))===sq.id);if(!sh)throw Error('Unreachable square!');shape={...sh};center=c;tryFind();lastFound=null;}render();return {found:found.size,fulfilled:satisfied(),won:isWon()};},load, boards:LEVELS.length};
+load(Number.isInteger(saved.idx)?clamp(saved.idx,0,LEVELS.length-1):0);
 })();
 </script>
 </body>
