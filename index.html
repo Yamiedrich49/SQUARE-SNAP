@@ -87,8 +87,8 @@ button:focus-visible{outline:3px solid #6cc7ca;outline-offset:2px}
   <section id="picker" class="picker" hidden><div class="pickerTop"><span>遊びたい問題を選ぶ</span><span>✓ クリア済み</span></div><div id="stageGrid" class="stageGrid"></div></section>
   <section class="paper" aria-label="隠れた正方形パズル">
     <div class="heading"><div><div class="eyebrow" id="stageText">28 POINTS</div><h1>すべての点を満たそう</h1></div><div class="count"><strong id="score">0</strong><small>発見</small></div></div>
-    <div class="fulfillment"><div class="fulfillmentTop"><span>点の条件を満たした数</span><strong id="fulfilled">0 / 28</strong></div><div class="track"><div id="fulfillBar" class="bar"></div></div></div>
-    <div class="legend"><span class="legendItem"><i class="dot"></i>1回だけ</span><span class="legendItem"><i class="dot shared"></i>2回以上</span><span class="dim">薄い点は達成済み</span></div>
+    <div class="fulfillment"><div class="fulfillmentTop"><span>使い切った点</span><strong id="fulfilled">0 / 28</strong></div><div class="track"><div id="fulfillBar" class="bar"></div></div></div>
+    <div class="legend"><span class="legendItem"><i class="dot"></i>1回だけ</span><span class="legendItem"><i class="dot shared"></i>2回以上</span><span class="dim">使い切った点は薄くなる</span></div>
     <div class="boardWrap" id="wrap">
       <svg id="board" viewBox="0 0 360 482" aria-label="正方形を指で移動、回転、拡大縮小して点の位置に重ねる"><g id="scene" pointer-events="none"></g><g id="fx" pointer-events="none"></g><rect id="input" width="360" height="482" fill="transparent"/></svg>
       <div id="toast" aria-live="polite" role="status"></div>
@@ -96,7 +96,7 @@ button:focus-visible{outline:3px solid #6cc7ca;outline-offset:2px}
     <div class="win" id="win"><div><strong>すべての点がつながった ✦</strong><small id="winSub">新しい正方形を発見した！</small></div><button type="button" id="next">次の問題へ →</button></div>
     <div class="foot"><p class="tip">指で移動 · 角を引いて変形<br>2本指で拡大・回転</p><div class="actions"><button id="hint" class="action" type="button">ヒント</button><button id="sound" class="action" type="button" aria-pressed="true">♪ ON</button><button id="reset" class="action" type="button">↺</button></div></div>
   </section>
-  <p class="below">正方形の総数は秘密。<br>黒い点を1回、シアンの点を2回以上使うとクリア。</p>
+  <p class="below">正方形の総数は秘密。<br>黒は1回、シアンは2回以上。必要回数使い切ると点が薄くなる。</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -130,8 +130,11 @@ function hitPolygon(p,v){let inside=false;for(let i=0,j=v.length-1;i<v.length;j=
 let tickBuffer=null,lastTick=-1;
 function play(kind){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{});const t=audio.currentTime;if(kind==='shift'){if(t-lastTick<.075)return;lastTick=t;if(!tickBuffer){const len=Math.ceil(audio.sampleRate*.025);tickBuffer=audio.createBuffer(1,len,audio.sampleRate);const d=tickBuffer.getChannelData(0);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.exp(-i/(audio.sampleRate*.005));}const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),g=audio.createGain();src.buffer=tickBuffer;filter.type='lowpass';filter.frequency.value=1250;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.018,t+.002);g.gain.exponentialRampToValueAtTime(.0001,t+.024);src.connect(filter);filter.connect(g);g.connect(audio.destination);src.start(t);src.stop(t+.026);}else{for(const [mult,volume]of[[1,.035],[2,.003]]){const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.setValueAtTime(587.33*mult,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(volume,t+.009);g.gain.exponentialRampToValueAtTime(volume*.55,t+.035);g.gain.exponentialRampToValueAtTime(.0001,t+.175);o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.185);}}}catch(_){}}
 function toast(s){const t=el('toast');clearTimeout(toastTimer);t.textContent=s;t.classList.add('show');toastTimer=setTimeout(()=>t.classList.remove('show'),1050);}
+// Hidden required-use counts are the actual number of squares touching each dot.
+// The player only sees one use (dark) or two-or-more uses (cyan) until exhausted.
 function pointTarget(k){return degree.get(k)>=2?2:1;}
-function satisfied(){let n=0;for(const p of level.points){const k=key(...p);if((used.get(k)||0)>=pointTarget(k))n++;}return n;}
+function exhausted(k){return (used.get(k)||0)>=degree.get(k);}
+function satisfied(){let n=0;for(const p of level.points){if(exhausted(key(...p)))n++;}return n;}
 function isWon(){return satisfied()===level.points.length;}
 function updateHeader(){const n=satisfied(),win=isWon();el('score').textContent=found.size;el('fulfilled').textContent=`${n} / ${level.points.length}`;el('fulfillBar').style.width=(n/level.points.length*100).toFixed(1)+'%';el('win').classList.toggle('visible',win);el('winSub').textContent=`${found.size}個の正方形を発見！`;el('next').textContent=lv===LEVELS.length-1?'最初の問題へ →':'次の問題へ →';}
 function render(){let out='';out+='<rect x="0" y="0" width="360" height="482" fill="#fcfdfd"/>';
@@ -141,9 +144,14 @@ let fi=0;for(const sq of solutions){if(!found.has(sq.id))continue;const color=PA
 const v=verts(center,shape),s=snapCenter(center,shape),sv=verts(s,shape),dist=distance(center,s),id=sqKey(sv);
 const allMatched=sv.every(p=>dots.has(key(p.x,p.y))),ready=dist<.42&&allMatched&&!found.has(id);
 if(!stampHidden&&!isWon())out+=`<polygon points="${asPoints(v)}" fill="${ready?'#10bdb7':'#0aa4b0'}" fill-opacity="${ready?'.15':'.06'}" stroke="${ready?'#00a6a0':'#11a1ac'}" stroke-width="${ready?3:2.2}" stroke-linejoin="round" stroke-dasharray="${ready?'':'5 4'}"/>`;
-for(const [x,y] of level.points){const k=key(x,y),deg=degree.get(k),u=used.get(k)||0,fulfilled=u>=(deg>=2?2:1),[px,py]=xy({x,y});let color=fulfilled?'#b6cacf':deg>=2?'#0d9eaa':'#334953';if(ready&&sv.some(p=>p.x===x&&p.y===y))color='#00afa8';out+=`<circle cx="${px}" cy="${py}" r="7.1" fill="${color}" stroke="#fff" stroke-width="1.45"/>`;
- if(deg>=2&&u===1){out+=`<circle cx="${px}" cy="${py}" r="3.0" fill="#fff" opacity=".93"/>`;}
- if(fulfilled){out+=`<circle cx="${px}" cy="${py}" r="3" fill="#fcfdfd" opacity=".72"/>`;}
+for(const [x,y] of level.points){
+ // Gray out only when EVERY square touching this point has been found.
+ // For cyan dots, the exact required count remains hidden until then.
+ const k=key(x,y),deg=degree.get(k);
+ const [px,py]=xy({x,y});
+ let color=exhausted(k)?'#b6cacf':deg>=2?'#0d9eaa':'#334953';
+ if(ready&&sv.some(p=>p.x===x&&p.y===y))color='#00afa8';
+ out+=`<circle data-dot="${k}" cx="${px}" cy="${py}" r="7.1" fill="${color}" stroke="#fff" stroke-width="1.45"/>`;
 }
 if(hintPoint){const[px,py]=xy({x:hintPoint[0],y:hintPoint[1]});out+=`<circle class="hintRing" cx="${px}" cy="${py}" r="17"/>`;}
 if(!stampHidden&&!isWon()){const handle=v[2],[hx,hy]=xy(handle);out+=`<circle cx="${hx}" cy="${hy}" r="13" fill="#fffffff0" stroke="#069ca6" stroke-width="2.3"/><path d="M ${hx-5} ${hy+4} L ${hx+4} ${hy-5} M ${hx-2} ${hy-5} H ${hx+4} V ${hy+1}" stroke="#069ca6" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;}
@@ -169,7 +177,7 @@ function load(i,savePrevious=true){if(lv>=0&&savePrevious)saveBoard();clearTimeo
  // Integrity check: every square is forced by at least one point with true degree <=2.
  if(solutions.length!==level.expected||solutions.some(s=>!s.points.some(p=>degree.get(key(p.x,p.y))<=2))||[...degree.values()].includes(0))console.error('Board failed mathematical integrity check',lv);
  updatePicker();updateHeader();render();saved.idx=lv;persist();}
-function showHint(){if(isWon()){toast('この問題はクリア済み ✦');return;}const unfulfilled=level.points.filter(p=>(used.get(key(...p))||0)<pointTarget(key(...p)));if(!unfulfilled.length)return;const singles=unfulfilled.filter(p=>degree.get(key(...p))===1);const opts=singles.length?singles:unfulfilled;const p=opts[(found.size+lv)%opts.length];stopHint();hintPoint=p;render();toast('この点を使う正方形を探そう');hintTimer=setTimeout(()=>{hintPoint=null;render();},2700);}
+function showHint(){if(isWon()){toast('この問題はクリア済み ✦');return;}const unfulfilled=level.points.filter(p=>!exhausted(key(...p)));if(!unfulfilled.length)return;const singles=unfulfilled.filter(p=>degree.get(key(...p))===1);const opts=singles.length?singles:unfulfilled;const p=opts[(found.size+lv)%opts.length];stopHint();hintPoint=p;render();toast('この点を使う正方形を探そう');hintTimer=setTimeout(()=>{hintPoint=null;render();},2700);}
 const hasTouch=('ontouchstart'in window)||navigator.maxTouchPoints>0;
 if(hasTouch){svg.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)contactStart('t'+t.identifier,boardPoint(t));},{passive:false});svg.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();contactMove([...e.touches].map(t=>['t'+t.identifier,boardPoint(t)]));},{passive:false});svg.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});svg.addEventListener('touchcancel',e=>{if(e.cancelable)e.preventDefault();contactEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
 svg.addEventListener('pointerdown',e=>{if(hasTouch&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}contactStart('p'+e.pointerId,boardPoint(e));});svg.addEventListener('pointermove',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactMove([['p'+e.pointerId,boardPoint(e)]])}});svg.addEventListener('pointerup',e=>{if(touch.has('p'+e.pointerId)){e.preventDefault();contactEnd(['p'+e.pointerId])}});svg.addEventListener('pointercancel',e=>contactEnd(['p'+e.pointerId],true));svg.addEventListener('lostpointercapture',e=>contactEnd(['p'+e.pointerId],true));svg.addEventListener('contextmenu',e=>e.preventDefault());for(const n of['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if(el('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
