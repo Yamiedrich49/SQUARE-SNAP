@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f5f8f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SQUARE SNAP — Geometric discoveries</title>
+<title>SQUARE SNAP — CRISP EDITION</title>
 <style>
 :root{color-scheme:light;--paper:#fff;--bg:#f5f8f7;--ink:#293f46;--muted:#83979c;--cyan:#0c9ba4;--cyan-deep:#087f88;--grid:#e8efef;--silk:#d8e6e5;--gold:#c79b65}
 *{box-sizing:border-box}
@@ -90,15 +90,50 @@ button:focus-visible{outline:3px solid #74bec2;outline-offset:3px}
 @media(max-width:370px){.shell{padding-left:8px;padding-right:8px}.paper{padding-left:5px;padding-right:5px}.dashboard{padding-left:10px;padding-right:10px}.legendbar{padding-left:8px;padding-right:8px}.legend{gap:8px;font-size:9px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:none!important;transition:none!important}
+
+/* CRISP EDITION / linework, not decoration. Geometry is the ornament. */
+:root{--bg:#f7f9f8;--ink:#263d45;--muted:#8da1a5;--cyan:#0d969c;--cyan-deep:#0a7f86;--grid:#e9efed;--gold:#b59668}
+.shell{max-width:476px}
+.brandmark{border-radius:1px;transform:rotate(-11deg);box-shadow:3px -3px 0 -1px var(--bg),3px -3px 0 0 #c1e0dd}
+.brandver{letter-spacing:.13em;font-size:9px;color:#9aaeb0}
+.paper{border-radius:20px;box-shadow:0 10px 35px #264e4d09;border-color:#e6eeec}
+.boardwrap{border-color:#ecf0ee;background:#fdfefd;border-radius:11px}
+.grid-major{stroke:#dce7e5;stroke-width:.76}
+.grid-minor{stroke:#edf2f0;stroke-width:.72}
+.precision-point{transition:opacity .16s linear;pointer-events:none}
+.precision-point .pin-core{fill:#29434a;stroke:none;vector-effect:non-scaling-stroke}
+.precision-point .pin-outline{fill:none;stroke:#c7d8d8;stroke-width:.7;opacity:.56;vector-effect:non-scaling-stroke}
+.precision-point.multi .pin-core{fill:#0a9399}
+.precision-point.multi .pin-outline{stroke:#0d969c;stroke-width:1.3;opacity:.80}
+.precision-point.exhausted .pin-core{fill:#c0cccb}
+.precision-point.exhausted .pin-outline{stroke:#d3dedd;opacity:.42}
+.stamp{fill:#139a9f;fill-opacity:.024;stroke:#12959e;stroke-width:1.6;stroke-dasharray:none;stroke-linecap:butt;stroke-linejoin:miter;filter:none;vector-effect:non-scaling-stroke}
+.stamp.locked{stroke:#087f85;stroke-width:1.95;fill-opacity:.040}
+.stamp.ready{stroke:#0a858a;stroke-width:2.15;stroke-dasharray:none;fill:#0d999f;fill-opacity:.058;filter:none}
+.completed-square{fill-opacity:.046;stroke-width:1.45;stroke-opacity:.73;stroke-linejoin:miter;vector-effect:non-scaling-stroke}
+.completed-square.is-giant{fill-opacity:.038;stroke-width:1.85;stroke-opacity:.83}
+.completed-square.fresh{animation:crispFill .20s ease-out both}
+.trace{fill:none;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter;stroke-dasharray:100;stroke-dashoffset:100;animation:fastTrace .17s cubic-bezier(.07,.75,.24,1) both;vector-effect:non-scaling-stroke}
+.trace-shine{fill:none;stroke:#ffffff!important;stroke-width:.9;stroke-linejoin:miter;stroke-dasharray:100;stroke-dashoffset:100;animation:fastTrace .145s cubic-bezier(.07,.8,.25,1) 15ms both;vector-effect:non-scaling-stroke}
+#glowsLayer{display:none}
+#toast{box-shadow:none;font-weight:500}
+.mini-dot{width:9px;height:9px;background:#29434a;box-shadow:0 0 0 2px #e0e9e7}
+.mini-dot.multi{background:#0a9399;box-shadow:0 0 0 2px #bfe0dc}
+.foundcount strong{font-size:30px;font-weight:640;letter-spacing:-.05em}
+.foundcount span{font-size:8px;letter-spacing:.11em;font-weight:760}
+.dashboardtitle{font-weight:710}
+.progress-fill{transition:width .20s ease-out;background:#11999c}
+@keyframes fastTrace{to{stroke-dashoffset:0}}
+@keyframes crispFill{from{fill-opacity:0;stroke-opacity:0}to{fill-opacity:.046;stroke-opacity:.73}}
 </style>
 </head>
 <body>
 <main class="shell">
-<header class="brandbar"><div class="wordmark"><span class="brandmark" aria-hidden="true"></span>SQUARE SNAP</div><span class="brandver">STUDIO EDITION · 07</span></header>
+<header class="brandbar"><div class="wordmark"><span class="brandmark" aria-hidden="true"></span>SQUARE SNAP</div><span class="brandver">CRISP EDITION · 08</span></header>
 <nav class="pager" aria-label="ステージ切り替え"><button id="prev" aria-label="前の問題" type="button">‹</button><button id="choose" class="choose" type="button" aria-expanded="false">STAGE <b id="stageIdx">01</b> <span>/ 30 ⌄</span></button><button id="nextStage" aria-label="次の問題" type="button">›</button></nav>
 <section id="picker" class="picker" hidden><div class="pickerhead"><span>STAGE SELECT</span><span>✓ クリア済み</span></div><div class="stagegrid" id="stageGrid"></div></section>
 <section class="paper" aria-label="隠れた正方形パズル">
-  <header class="dashboard"><div class="dashboardtop"><div><div class="eyebrow" id="stageText">28 POINTS</div><h1 class="dashboardtitle">すべての点を使い切ろう</h1></div><div class="foundcount"><strong id="score">0</strong><span>発見</span></div></div><div class="smallprogress"><span>使い切った点</span><strong id="fulfilled">0 / 28</strong></div><div class="progress-track"><div id="fulfillBar" class="progress-fill"></div></div></header>
+  <header class="dashboard"><div class="dashboardtop"><div><div class="eyebrow" id="stageText">28 POINTS</div><h1 class="dashboardtitle">すべての点を使い切ろう</h1></div><div class="foundcount"><strong id="score">0</strong><span>SQUARES</span></div></div><div class="smallprogress"><span>使い切った点</span><strong id="fulfilled">0 / 28</strong></div><div class="progress-track"><div id="fulfillBar" class="progress-fill"></div></div></header>
   <div class="boardwrap" id="wrap">
     <svg id="board" viewBox="0 0 360 482" aria-label="1本指で正方形を移動、2本指で拡大と回転をするパズル">
       <rect width="360" height="482" fill="#fcfefd"/>
@@ -115,7 +150,7 @@ body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:n
   </div>
   <div class="legendbar"><div class="legend"><span class="legenditem"><i class="mini-dot"></i>1回だけ</span><span class="legenditem"><i class="mini-dot multi"></i>2回以上</span></div><div class="controls"><button id="hint" class="control" type="button">ヒント</button><button id="settings" class="control ellipsis" type="button" aria-label="設定" aria-expanded="false">···</button></div></div>
   <div class="options" id="options" hidden><button type="button" id="sound" aria-pressed="true">音 ON</button><button type="button" id="motion" aria-pressed="false">動き ON</button><button type="button" id="reset">やり直す</button></div>
-  <div class="win" id="win"><div><strong>すべての点がつながった ✦</strong><span id="winSub">完成した模様を眺めよう</span></div><button type="button" id="next">次の問題へ ›</button></div>
+  <div class="win" id="win"><div><strong>すべての点がつながった</strong><span id="winSub">完成した模様を眺めよう</span></div><button type="button" id="next">次の問題へ ›</button></div>
 </section>
 <p class="guide">1本指で動かす · 2本指で大きさと角度を変える</p>
 </main>
@@ -126,14 +161,14 @@ const LEVELS=[{"points":[[0,7],[1,5],[1,7],[2,3],[3,2],[4,12],[5,0],[5,6],[5,8],
 const VW=360,VH=482,STORAGE='square_snap_30_puzzles_v1';
 const $=id=>document.getElementById(id),svg=$('board'),scene=$('lattice'),foundLayer=$('foundLayer'),stamp=$('stamp'),dotsLayer=$('dotsLayer'),glowsLayer=$('glowsLayer'),fx=$('effectsLayer'),hintLayer=$('hintLayer');
 const key=(x,y)=>`${x},${y}`,sqKey=v=>v.map(p=>key(p.x,p.y)).sort().join('|');
-const clamp=(x,lo,hi)=>Math.min(hi,Math.max(lo,x)),dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y),easing=.28;
+const clamp=(x,lo,hi)=>Math.min(hi,Math.max(lo,x)),dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
 const SVGNS='http://www.w3.org/2000/svg';
 const node=(name,attrs={})=>{const e=document.createElementNS(SVGNS,name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;};
 let saved={idx:0,boards:{}};try{const s=JSON.parse(localStorage.getItem(STORAGE)||'null');if(s&&typeof s==='object'&&s.boards&&typeof s.boards==='object')saved=s;}catch(_){}
 if(!saved.grandSquaresV1){for(const i of [11,26])delete saved.boards[String(i)];saved.grandSquaresV1=true;persist();}
 if(!saved.prefs)saved.prefs={};
 let lv=-1,level,dots,solutions,degree,found,used,foundOrder,shapes,shape,center,step,ox,oy;
-let pointers=new Map(),single=null,dual=null,visualShape={a:3,b:0},stampHidden=false,glowOn=false,readyNow=false,frame=0,motionOff=saved.prefs.motion===undefined?!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches):!!saved.prefs.motion;
+let pointers=new Map(),single=null,dual=null,snapLock=null,stampHidden=false,readyNow=false,frame=0,motionOff=saved.prefs.motion===undefined?!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches):!!saved.prefs.motion;
 let fxTimeout=null,hintTimeout=null,toastTimeout=null,stageDone=new Set(),hintPoint=null,ctx=null,master=null,lastTick=-1;
 let sound=saved.prefs.sound!==false;
 for(let i=0;i<LEVELS.length;i++){if(Array.isArray(saved.boards[String(i)])&&saved.boards[String(i)].length===LEVELS[i].expected)stageDone.add(i)}
@@ -151,7 +186,7 @@ function clampCenter(c,s){const v=vertices({x:0,y:0},s),xs=v.map(p=>p.x),ys=v.ma
 function snapCenter(c,s){const corner=vertices({x:0,y:0},s)[0];return clampCenter({x:Math.round(c.x+corner.x)-corner.x,y:Math.round(c.y+corner.y)-corner.y},s);}
 function latticeCandidate(c,s){return vertices(snapCenter(c,s),s)}
 function screenPoint(e){const r=svg.getBoundingClientRect();return{x:((e.clientX-r.left)*VW/r.width-ox)/step,y:((e.clientY-r.top)*VH/r.height-oy)/step};}
-function nearestShape(length,angle){const quarter=Math.PI/2,theta=((angle+Math.PI/4)%quarter+quarter)%quarter-Math.PI/4,ta=Math.max(.01,length)*Math.cos(theta),tb=Math.max(.01,length)*Math.sin(theta);let best=shape,d=Infinity;for(const s of shapes){const sc=(s.a-ta)**2+(s.b-tb)**2;if(sc<d){best=s;d=sc;}}const current=(shape.a-ta)**2+(shape.b-tb)**2;return current<=d+.19?shape:best;}
+function nearestShape(length,angle){const quarter=Math.PI/2,theta=((angle+Math.PI/4)%quarter+quarter)%quarter-Math.PI/4,ta=Math.max(.01,length)*Math.cos(theta),tb=Math.max(.01,length)*Math.sin(theta);let best=shape,d=Infinity;for(const s of shapes){const sc=(s.a-ta)**2+(s.b-tb)**2;if(sc<d){best=s;d=sc;}}const current=(shape.a-ta)**2+(shape.b-tb)**2;return current<=d+.38?shape:best;}
 function degreeOf(k){return degree.get(k)||0}
 function exhausted(k){return (used.get(k)||0)>=degreeOf(k)}
 function satisfied(){let n=0;for(const p of level.points)if(exhausted(key(...p)))n++;return n}
@@ -159,17 +194,29 @@ function win(){return satisfied()===level.points.length}
 function solveInfo(){return {stage:lv+1,dots:level.points.length,actualSquares:solutions.length,found:found.size,fulfilled:satisfied(),won:win(),allReachable:solutions.every(q=>shapes.some(s=>sqKey(vertices({x:q.points.reduce((a,p)=>a+p.x,0)/4,y:q.points.reduce((a,p)=>a+p.y,0)/4},s))===q.id)),allForced:solutions.every(q=>q.points.some(p=>degreeOf(key(p.x,p.y))<=2))};}
 function drawGrid(){scene.replaceChildren();let lines='';for(let x=0;x<level.cols;x++){const px=ox+x*step;lines+=`<path class="${x%5===0?'grid-major':'grid-minor'}" d="M ${px.toFixed(2)} ${(oy-9).toFixed(2)} V ${(oy+step*(level.rows-1)+9).toFixed(2)}"/>`;}for(let y=0;y<level.rows;y++){const py=oy+y*step;lines+=`<path class="${y%5===0?'grid-major':'grid-minor'}" d="M ${(ox-9).toFixed(2)} ${py.toFixed(2)} H ${(ox+step*(level.cols-1)+9).toFixed(2)}"/>`;}scene.innerHTML=lines;}
 const pointEls=new Map(),vertexHalos=new Map();
-function drawDots(){dotsLayer.replaceChildren();glowsLayer.replaceChildren();pointEls.clear();vertexHalos.clear();for(const[x,y]of level.points){const k=key(x,y),[px,py]=xy({x,y});const dot=node('circle',{cx:px,cy:py,r:degreeOf(k)>=2?7.7:7.0,class:'dot '+(degreeOf(k)>=2?'multi':'single')});dotsLayer.append(dot);pointEls.set(k,dot);const ring=node('circle',{cx:px,cy:py,r:12.8,class:'vertex-glow'});glowsLayer.append(ring);vertexHalos.set(k,ring);}refreshDots();}
-function refreshDots(){for(const[k,d]of pointEls){d.classList.toggle('exhausted',exhausted(k));}for(const h of vertexHalos.values())h.classList.remove('on');}
+function drawDots(){dotsLayer.replaceChildren();glowsLayer.replaceChildren();pointEls.clear();vertexHalos.clear();for(const[x,y]of level.points){const k=key(x,y),[px,py]=xy({x,y}),multi=degreeOf(k)>1;const g=node('g',{class:'precision-point '+(multi?'multi':'single')});g.append(node('circle',{cx:px,cy:py,r:7.1,class:'pin-outline'}),node('circle',{cx:px,cy:py,r:4.0,class:'pin-core'}));dotsLayer.append(g);pointEls.set(k,g);}refreshDots();}
+function refreshDots(){for(const[k,d]of pointEls)d.classList.toggle('exhausted',exhausted(k));}
 function sqShade(sq){const vs=sq.points, xs=vs.map(p=>p.x),ys=vs.map(p=>p.y);const coverage=Math.max((Math.max(...xs)-Math.min(...xs))/(level.cols-1),(Math.max(...ys)-Math.min(...ys))/(level.rows-1));return coverage>=.88?{c:'#b99462',giant:true}:{c:'#128f9b',giant:false};}
 function appendSquare(sq,animate=false){const {c,giant}=sqShade(sq),poly=node('polygon',{points:asPoints(sq.points),fill:c,stroke:c,class:'completed-square'+(giant?' is-giant':'')+(animate&&!motionOff?' fresh':'')});foundLayer.append(poly);}
 function drawFound(){foundLayer.replaceChildren();for(const id of foundOrder){const sq=solutions.find(s=>s.id===id);if(sq)appendSquare(sq);}}
-function drawFrame(){frame=0;if(!level)return;const lag=motionOff?1:easing;visualShape.a+=(shape.a-visualShape.a)*lag;visualShape.b+=(shape.b-visualShape.b)*lag;const error=Math.hypot(shape.a-visualShape.a,shape.b-visualShape.b);if(error<.006){visualShape.a=shape.a;visualShape.b=shape.b;}
- const v=vertices(center,visualShape);stamp.setAttribute('points',asPoints(v));stamp.setAttribute('visibility',stampHidden||win()?'hidden':'visible');
- const snapped=snapCenter(center,shape),sv=vertices(snapped,shape),valid=sv.every(p=>dots.has(key(p.x,p.y)))&&!found.has(sqKey(sv));
- const near=dist(center,snapped)<.31;readyNow=valid&&near&&!stampHidden&&!win();stamp.classList.toggle('ready',readyNow);
- for(const [k,h]of vertexHalos)h.classList.toggle('on',readyNow&&sv.some(p=>key(p.x,p.y)===k));
- if(error>=.006)requestDraw();}
+// Immediate cursor feedback. Any lattice point may attract the stamp; never only correct answers.
+function magnetCenter(){
+ if(snapLock){if(dist(center,snapLock)<=.57)return snapLock;snapLock=null;}
+ const p=snapCenter(center,shape);
+ if(dist(center,p)<=.33){snapLock={...p};return snapLock;}
+ return center;
+}
+function drawFrame(){
+ frame=0;if(!level)return;
+ const view=magnetCenter();
+ stamp.setAttribute('points',asPoints(vertices(view,shape)));
+ stamp.setAttribute('visibility',stampHidden||win()?'hidden':'visible');
+ const snapped=snapCenter(center,shape),sv=vertices(snapped,shape);
+ const valid=sv.every(p=>dots.has(key(p.x,p.y)))&&!found.has(sqKey(sv));
+ readyNow=valid&&!!snapLock&&!stampHidden&&!win();
+ stamp.classList.toggle('ready',readyNow);
+ stamp.classList.toggle('locked',!!snapLock);
+}
 function requestDraw(){if(!frame)frame=requestAnimationFrame(drawFrame)}
 function refreshHeader(){const n=satisfied(),done=win();$('score').textContent=found.size;$('fulfilled').textContent=`${n} / ${level.points.length}`;$('fulfillBar').style.width=`${(100*n/level.points.length).toFixed(2)}%`;$('win').classList.toggle('show',done);$('winSub').textContent=`${found.size}個の正方形を発見`;$('next').textContent=lv===LEVELS.length-1?'最初の問題へ ›':'次の問題へ ›';}
 function rebuildPicker(){$('stageGrid').innerHTML=LEVELS.map((l,i)=>{const rec=saved.boards[String(i)]||[],done=stageDone.has(i);return `<button class="stagebtn ${lv===i?'current':''} ${done?'done':rec.length?'partial':''}" data-stage="${i}" type="button" aria-label="問題${i+1}${done?'クリア済み':''}">${String(i+1).padStart(2,'0')}</button>`;}).join('');}
@@ -177,24 +224,24 @@ function save(){if(lv<0)return;saved.boards[String(lv)]=[...foundOrder];saved.id
 function toast(message){const e=$('toast');clearTimeout(toastTimeout);e.textContent=message;e.classList.add('show');toastTimeout=setTimeout(()=>e.classList.remove('show'),1000);}
 function makeAudio(){if(!sound)return;try{if(!ctx){const C=window.AudioContext||window.webkitAudioContext;if(!C)return;ctx=new C();master=ctx.createGain();master.gain.value=.55;master.connect(ctx.destination);}if(ctx.state==='suspended')ctx.resume().catch(()=>{});}catch(_){}}
 function note(frequency,start,vol,duration){if(!ctx||!sound)return;const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.setValueAtTime(frequency,start);gain.gain.setValueAtTime(.0001,start);gain.gain.exponentialRampToValueAtTime(Math.max(.0001,vol),start+.006);gain.gain.exponentialRampToValueAtTime(.0001,start+duration);osc.connect(gain);gain.connect(master);osc.start(start);osc.stop(start+duration+.012);}
-function audioEvent(type){if(!sound)return;makeAudio();if(!ctx)return;const t=ctx.currentTime;if(type==='shift'){if(t-lastTick<.115)return;lastTick=t;note(740,t,.014,.040);}else if(type==='found'){note(523.25,t,.065,.20);note(1046.50,t+.008,.008,.15);}else if(type==='complete'){note(523.25,t,.055,.24);note(659.25,t+.085,.046,.25);note(783.99,t+.17,.045,.34);}else if(type==='grid'){note(660,t,.008,.028);}}
-function spawnFx(sq){const{c}=sqShade(sq);fx.replaceChildren();if(motionOff)return;const poly=node('polygon',{class:'trace',points:asPoints(sq.points),pathLength:100,stroke:c});const mid={x:sq.points.reduce((v,p)=>v+p.x,0)/4,y:sq.points.reduce((v,p)=>v+p.y,0)/4},[cx,cy]=xy(mid);const halo=node('circle',{class:'halo',cx,cy,r:18,stroke:c});fx.append(poly,halo);clearTimeout(fxTimeout);fxTimeout=setTimeout(()=>fx.replaceChildren(),530);}
-function foundSquare(){if(stampHidden)return false;const snapped=snapCenter(center,shape),v=vertices(snapped,shape);if(dist(center,snapped)>.35||v.some(p=>!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);foundOrder.push(id);for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}center=snapped;stampHidden=true;appendSquare(sq,true);spawnFx(sq);save();refreshDots();refreshHeader();rebuildPicker();audioEvent(win()?'complete':'found');if(win()){stageDone.add(lv);rebuildPicker();foundLayer.classList.remove('celebrate');void foundLayer.getBoundingClientRect();foundLayer.classList.add('celebrate');setTimeout(()=>foundLayer.classList.remove('celebrate'),1000);toast('完成 ✦');}else{toast('発見 ✦');}requestDraw();return true;}
-function changeShape(s){if(s.a===shape.a&&s.b===shape.b)return;shape=s;center=clampCenter(center,shape);audioEvent('shift');requestDraw();}
+function audioEvent(type){if(!sound)return;makeAudio();if(!ctx)return;const t=ctx.currentTime;if(type==='shift'){if(t-lastTick<.105)return;lastTick=t;note(880,t,.010,.032);}else if(type==='found'){note(783.99,t,.043,.115);}else if(type==='complete'){note(659.25,t,.040,.12);note(987.77,t+.13,.043,.18);}else if(type==='grid'){note(784,t,.006,.020);}}
+function spawnFx(sq){const{c}=sqShade(sq);fx.replaceChildren();if(motionOff)return;const p=asPoints(sq.points);fx.append(node('polygon',{class:'trace',points:p,pathLength:100,stroke:c}),node('polygon',{class:'trace-shine',points:p,pathLength:100,stroke:c}));clearTimeout(fxTimeout);fxTimeout=setTimeout(()=>fx.replaceChildren(),270);}
+function foundSquare(){if(stampHidden)return false;const snapped=snapCenter(center,shape),v=vertices(snapped,shape);if(dist(center,snapped)>.35||v.some(p=>!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);foundOrder.push(id);for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}center=snapped;snapLock=null;stampHidden=true;appendSquare(sq,true);spawnFx(sq);save();refreshDots();refreshHeader();rebuildPicker();audioEvent(win()?'complete':'found');if(win()){stageDone.add(lv);rebuildPicker();foundLayer.classList.remove('celebrate');void foundLayer.getBoundingClientRect();foundLayer.classList.add('celebrate');setTimeout(()=>foundLayer.classList.remove('celebrate'),1000);}requestDraw();return true;}
+function changeShape(s){if(s.a===shape.a&&s.b===shape.b)return;shape=s;center=clampCenter(center,shape);snapLock=null;audioEvent('shift');requestDraw();}
 function startSingle(){const [p]=pointers.values();single={p:{...p},c:{...center}};dual=null;}
 function startDual(){const [a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};dual={mid,center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),length:Math.max(.001,dist(a,b)),shape:{...shape}};single=null;}
 function contactsChanged(){if(pointers.size>=2){if(!dual)startDual();const[a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},angle=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(dual.shape.a,dual.shape.b)*clamp(dist(a,b)/dual.length,.15,14),turn=Math.atan2(dual.shape.b,dual.shape.a)+angle-dual.angle;const next=nearestShape(len,turn);if(next.a!==shape.a||next.b!==shape.b)changeShape(next);center=clampCenter({x:dual.center.x+mid.x-dual.mid.x,y:dual.center.y+mid.y-dual.mid.y},shape);
  }else if(pointers.size===1&&single){const [p]=pointers.values();center=clampCenter({x:single.c.x+p.x-single.p.x,y:single.c.y+p.y-single.p.y},shape);}requestDraw();}
 function inputStart(id,p){if(pointers.has(id)||win())return;makeAudio();if(stampHidden)stampHidden=false;pointers.set(id,p);if(pointers.size===1)startSingle();else if(pointers.size===2)startDual();requestDraw();}
 function inputMove(items){let updated=false;for(const[id,p]of items)if(pointers.has(id)){pointers.set(id,p);updated=true;}if(updated)contactsChanged();}
-function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;center=snapCenter(center,shape);if(!cancel)foundSquare();}requestDraw();}
+function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;const lock=magnetCenter();const eligible=!!snapLock&&dist(lock,snapCenter(center,shape))<.01;center=snapCenter(center,shape);snapLock=null;if(!cancel&&eligible)foundSquare();}requestDraw();}
 function stopHint(){clearTimeout(hintTimeout);hintPoint=null;hintLayer.replaceChildren();}
 function showHint(){if(win()){toast('この問題はクリア済み');return;}const rest=level.points.filter(p=>!exhausted(key(...p)));const singles=rest.filter(p=>degreeOf(key(...p))===1),pool=singles.length?singles:rest;if(!pool.length)return;const p=pool[(found.size+lv)%pool.length];stopHint();hintPoint=p;const[x,y]=xy({x:p[0],y:p[1]});hintLayer.append(node('circle',{cx:x,cy:y,r:17,class:'hint-ring'}));toast('この点を含む正方形を探そう');hintTimeout=setTimeout(stopHint,2900);}
-function load(i,saveOld=true){if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;stampHidden=false;
+function load(i,saveOld=true){if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;snapLock=null;stampHidden=false;
  lv=(i+LEVELS.length)%LEVELS.length;level=LEVELS[lv];size();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);degree=new Map(level.points.map(p=>[key(...p),0]));for(const q of solutions)for(const p of q.points){const k=key(p.x,p.y);degree.set(k,degreeOf(k)+1);}
  const ids=new Set(solutions.map(s=>s.id)),row=saved.boards[String(lv)]||[];foundOrder=Array.isArray(row)?[...new Set(row.filter(id=>ids.has(id)))]:[];found=new Set(foundOrder);used=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)if(found.has(sq.id))for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}
  if(win())stageDone.add(lv);else stageDone.delete(lv);
- shapes=allShapes(level.cols,level.rows);shape={a:3,b:0};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.71},shape);visualShape={...shape};
+ shapes=allShapes(level.cols,level.rows);shape={a:3,b:0};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.71},shape);snapLock=null;
  if(solutions.length!==level.expected||solutions.some(q=>!q.points.some(p=>degreeOf(key(p.x,p.y))<=2))||[...degree.values()].some(v=>v===0))console.error('Integrity error on level',lv+1);
  $('stageIdx').textContent=String(lv+1).padStart(2,'0');$('stageText').textContent=`${level.points.length} POINTS  ·  ${lv<10?'EXPLORER':lv<20?'DISCOVERY':'CHALLENGE'}`;
  drawGrid();drawDots();drawFound();rebuildPicker();refreshHeader();saved.idx=lv;persist();requestDraw();}
@@ -212,7 +259,7 @@ $('hint').addEventListener('click',showHint);
 $('sound').addEventListener('click',()=>{sound=!sound;saved.prefs.sound=sound;$('sound').textContent=sound?'音 ON':'音 OFF';$('sound').setAttribute('aria-pressed',String(sound));persist();if(sound)audioEvent('shift')});
 $('motion').addEventListener('click',()=>{motionOff=!motionOff;saved.prefs.motion=motionOff;document.body.classList.toggle('low-motion',motionOff);$('motion').textContent=motionOff?'動き OFF':'動き ON';$('motion').setAttribute('aria-pressed',String(!motionOff));persist();requestDraw();});
 $('reset').addEventListener('click',()=>{saved.boards[String(lv)]=[];stageDone.delete(lv);persist();load(lv,false);toast('最初から');$('options').hidden=true;$('settings').setAttribute('aria-expanded','false');});
-window.__SQUARE_SNAP_TEST__={state:solveInfo,load,boards:LEVELS.length,testSolve:()=>{for(const sq of solutions){if(found.has(sq.id))continue;const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s=shapes.find(s=>sqKey(vertices(c,s))===sq.id);if(!s)throw Error('Square unreachable: '+sq.id);shape={...s};center=c;stampHidden=false;if(!foundSquare())throw Error('Square failed: '+sq.id);}return solveInfo();},setShape:(a,b)=>{const s=shapes.find(s=>s.a===a&&s.b===b);if(s){shape=s;center=snapCenter(center,s);requestDraw();}return !!s;},setCenter:(x,y)=>{center=clampCenter({x,y},shape);requestDraw();},getRenderStats:()=>({dotElements:dotsLayer.childElementCount,gridElements:scene.childElementCount,foundElements:foundLayer.childElementCount})};
+window.__SQUARE_SNAP_TEST__={state:solveInfo,load,boards:LEVELS.length,magnet:()=>({lock:snapLock,center,shape,visible:magnetCenter()}),testSolve:()=>{for(const sq of solutions){if(found.has(sq.id))continue;const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s=shapes.find(s=>sqKey(vertices(c,s))===sq.id);if(!s)throw Error('Square unreachable: '+sq.id);shape={...s};center=c;stampHidden=false;if(!foundSquare())throw Error('Square failed: '+sq.id);}return solveInfo();},setShape:(a,b)=>{const s=shapes.find(s=>s.a===a&&s.b===b);if(s){shape=s;center=snapCenter(center,s);requestDraw();}return !!s;},setCenter:(x,y)=>{center=clampCenter({x,y},shape);requestDraw();},getRenderStats:()=>({dotElements:dotsLayer.childElementCount,gridElements:scene.childElementCount,foundElements:foundLayer.childElementCount})};
 load(Number.isInteger(saved.idx)?clamp(saved.idx,0,LEVELS.length-1):0);
 })();
 </script>
