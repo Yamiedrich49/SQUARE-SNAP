@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f5f8f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SQUARE SNAP — 500 PUZZLES v8.11</title>
+<title>SQUARE SNAP — 500 PUZZLES v8.12</title>
 <style>
 :root{color-scheme:light;--paper:#fff;--bg:#f5f8f7;--ink:#293f46;--muted:#83979c;--cyan:#0c9ba4;--cyan-deep:#087f88;--grid:#e8efef;--silk:#d8e6e5;--gold:#c79b65}
 *{box-sizing:border-box}
@@ -254,7 +254,7 @@ body.low-motion .completion-panel{transition:none;}
     </div>
   </div>
   <div class="legendbar"><div class="legend"><span class="legenditem" aria-label="Point in one square"><i class="mini-dot"></i>1×</span><span class="legenditem" aria-label="Point in two or more squares"><i class="mini-dot multi"></i>2×+</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="Turn sound off">SOUND ON</button><button id="hint" class="control" type="button">HINT</button><button id="settings" class="control ellipsis" type="button" aria-label="Settings" aria-expanded="false">···</button></div></div>
-  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v8.11</span></div>
+  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v8.12</span></div>
 
 </section>
 <p class="guide" id="guide">DRAG ANYWHERE TO MOVE · PINCH & TWIST</p>
@@ -465,7 +465,7 @@ function audioEvent(type){
  if(!sound)return;
  const now=performance.now();
  if(type==='move'){
-  if(!moveClicks||now-lastMoveTickAt<125)return; // 8 ticks/sec maximum; same quiet timbre and gain as v8.11
+  if(!moveClicks||now-lastMoveTickAt<72)return; // About 14 ticks/sec maximum; unchanged quiet timbre and gain.
   lastMoveTickAt=now;
   // Never replay an old navigation click on iPhone when AudioContext resumes.
   if(makeAudio())playReadyAudio(type);
