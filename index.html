@@ -187,6 +187,28 @@ body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:n
 .stagegrid{grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
 .stagebtn{height:37px;font-size:11px;font-variant-numeric:tabular-nums}
 .picker-foot{font-size:9px;color:#a2b3b4;text-align:center;margin-top:11px}
+
+/* After completing a puzzle, its canvas no longer needs to capture gestures.
+   Restore native vertical scroll, while keeping touch locked during active play. */
+.boardwrap.is-complete,.boardwrap.is-complete svg,.boardwrap.is-complete svg *{touch-action:pan-y!important;overscroll-behavior:auto}
+/* In-board completion: never requires a scroll through a touch-captured canvas. */
+.completion{position:absolute;inset:0;z-index:12;display:flex;align-items:flex-end;justify-content:center;pointer-events:none;padding:12px;}
+.completion-panel{pointer-events:auto;width:min(100%,320px);background:rgba(255,255,255,.968);border:1px solid #dceae7;border-radius:15px;box-shadow:0 12px 34px rgba(20,65,68,.13),0 2px 8px rgba(20,65,68,.04);padding:13px 13px 12px;text-align:center;opacity:0;transform:translateY(10px) scale(.985);transition:opacity .25s ease,transform .28s cubic-bezier(.2,.75,.2,1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);}
+.completion.show .completion-panel{opacity:1;transform:translateY(0) scale(1);}
+.completion-symbol{display:none;}
+.completion-symbol svg{display:block;width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round;stroke-linecap:square;}
+.completion-symbol svg path{stroke-width:2;}
+.completion-eyebrow{font-size:11px;letter-spacing:.13em;font-weight:790;color:#2c6269;}
+.completion-sub{font-size:10px;margin-top:4px;color:#84999b;font-weight:560;}
+.completion-actions{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:9px;margin-top:12px;}
+.completion-actions button{height:45px;min-width:0;border-radius:11px;font-size:12px;font-weight:720;touch-action:manipulation;}
+.completion-next{background:#0d9299;color:white;box-shadow:0 3px 10px rgba(13,146,153,.16);}
+.completion-next:active{background:#087c83;transform:scale(.985);}
+.completion-next span{font-size:18px;vertical-align:-1px;margin-left:6px;font-weight:500;}
+.completion-retry{background:#f4f8f6;color:#55757b;border:1px solid #e2ece9;}
+.completion-retry:active{background:#e7f2ee;transform:scale(.985);}
+@media(prefers-reduced-motion:reduce){.completion-panel{transition:none;}}
+body.low-motion .completion-panel{transition:none;}
 </style>
 </head>
 <body>
@@ -209,10 +231,21 @@ body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:n
       <rect id="input" x="0" y="0" width="360" height="482" fill="transparent"/>
     </svg>
     <div id="toast" role="status" aria-live="polite"></div>
+    <div id="win" class="completion" hidden aria-live="polite">
+      <div class="completion-panel" role="group" aria-label="ステージクリア。次へ進むか、もう一度遊べます">
+        <div class="completion-symbol" aria-hidden="true"><svg viewBox="0 0 28 28"><rect x="5.5" y="5.5" width="17" height="17" rx="1" transform="rotate(-8 14 14)"/><path d="M9 14l3.2 3.4L19 10.9"/></svg></div>
+        <div class="completion-eyebrow">STAGE <span id="winStage">001</span> COMPLETE</div>
+        <div class="completion-sub" id="winSub">正方形をすべて発見</div>
+        <div class="completion-actions">
+          <button type="button" class="completion-next" id="next">次のステージ <span aria-hidden="true">›</span></button>
+          <button type="button" class="completion-retry" id="retry">もう一度</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="legendbar"><div class="legend"><span class="legenditem"><i class="mini-dot"></i>1回だけ</span><span class="legenditem"><i class="mini-dot multi"></i>2回以上</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="効果音をオフにする">音 ON</button><button id="hint" class="control" type="button">ヒント</button><button id="settings" class="control ellipsis" type="button" aria-label="設定" aria-expanded="false">···</button></div></div>
   <div class="options" id="options" hidden><button type="button" id="motion" aria-pressed="false">動き ON</button><button type="button" id="reset">やり直す</button></div>
-  <div class="win" id="win"><div><strong>すべての点がつながった</strong><span id="winSub">完成した模様を眺めよう</span></div><button type="button" id="next">次の問題へ ›</button></div>
+
 </section>
 <p class="guide" id="guide">1本指で移動 · 2本指で大きさと角度を変える</p>
 </main>
@@ -242,6 +275,7 @@ let lv=-1,level,dots,solutions,degree,found,used,foundOrder,shapes,shape,center,
 let pointers=new Map(),single=null,dual=null,snapLock=null,stampHidden=false,readyNow=false,frame=0,motionOff=saved.prefs.motion===undefined?!!(window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches):!!saved.prefs.motion;
 let fxTimeout=null,hintTimeout=null,toastTimeout=null,stageDone=new Set(),hintPoint=null,ctx=null,master=null,lastTick=-1,activeVoice=null,waitingSound=null,resumePromise=null,audioToken=0;
 let sound=saved.prefs.sound!==false;
+let completionTimer=null;
 for(let i=0;i<LEVELS.length;i++){if(Array.isArray(saved.boards[String(i)])&&saved.boards[String(i)].length===LEVELS[i].expected)stageDone.add(i)}
 document.body.classList.toggle('low-motion',motionOff);
 $('guide').hidden=!!saved.prefs.gestureSeen;
@@ -292,7 +326,23 @@ function drawFrame(){
  stamp.classList.toggle('locked',!!snapLock);
 }
 function requestDraw(){if(!frame)frame=requestAnimationFrame(drawFrame)}
-function refreshHeader(){const n=satisfied(),done=win();$('score').textContent=found.size;$('fulfilled').textContent=`${n} / ${level.points.length}`;$('fulfillBar').style.width=`${(100*n/level.points.length).toFixed(2)}%`;$('win').classList.toggle('show',done);$('winSub').textContent=`${found.size}個の正方形を発見`;$('next').textContent=lv===LEVELS.length-1?'最初の問題へ ›':'次の問題へ ›';}
+function refreshHeader(){const n=satisfied();$('score').textContent=found.size;$('fulfilled').textContent=`${n} / ${level.points.length}`;$('fulfillBar').style.width=`${(100*n/level.points.length).toFixed(2)}%`;$('wrap').classList.toggle('is-complete',win());$('winStage').textContent=String(lv+1).padStart(3,'0');$('winSub').textContent=`${found.size}個の正方形を発見`;$('next').innerHTML=lv===LEVELS.length-1?'最初のステージ <span aria-hidden="true">›</span>':'次のステージ <span aria-hidden="true">›</span>';}
+function hideCompletion(){clearTimeout(completionTimer);completionTimer=null;const panel=$('win');panel.classList.remove('show');panel.hidden=true;}
+function showCompletion(delay=0){
+ clearTimeout(completionTimer);completionTimer=null;
+ const stage=lv;
+ const reveal=()=>{
+  if(lv!==stage||!win())return;
+  const panel=$('win');panel.hidden=false;
+  const boardBox=$('wrap').getBoundingClientRect(),panelHeight=panel.querySelector('.completion-panel').offsetHeight;
+  const overflow=Math.max(0,boardBox.bottom+8-window.innerHeight);
+  // The puzzle still captures vertical gestures; keep actions inside the visible viewport.
+  panel.style.translate=`0 ${-Math.min(overflow,Math.max(0,boardBox.height-panelHeight-20))}px`;
+  // Delay class flip one frame so the panel slides in, except reduced motion.
+  requestAnimationFrame(()=>{if(lv===stage&&!panel.hidden)panel.classList.add('show');});
+ };
+ if(delay>0)completionTimer=setTimeout(reveal,delay);else reveal();
+}
 function rebuildPicker(){
  const start=pickerPage*25,end=Math.min(start+25,LEVELS.length);
  $('pageTitle').textContent=`${String(start+1).padStart(3,'0')} — ${String(end).padStart(3,'0')} / 500`;
@@ -385,36 +435,52 @@ function spawnFx(sq){
  for(const v of sq.points){const [x,y]=xy(v),d=5.7;fx.append(node('path',{class:'trace-corners',d:`M${(x-d).toFixed(2)} ${y.toFixed(2)}H${(x+d).toFixed(2)} M${x.toFixed(2)} ${(y-d).toFixed(2)}V${(y+d).toFixed(2)}`}));}
  fxTimeout=setTimeout(()=>fx.replaceChildren(),310);
 }
-function foundSquare(){if(stampHidden)return false;const snapped=snapCenter(center,shape),v=vertices(snapped,shape);if(dist(center,snapped)>.35||v.some(p=>!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);foundOrder.push(id);for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}center=snapped;snapLock=null;stampHidden=true;appendSquare(sq,true);spawnFx(sq);save();refreshDots();refreshHeader();rebuildPicker();audioEvent(win()?'complete':'found');if(win()){stageDone.add(lv);rebuildPicker();foundLayer.classList.remove('celebrate');void foundLayer.getBoundingClientRect();foundLayer.classList.add('celebrate');setTimeout(()=>foundLayer.classList.remove('celebrate'),1000);}requestDraw();return true;}
+function foundSquare(){if(stampHidden)return false;const snapped=snapCenter(center,shape),v=vertices(snapped,shape);if(dist(center,snapped)>.35||v.some(p=>!dots.has(key(p.x,p.y))))return false;const id=sqKey(v);if(found.has(id))return false;const sq=solutions.find(s=>s.id===id);if(!sq)return false;found.add(id);foundOrder.push(id);for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}center=snapped;snapLock=null;stampHidden=true;appendSquare(sq,true);spawnFx(sq);save();refreshDots();refreshHeader();rebuildPicker();audioEvent(win()?'complete':'found');if(win()){stageDone.add(lv);rebuildPicker();foundLayer.classList.remove('celebrate');void foundLayer.getBoundingClientRect();foundLayer.classList.add('celebrate');setTimeout(()=>foundLayer.classList.remove('celebrate'),1000);showCompletion(420);}requestDraw();return true;}
 function changeShape(s){if(s.a===shape.a&&s.b===shape.b)return;shape=s;center=clampCenter(center,shape);snapLock=null;audioEvent('shift');requestDraw();}
 function startSingle(){const [p]=pointers.values();single={p:{...p},c:{...center}};dual=null;}
 function startDual(){const [a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};dual={mid,center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),length:Math.max(.001,dist(a,b)),shape:{...shape}};single=null;}
 function contactsChanged(){if(pointers.size>=2){if(!dual)startDual();const[a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},angle=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(dual.shape.a,dual.shape.b)*clamp(dist(a,b)/dual.length,.15,14),turn=Math.atan2(dual.shape.b,dual.shape.a)+angle-dual.angle;const next=nearestShape(len,turn);if(next.a!==shape.a||next.b!==shape.b)changeShape(next);center=clampCenter({x:dual.center.x+mid.x-dual.mid.x,y:dual.center.y+mid.y-dual.mid.y},shape);
  }else if(pointers.size===1&&single){const [p]=pointers.values();center=clampCenter({x:single.c.x+p.x-single.p.x,y:single.c.y+p.y-single.p.y},shape);}requestDraw();}
-function inputStart(id,p){if(pointers.has(id)||win())return;makeAudio();if(!saved.prefs.gestureSeen){saved.prefs.gestureSeen=true;$('guide').hidden=true;persist();}if(stampHidden)stampHidden=false;pointers.set(id,p);if(pointers.size===1)startSingle();else if(pointers.size===2)startDual();requestDraw();}
+function inputStart(id,p){
+ if(pointers.has(id)||win())return;
+ makeAudio();
+ if(!saved.prefs.gestureSeen){saved.prefs.gestureSeen=true;$('guide').hidden=true;persist();}
+ // After a square is found, the next stamp must originate under the FIRST new
+ // finger, not at the location of the previously completed square.
+ // Preserve shape/size and the existing 1:1 drag & two-finger gesture behavior.
+ if(stampHidden&&pointers.size===0){
+  center=clampCenter(p,shape);
+  snapLock=null;
+  stampHidden=false;
+ }
+ pointers.set(id,p);
+ if(pointers.size===1)startSingle();else if(pointers.size===2)startDual();
+ requestDraw();
+}
 function inputMove(items){let updated=false;for(const[id,p]of items)if(pointers.has(id)){pointers.set(id,p);updated=true;}if(updated)contactsChanged();}
 function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;const lock=magnetCenter();const eligible=!!snapLock&&dist(lock,snapCenter(center,shape))<.01;center=snapCenter(center,shape);snapLock=null;if(!cancel&&eligible)foundSquare();}requestDraw();}
 function stopHint(){clearTimeout(hintTimeout);hintPoint=null;hintLayer.replaceChildren();}
 function showHint(){if(win()){toast('この問題はクリア済み');return;}const rest=level.points.filter(p=>!exhausted(key(...p)));const singles=rest.filter(p=>degreeOf(key(...p))===1),pool=singles.length?singles:rest;if(!pool.length)return;const p=pool[(found.size+lv)%pool.length];stopHint();hintPoint=p;const[x,y]=xy({x:p[0],y:p[1]});hintLayer.append(node('circle',{cx:x,cy:y,r:17,class:'hint-ring'}));toast('この点を含む正方形を探そう');hintTimeout=setTimeout(stopHint,2900);}
-function load(i,saveOld=true){if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;snapLock=null;stampHidden=false;
+function load(i,saveOld=true){hideCompletion();if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;snapLock=null;stampHidden=false;
  lv=(i+LEVELS.length)%LEVELS.length;level=LEVELS[lv];size();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);degree=new Map(level.points.map(p=>[key(...p),0]));for(const q of solutions)for(const p of q.points){const k=key(p.x,p.y);degree.set(k,degreeOf(k)+1);}
  const ids=new Set(solutions.map(s=>s.id)),row=saved.boards[String(lv)]||[];foundOrder=Array.isArray(row)?[...new Set(row.filter(id=>ids.has(id)))]:[];found=new Set(foundOrder);used=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)if(found.has(sq.id))for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}
  if(win())stageDone.add(lv);else stageDone.delete(lv);
  shapes=allShapes(level.cols,level.rows);shape={a:3,b:0};center=snapCenter({x:(level.cols-1)/2,y:level.rows*.71},shape);snapLock=null;
  if(solutions.length!==level.expected||solutions.some(q=>!q.points.some(p=>degreeOf(key(p.x,p.y))<=2))||[...degree.values()].some(v=>v===0))console.error('Integrity error on level',lv+1);
  pickerPage=Math.floor(lv/25);$('stageIdx').textContent=String(lv+1).padStart(3,'0');$('stageText').textContent=`${level.points.length} POINTS · ${lv<3?'FIRST STEPS':lv<10?'DISCOVERY':lv<20?'EXPLORER':lv<50?'DISCOVERY':lv<200?'EXPLORER':lv<350?'FOCUS':'MASTER'}`;
- drawGrid();drawDots();drawFound();rebuildPicker();refreshHeader();saved.idx=lv;persist();requestDraw();}
+ drawGrid();drawDots();drawFound();rebuildPicker();refreshHeader();saved.idx=lv;persist();requestDraw();if(win())showCompletion();}
 // Touch events are captured only inside the puzzle, preserving normal page scrolling outside.
 const touchAvailable=('ontouchstart'in window)||navigator.maxTouchPoints>0;
-if(touchAvailable){svg.addEventListener('touchstart',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)inputStart('t'+t.identifier,screenPoint(t));},{passive:false});svg.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();inputMove([...e.touches].map(t=>['t'+t.identifier,screenPoint(t)]));},{passive:false});svg.addEventListener('touchend',e=>{if(e.cancelable)e.preventDefault();inputEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});svg.addEventListener('touchcancel',e=>{if(e.cancelable)e.preventDefault();inputEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
-svg.addEventListener('pointerdown',e=>{if(touchAvailable&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}inputStart('p'+e.pointerId,screenPoint(e));});svg.addEventListener('pointermove',e=>{if(pointers.has('p'+e.pointerId)){e.preventDefault();inputMove([['p'+e.pointerId,screenPoint(e)]])}});svg.addEventListener('pointerup',e=>{if(pointers.has('p'+e.pointerId)){e.preventDefault();inputEnd(['p'+e.pointerId])}});svg.addEventListener('pointercancel',e=>inputEnd(['p'+e.pointerId],true));svg.addEventListener('lostpointercapture',e=>inputEnd(['p'+e.pointerId],true));svg.addEventListener('contextmenu',e=>e.preventDefault());
-for(const n of ['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if($('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
-svg.addEventListener('wheel',e=>{e.preventDefault();const ordered=[...shapes].sort((a,b)=>Math.hypot(a.a,a.b)-Math.hypot(b.a,b.b)||a.b-b.b),j=ordered.findIndex(s=>s.a===shape.a&&s.b===shape.b);changeShape(ordered[(j+(e.deltaY>0?1:-1)+ordered.length)%ordered.length]);center=snapCenter(center,shape);requestDraw();},{passive:false});
+if(touchAvailable){svg.addEventListener('touchstart',e=>{if(win())return;if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)inputStart('t'+t.identifier,screenPoint(t));},{passive:false});svg.addEventListener('touchmove',e=>{if(win())return;if(e.cancelable)e.preventDefault();inputMove([...e.touches].map(t=>['t'+t.identifier,screenPoint(t)]));},{passive:false});svg.addEventListener('touchend',e=>{if(win())return;if(e.cancelable)e.preventDefault();inputEnd([...e.changedTouches].map(t=>'t'+t.identifier));},{passive:false});svg.addEventListener('touchcancel',e=>{if(win())return;if(e.cancelable)e.preventDefault();inputEnd([...e.changedTouches].map(t=>'t'+t.identifier),true);},{passive:false});}
+svg.addEventListener('pointerdown',e=>{if(win())return;if(touchAvailable&&e.pointerType==='touch')return;if(e.pointerType==='mouse'&&e.button!==0)return;e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}inputStart('p'+e.pointerId,screenPoint(e));});svg.addEventListener('pointermove',e=>{if(pointers.has('p'+e.pointerId)){e.preventDefault();inputMove([['p'+e.pointerId,screenPoint(e)]])}});svg.addEventListener('pointerup',e=>{if(pointers.has('p'+e.pointerId)){e.preventDefault();inputEnd(['p'+e.pointerId])}});svg.addEventListener('pointercancel',e=>inputEnd(['p'+e.pointerId],true));svg.addEventListener('lostpointercapture',e=>inputEnd(['p'+e.pointerId],true));svg.addEventListener('contextmenu',e=>e.preventDefault());
+for(const n of ['gesturestart','gesturechange','gestureend'])document.addEventListener(n,e=>{if(!win()&&$('wrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
+svg.addEventListener('wheel',e=>{if(win())return;e.preventDefault();const ordered=[...shapes].sort((a,b)=>Math.hypot(a.a,a.b)-Math.hypot(b.a,b.b)||a.b-b.b),j=ordered.findIndex(s=>s.a===shape.a&&s.b===shape.b);changeShape(ordered[(j+(e.deltaY>0?1:-1)+ordered.length)%ordered.length]);center=snapCenter(center,shape);requestDraw();},{passive:false});
 $('choose').addEventListener('click',()=>{const picker=$('picker');picker.hidden=!picker.hidden;if(!picker.hidden){pickerPage=Math.floor(lv/25);rebuildPicker();}$('choose').setAttribute('aria-expanded',String(!picker.hidden));});
 $('pagePrev').addEventListener('click',()=>{pickerPage=Math.max(0,pickerPage-1);rebuildPicker();});
 $('pageNext').addEventListener('click',()=>{pickerPage=Math.min(19,pickerPage+1);rebuildPicker();});
 $('stageGrid').addEventListener('click',e=>{const b=e.target.closest('button[data-stage]');if(!b)return;load(+b.dataset.stage);$('picker').hidden=true;$('choose').setAttribute('aria-expanded','false');});
-$('prev').addEventListener('click',()=>load(lv-1));$('nextStage').addEventListener('click',()=>load(lv+1));$('next').addEventListener('click',()=>load(lv+1));
+function revealStageTop(){window.scrollTo(0,0);requestAnimationFrame(()=>window.scrollTo(0,0));}
+$('prev').addEventListener('click',()=>load(lv-1));$('nextStage').addEventListener('click',()=>load(lv+1));$('next').addEventListener('click',()=>{load(lv+1);revealStageTop();});$('retry').addEventListener('click',()=>{saved.boards[String(lv)]=[];stageDone.delete(lv);persist();load(lv,false);revealStageTop();});
 $('settings').addEventListener('click',()=>{const o=$('options');o.hidden=!o.hidden;$('settings').setAttribute('aria-expanded',String(!o.hidden));});
 $('hint').addEventListener('click',showHint);
 $('sound').addEventListener('click',()=>{sound=!sound;resetAudio();saved.prefs.sound=sound;updateSoundButton();persist();if(sound)audioEvent('confirm');});
