@@ -1,12 +1,12 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f5f8f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SQUARE SNAP — 500 PUZZLES</title>
+<title>SQUARE SNAP — 500 PUZZLES v8.8</title>
 <style>
 :root{color-scheme:light;--paper:#fff;--bg:#f5f8f7;--ink:#293f46;--muted:#83979c;--cyan:#0c9ba4;--cyan-deep:#087f88;--grid:#e8efef;--silk:#d8e6e5;--gold:#c79b65}
 *{box-sizing:border-box}
@@ -77,6 +77,7 @@ button:focus-visible{outline:3px solid #74bec2;outline-offset:3px}
 .control.ellipsis{width:36px;font-size:18px;line-height:1;padding:6px}
 .guide{font-size:10px;text-align:center;color:#a1b1b2;letter-spacing:.025em;margin:12px 0 3px;font-weight:570}
 .options{display:flex;gap:8px;justify-content:space-between;margin:9px 3px 0;padding:10px;background:#f8fbfa;border:1px solid #eaf0ef;border-radius:12px}
+.options .version-check{align-self:center;color:#849c9b;font-size:10px;letter-spacing:.05em;white-space:nowrap}
 .options button{flex:1;min-height:38px;background:white;border:1px solid #e3eeec;border-radius:9px;font-size:11px;font-weight:740;color:#5a777e}
 .win{display:none;align-items:center;justify-content:space-between;gap:10px;padding:13px;margin:10px 2px 0;background:linear-gradient(115deg,#f1faf8,#fdfcfa);border:1px solid #cfe9e3;border-radius:13px}
 .win.show{display:flex}
@@ -209,17 +210,22 @@ body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:n
 .completion-retry:active{background:#e7f2ee;transform:scale(.985);}
 @media(prefers-reduced-motion:reduce){.completion-panel{transition:none;}}
 body.low-motion .completion-panel{transition:none;}
+/* English controls stay legible even on narrow iPhones. */
+.legend{gap:11px}
+.legenditem{gap:5px}
+.sound-toggle{min-width:68px;padding-left:8px;padding-right:8px;font-size:10px}
+@media(max-width:370px){.legendbar{padding-left:7px;padding-right:7px}.legend{gap:8px}.controls{gap:4px}.control{padding-left:8px;padding-right:8px}.sound-toggle{min-width:62px;font-size:9px}}
 </style>
 </head>
 <body>
 <main class="shell">
 <header class="brandbar"><div class="wordmark"><span class="brandmark" aria-hidden="true"></span>SQUARE SNAP</div></header>
-<nav class="pager" aria-label="ステージ切り替え"><button id="prev" aria-label="前の問題" type="button">‹</button><button id="choose" class="choose" type="button" aria-expanded="false">STAGE <b id="stageIdx">001</b> <span>/ 500 ⌄</span></button><button id="nextStage" aria-label="次の問題" type="button">›</button></nav>
-<section id="picker" class="picker" hidden><div class="pickerhead"><span>STAGE SELECT</span><span id="pickerProgress">0 / 500 CLEAR</span></div><div class="picker-nav"><button id="pagePrev" type="button" aria-label="前の25問">‹</button><span id="pageTitle">001 — 025</span><button id="pageNext" type="button" aria-label="次の25問">›</button></div><div class="stagegrid" id="stageGrid"></div><div class="picker-foot">25問ずつ表示 · 前後の矢印で移動</div></section>
-<section class="paper" aria-label="隠れた正方形パズル">
-  <header class="dashboard"><div class="dashboardtop"><div><h1 class="sr-only">隠れた正方形</h1><div class="eyebrow" id="stageText">28 POINTS</div></div><div class="foundcount"><strong id="score">0</strong><span>SQUARES</span></div></div><div class="smallprogress"><span>使い切った点</span><strong id="fulfilled">0 / 28</strong></div><div class="progress-track"><div id="fulfillBar" class="progress-fill"></div></div></header>
+<nav class="pager" aria-label="Stage navigation"><button id="prev" aria-label="Previous puzzle" type="button">‹</button><button id="choose" class="choose" type="button" aria-expanded="false">STAGE <b id="stageIdx">001</b> <span>/ 500 ⌄</span></button><button id="nextStage" aria-label="Next puzzle" type="button">›</button></nav>
+<section id="picker" class="picker" hidden><div class="pickerhead"><span>STAGE SELECT</span><span id="pickerProgress">0 / 500 CLEAR</span></div><div class="picker-nav"><button id="pagePrev" type="button" aria-label="Previous 25 puzzles">‹</button><span id="pageTitle">001 — 025</span><button id="pageNext" type="button" aria-label="Next 25 puzzles">›</button></div><div class="stagegrid" id="stageGrid"></div><div class="picker-foot">25 STAGES PER PAGE</div></section>
+<section class="paper" aria-label="Hidden squares puzzle">
+  <header class="dashboard"><div class="dashboardtop"><div><h1 class="sr-only">SQUARE SNAP</h1><div class="eyebrow" id="stageText">28 POINTS</div></div><div class="foundcount"><strong id="score">0</strong><span>FOUND</span></div></div><div class="smallprogress"><span>POINTS COMPLETE</span><strong id="fulfilled">0 / 28</strong></div><div class="progress-track"><div id="fulfillBar" class="progress-fill"></div></div></header>
   <div class="boardwrap" id="wrap">
-    <svg id="board" viewBox="0 0 360 482" aria-label="1本指で正方形を移動、2本指で拡大と回転をするパズル">
+    <svg id="board" viewBox="0 0 360 482" aria-label="Move the square with one finger, resize and rotate with two fingers">
       <rect width="360" height="482" fill="#fcfefd"/>
       <g id="lattice" pointer-events="none"></g>
       <g id="foundLayer" pointer-events="none"></g>
@@ -232,22 +238,22 @@ body.low-motion .completion-panel{transition:none;}
     </svg>
     <div id="toast" role="status" aria-live="polite"></div>
     <div id="win" class="completion" hidden aria-live="polite">
-      <div class="completion-panel" role="group" aria-label="ステージクリア。次へ進むか、もう一度遊べます">
+      <div class="completion-panel" role="group" aria-label="Stage complete. Next stage or replay">
         <div class="completion-symbol" aria-hidden="true"><svg viewBox="0 0 28 28"><rect x="5.5" y="5.5" width="17" height="17" rx="1" transform="rotate(-8 14 14)"/><path d="M9 14l3.2 3.4L19 10.9"/></svg></div>
         <div class="completion-eyebrow">STAGE <span id="winStage">001</span> COMPLETE</div>
-        <div class="completion-sub" id="winSub">正方形をすべて発見</div>
+        <div class="completion-sub" id="winSub">ALL SQUARES FOUND</div>
         <div class="completion-actions">
-          <button type="button" class="completion-next" id="next">次のステージ <span aria-hidden="true">›</span></button>
-          <button type="button" class="completion-retry" id="retry">もう一度</button>
+          <button type="button" class="completion-next" id="next">NEXT <span aria-hidden="true">›</span></button>
+          <button type="button" class="completion-retry" id="retry">REPLAY</button>
         </div>
       </div>
     </div>
   </div>
-  <div class="legendbar"><div class="legend"><span class="legenditem"><i class="mini-dot"></i>1回だけ</span><span class="legenditem"><i class="mini-dot multi"></i>2回以上</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="効果音をオフにする">音 ON</button><button id="hint" class="control" type="button">ヒント</button><button id="settings" class="control ellipsis" type="button" aria-label="設定" aria-expanded="false">···</button></div></div>
-  <div class="options" id="options" hidden><button type="button" id="motion" aria-pressed="false">動き ON</button><button type="button" id="reset">やり直す</button></div>
+  <div class="legendbar"><div class="legend"><span class="legenditem" aria-label="Point in one square"><i class="mini-dot"></i>1×</span><span class="legenditem" aria-label="Point in two or more squares"><i class="mini-dot multi"></i>2×+</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="Turn sound off">SOUND ON</button><button id="hint" class="control" type="button">HINT</button><button id="settings" class="control ellipsis" type="button" aria-label="Settings" aria-expanded="false">···</button></div></div>
+  <div class="options" id="options" hidden><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v8.8</span></div>
 
 </section>
-<p class="guide" id="guide">1本指で移動 · 2本指で大きさと角度を変える</p>
+<p class="guide" id="guide">DRAG ANYWHERE TO MOVE · PINCH & TWIST</p>
 </main>
 <script>
 (()=>{'use strict';
@@ -280,7 +286,7 @@ for(let i=0;i<LEVELS.length;i++){if(Array.isArray(saved.boards[String(i)])&&save
 document.body.classList.toggle('low-motion',motionOff);
 $('guide').hidden=!!saved.prefs.gestureSeen;
 updateSoundButton();
-$('motion').textContent=motionOff?'動き OFF':'動き ON';$('motion').setAttribute('aria-pressed',String(!motionOff));
+$('motion').textContent=motionOff?'MOTION OFF':'MOTION ON';$('motion').setAttribute('aria-pressed',String(!motionOff));
 function persist(){try{localStorage.setItem(STORAGE,JSON.stringify(saved))}catch(_){}}
 function size(){step=Math.min(318/(level.cols-1),416/(level.rows-1));ox=(VW-step*(level.cols-1))/2;oy=(VH-step*(level.rows-1))/2;}
 function xy(p){return [ox+p.x*step,oy+p.y*step]}
@@ -293,6 +299,15 @@ function snapCenter(c,s){const corner=vertices({x:0,y:0},s)[0];return clampCente
 function latticeCandidate(c,s){return vertices(snapCenter(c,s),s)}
 function screenPoint(e){const r=svg.getBoundingClientRect();return{x:((e.clientX-r.left)*VW/r.width-ox)/step,y:((e.clientY-r.top)*VH/r.height-oy)/step};}
 function nearestShape(length,angle){const quarter=Math.PI/2,theta=((angle+Math.PI/4)%quarter+quarter)%quarter-Math.PI/4,ta=Math.max(.01,length)*Math.cos(theta),tb=Math.max(.01,length)*Math.sin(theta);let best=shape,d=Infinity;for(const s of shapes){const sc=(s.a-ta)**2+(s.b-tb)**2;if(sc<d){best=s;d=sc;}}const current=(shape.a-ta)**2+(shape.b-tb)**2;return current<=d+.38?shape:best;}
+// Small stamps use the same 360x482 board but a finer, direct input ratio.
+// The SVG already captures input across the entire board; this is NOT a hit-area hack.
+// A compact square gets a larger neutral grid catch radius, independent of answers.
+function smallStamp(s=shape){
+ const rect=svg.getBoundingClientRect();
+ const pxPerUnit=step*(rect.width||VW)/VW;
+ return Math.hypot(s.a,s.b)*pxPerUnit<=42;
+}
+function moveRatio(s=shape){return smallStamp(s)?.72:1;}
 function degreeOf(k){return degree.get(k)||0}
 function exhausted(k){return (used.get(k)||0)>=degreeOf(k)}
 function satisfied(){let n=0;for(const p of level.points)if(exhausted(key(...p)))n++;return n}
@@ -307,9 +322,9 @@ function appendSquare(sq,animate=false){const {giant}=sqShade(sq),c=giant?'#afa1
 function drawFound(){foundLayer.replaceChildren();for(const id of foundOrder){const sq=solutions.find(s=>s.id===id);if(sq)appendSquare(sq);}}
 // Immediate cursor feedback. Any lattice point may attract the stamp; never only correct answers.
 function magnetCenter(){
- if(snapLock){if(dist(center,snapLock)<=.57)return snapLock;snapLock=null;}
+ if(snapLock){if(dist(center,snapLock)<=(smallStamp()?.59:.57))return snapLock;snapLock=null;}
  const p=snapCenter(center,shape);
- if(dist(center,p)<=.33){snapLock={...p};return snapLock;}
+ if(dist(center,p)<=(smallStamp()?.41:.33)){snapLock={...p};return snapLock;}
  return center;
 }
 function drawFrame(){
@@ -326,7 +341,7 @@ function drawFrame(){
  stamp.classList.toggle('locked',!!snapLock);
 }
 function requestDraw(){if(!frame)frame=requestAnimationFrame(drawFrame)}
-function refreshHeader(){const n=satisfied();$('score').textContent=found.size;$('fulfilled').textContent=`${n} / ${level.points.length}`;$('fulfillBar').style.width=`${(100*n/level.points.length).toFixed(2)}%`;$('wrap').classList.toggle('is-complete',win());$('winStage').textContent=String(lv+1).padStart(3,'0');$('winSub').textContent=`${found.size}個の正方形を発見`;$('next').innerHTML=lv===LEVELS.length-1?'最初のステージ <span aria-hidden="true">›</span>':'次のステージ <span aria-hidden="true">›</span>';}
+function refreshHeader(){const n=satisfied();$('score').textContent=found.size;$('fulfilled').textContent=`${n} / ${level.points.length}`;$('fulfillBar').style.width=`${(100*n/level.points.length).toFixed(2)}%`;$('wrap').classList.toggle('is-complete',win());$('winStage').textContent=String(lv+1).padStart(3,'0');$('winSub').textContent=`${found.size} SQUARE${found.size===1?'':'S'} FOUND`;$('next').innerHTML=lv===LEVELS.length-1?'STAGE 001 <span aria-hidden="true">›</span>':'NEXT <span aria-hidden="true">›</span>';}
 function hideCompletion(){clearTimeout(completionTimer);completionTimer=null;const panel=$('win');panel.classList.remove('show');panel.hidden=true;}
 function showCompletion(delay=0){
  clearTimeout(completionTimer);completionTimer=null;
@@ -351,7 +366,7 @@ function rebuildPicker(){
  $('pageNext').disabled=end>=LEVELS.length;
  $('stageGrid').innerHTML=LEVELS.slice(start,end).map((l,j)=>{
    const i=start+j,rec=saved.boards[String(i)]||[],done=stageDone.has(i);
-   return `<button class="stagebtn ${lv===i?'current':''} ${done?'done':rec.length?'partial':''}" data-stage="${i}" type="button" aria-label="問題${i+1}${done?'クリア済み':''}">${String(i+1).padStart(3,'0')}</button>`;
+   return `<button class="stagebtn ${lv===i?'current':''} ${done?'done':rec.length?'partial':''}" data-stage="${i}" type="button" aria-label="Stage ${i+1}${done?' completed':''}">${String(i+1).padStart(3,'0')}</button>`;
  }).join('');
 }
 function save(){if(lv<0)return;saved.boards[String(lv)]=[...foundOrder];saved.idx=lv;persist()}
@@ -359,8 +374,8 @@ function toast(message){const e=$('toast');clearTimeout(toastTimeout);e.textCont
 // A single quiet voice at a time. On iOS a suspended/interrupted context must
 // be resumed from a direct user gesture. The visible toggle can rebuild it.
 function updateSoundButton(){
- const b=$('sound');b.textContent=sound?'音 ON':'音 OFF';b.setAttribute('aria-pressed',String(sound));
- b.setAttribute('aria-label',sound?'効果音オン。タップでオフ':'効果音オフ。タップで再開し、確認音を鳴らす');
+ const b=$('sound');b.textContent=sound?'SOUND ON':'SOUND OFF';b.setAttribute('aria-pressed',String(sound));
+ b.setAttribute('aria-label',sound?'Sound on. Tap to mute':'Sound off. Tap to resume and test');
  b.classList.toggle('is-off',!sound);
 }
 function stopVoice(){
@@ -439,20 +454,36 @@ function foundSquare(){if(stampHidden)return false;const snapped=snapCenter(cent
 function changeShape(s){if(s.a===shape.a&&s.b===shape.b)return;shape=s;center=clampCenter(center,shape);snapLock=null;audioEvent('shift');requestDraw();}
 function startSingle(){const [p]=pointers.values();single={p:{...p},c:{...center}};dual=null;}
 function startDual(){const [a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};dual={mid,center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),length:Math.max(.001,dist(a,b)),shape:{...shape}};single=null;}
-function contactsChanged(){if(pointers.size>=2){if(!dual)startDual();const[a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},angle=Math.atan2(b.y-a.y,b.x-a.x),len=Math.hypot(dual.shape.a,dual.shape.b)*clamp(dist(a,b)/dual.length,.15,14),turn=Math.atan2(dual.shape.b,dual.shape.a)+angle-dual.angle;const next=nearestShape(len,turn);if(next.a!==shape.a||next.b!==shape.b)changeShape(next);center=clampCenter({x:dual.center.x+mid.x-dual.mid.x,y:dual.center.y+mid.y-dual.mid.y},shape);
- }else if(pointers.size===1&&single){const [p]=pointers.values();center=clampCenter({x:single.c.x+p.x-single.p.x,y:single.c.y+p.y-single.p.y},shape);}requestDraw();}
+function contactsChanged(){if(pointers.size>=2){if(!dual)startDual();const[a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},angle=Math.atan2(b.y-a.y,b.x-a.x),len=smallStamp(dual.shape)?Math.max(.01,Math.hypot(dual.shape.a,dual.shape.b)+(dist(a,b)-dual.length)*.78):Math.hypot(dual.shape.a,dual.shape.b)*clamp(dist(a,b)/dual.length,.15,14),turn=Math.atan2(dual.shape.b,dual.shape.a)+angle-dual.angle;const next=nearestShape(len,turn);if(next.a!==shape.a||next.b!==shape.b)changeShape(next);center=clampCenter({x:dual.center.x+mid.x-dual.mid.x,y:dual.center.y+mid.y-dual.mid.y},shape);
+ }else if(pointers.size===1&&single){const [p]=pointers.values();center=clampCenter({x:single.c.x+(p.x-single.p.x)*moveRatio(),y:single.c.y+(p.y-single.p.y)*moveRatio()},shape);}requestDraw();}
+// Touch-to-respawn: the previous square may be so large that clampCenter()
+// forces its center back to the old place, even when a different spot is tapped.
+// Choose the closest-to-previous legal shape that CAN actually live under this
+// touch. This is purely geometric: no hidden solution data or answer snapping.
+function respawnAt(p){
+ const target={x:clamp(p.x,0,level.cols-1),y:clamp(p.y,0,level.rows-1)};
+ let nextCenter=clampCenter(target,shape);
+ if(dist(nextCenter,target)>.58){
+  const oldLength=Math.hypot(shape.a,shape.b),oldAngle=Math.atan2(shape.b,shape.a);
+  let choice=shape,best=Infinity;
+  for(const s of shapes){
+   const c=clampCenter(target,s),miss=dist(target,c);
+   const len=Math.hypot(s.a,s.b),angle=Math.atan2(s.b,s.a);
+   const err=miss*1000+Math.abs(len-oldLength)*2+Math.abs(angle-oldAngle)*2;
+   if(err<best){best=err;choice=s;nextCenter=c;}
+  }
+  shape=choice;
+ }
+ center=nextCenter;
+ snapLock=null;
+ stampHidden=false;
+}
 function inputStart(id,p){
  if(pointers.has(id)||win())return;
  makeAudio();
  if(!saved.prefs.gestureSeen){saved.prefs.gestureSeen=true;$('guide').hidden=true;persist();}
- // After a square is found, the next stamp must originate under the FIRST new
- // finger, not at the location of the previously completed square.
- // Preserve shape/size and the existing 1:1 drag & two-finger gesture behavior.
- if(stampHidden&&pointers.size===0){
-  center=clampCenter(p,shape);
-  snapLock=null;
-  stampHidden=false;
- }
+ // A newly discovered square must never constrain where the next gesture starts.
+ if(stampHidden&&pointers.size===0)respawnAt(p);
  pointers.set(id,p);
  if(pointers.size===1)startSingle();else if(pointers.size===2)startDual();
  requestDraw();
@@ -460,7 +491,7 @@ function inputStart(id,p){
 function inputMove(items){let updated=false;for(const[id,p]of items)if(pointers.has(id)){pointers.set(id,p);updated=true;}if(updated)contactsChanged();}
 function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;const lock=magnetCenter();const eligible=!!snapLock&&dist(lock,snapCenter(center,shape))<.01;center=snapCenter(center,shape);snapLock=null;if(!cancel&&eligible)foundSquare();}requestDraw();}
 function stopHint(){clearTimeout(hintTimeout);hintPoint=null;hintLayer.replaceChildren();}
-function showHint(){if(win()){toast('この問題はクリア済み');return;}const rest=level.points.filter(p=>!exhausted(key(...p)));const singles=rest.filter(p=>degreeOf(key(...p))===1),pool=singles.length?singles:rest;if(!pool.length)return;const p=pool[(found.size+lv)%pool.length];stopHint();hintPoint=p;const[x,y]=xy({x:p[0],y:p[1]});hintLayer.append(node('circle',{cx:x,cy:y,r:17,class:'hint-ring'}));toast('この点を含む正方形を探そう');hintTimeout=setTimeout(stopHint,2900);}
+function showHint(){if(win()){toast('ALREADY COMPLETE');return;}const rest=level.points.filter(p=>!exhausted(key(...p)));const singles=rest.filter(p=>degreeOf(key(...p))===1),pool=singles.length?singles:rest;if(!pool.length)return;const p=pool[(found.size+lv)%pool.length];stopHint();hintPoint=p;const[x,y]=xy({x:p[0],y:p[1]});hintLayer.append(node('circle',{cx:x,cy:y,r:17,class:'hint-ring'}));toast('TRY THIS POINT');hintTimeout=setTimeout(stopHint,2900);}
 function load(i,saveOld=true){hideCompletion();if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;snapLock=null;stampHidden=false;
  lv=(i+LEVELS.length)%LEVELS.length;level=LEVELS[lv];size();dots=new Set(level.points.map(p=>key(...p)));solutions=detect(level.points);degree=new Map(level.points.map(p=>[key(...p),0]));for(const q of solutions)for(const p of q.points){const k=key(p.x,p.y);degree.set(k,degreeOf(k)+1);}
  const ids=new Set(solutions.map(s=>s.id)),row=saved.boards[String(lv)]||[];foundOrder=Array.isArray(row)?[...new Set(row.filter(id=>ids.has(id)))]:[];found=new Set(foundOrder);used=new Map(level.points.map(p=>[key(...p),0]));for(const sq of solutions)if(found.has(sq.id))for(const p of sq.points){const k=key(p.x,p.y);used.set(k,(used.get(k)||0)+1);}
@@ -484,9 +515,9 @@ $('prev').addEventListener('click',()=>load(lv-1));$('nextStage').addEventListen
 $('settings').addEventListener('click',()=>{const o=$('options');o.hidden=!o.hidden;$('settings').setAttribute('aria-expanded',String(!o.hidden));});
 $('hint').addEventListener('click',showHint);
 $('sound').addEventListener('click',()=>{sound=!sound;resetAudio();saved.prefs.sound=sound;updateSoundButton();persist();if(sound)audioEvent('confirm');});
-$('motion').addEventListener('click',()=>{motionOff=!motionOff;saved.prefs.motion=motionOff;document.body.classList.toggle('low-motion',motionOff);$('motion').textContent=motionOff?'動き OFF':'動き ON';$('motion').setAttribute('aria-pressed',String(!motionOff));persist();requestDraw();});
-$('reset').addEventListener('click',()=>{saved.boards[String(lv)]=[];stageDone.delete(lv);persist();load(lv,false);toast('最初から');$('options').hidden=true;$('settings').setAttribute('aria-expanded','false');});
-window.__SQUARE_SNAP_TEST__={state:solveInfo,load,boards:LEVELS.length,magnet:()=>({lock:snapLock,center,shape,visible:magnetCenter()}),testSolve:()=>{for(const sq of solutions){if(found.has(sq.id))continue;const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s=shapes.find(s=>sqKey(vertices(c,s))===sq.id);if(!s)throw Error('Square unreachable: '+sq.id);shape={...s};center=c;stampHidden=false;if(!foundSquare())throw Error('Square failed: '+sq.id);}return solveInfo();},setShape:(a,b)=>{const s=shapes.find(s=>s.a===a&&s.b===b);if(s){shape=s;center=snapCenter(center,s);requestDraw();}return !!s;},setCenter:(x,y)=>{center=clampCenter({x,y},shape);requestDraw();},getRenderStats:()=>({dotElements:dotsLayer.childElementCount,gridElements:scene.childElementCount,foundElements:foundLayer.childElementCount})};
+$('motion').addEventListener('click',()=>{motionOff=!motionOff;saved.prefs.motion=motionOff;document.body.classList.toggle('low-motion',motionOff);$('motion').textContent=motionOff?'MOTION OFF':'MOTION ON';$('motion').setAttribute('aria-pressed',String(!motionOff));persist();requestDraw();});
+$('reset').addEventListener('click',()=>{saved.boards[String(lv)]=[];stageDone.delete(lv);persist();load(lv,false);toast('STARTED OVER');$('options').hidden=true;$('settings').setAttribute('aria-expanded','false');});
+window.__SQUARE_SNAP_TEST__={state:solveInfo,load,boards:LEVELS.length,magnet:()=>({lock:snapLock,center,shape,visible:magnetCenter()}),testSolve:()=>{for(const sq of solutions){if(found.has(sq.id))continue;const c={x:sq.points.reduce((a,p)=>a+p.x,0)/4,y:sq.points.reduce((a,p)=>a+p.y,0)/4},s=shapes.find(s=>sqKey(vertices(c,s))===sq.id);if(!s)throw Error('Square unreachable: '+sq.id);shape={...s};center=c;stampHidden=false;if(!foundSquare())throw Error('Square failed: '+sq.id);}return solveInfo();},setShape:(a,b)=>{const s=shapes.find(s=>s.a===a&&s.b===b);if(s){shape=s;center=snapCenter(center,s);requestDraw();}return !!s;},setCenter:(x,y)=>{center=clampCenter({x,y},shape);requestDraw();},getInteraction:()=>({stampHidden,shape:{...shape},center:{...center},small:smallStamp(),moveRatio:moveRatio(),lock:snapLock&&{...snapLock},pointerCount:pointers.size}),getRenderStats:()=>({dotElements:dotsLayer.childElementCount,gridElements:scene.childElementCount,foundElements:foundLayer.childElementCount})};
 load(Number.isInteger(saved.idx)?clamp(saved.idx,0,LEVELS.length-1):0);
 })();
 </script>
