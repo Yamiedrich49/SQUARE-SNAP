@@ -1,61 +1,55 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#f7f9f8">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<title>CUBE SNAP — a 3D SQUARE SNAP experiment</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no"><meta name="theme-color" content="#f6f9f8"><meta name="apple-mobile-web-app-capable" content="yes"><title>CUBE SNAP — Spatial Discovery v0.2</title>
 <style>
-:root{--paper:#fff;--bg:#f7f9f8;--ink:#2a4248;--muted:#8aa0a4;--cyan:#0c969d;--deep:#087e85;--line:#e4eeec;--gold:#b98e58;--ease:cubic-bezier(.2,.7,.15,1)}
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;color:var(--ink);-webkit-text-size-adjust:100%}
-body{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer;color:inherit;border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:focus-visible{outline:3px solid #79c9c6;outline-offset:3px}[hidden]{display:none!important}
-.shell{max-width:472px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
-.brand{display:flex;align-items:center;justify-content:space-between;padding:4px 7px 15px}.brand-name{display:flex;align-items:center;gap:10px;font-weight:830;font-size:12px;letter-spacing:.16em}.mark{width:18px;height:18px;position:relative;transform:rotate(-14deg)}.mark:before,.mark:after{content:'';position:absolute;width:13px;height:13px;border:1.7px solid var(--cyan);border-radius:1px}.mark:after{transform:translate(4px,-4px);opacity:.48}.brand-ver{font-size:9px;color:#a5b3b5;font-weight:750;letter-spacing:.12em}
-.pager{display:grid;grid-template-columns:46px 1fr 46px;gap:8px;margin-bottom:9px}.pager button{height:43px;border-radius:12px;border:1px solid #e2eae8;background:white;box-shadow:0 2px 7px #31585a08}.pager button:active{transform:scale(.97);background:#eaf5f4}.pager .arrow{font-size:23px;color:#76979a}.stage-pick{font-size:12px;font-weight:780;letter-spacing:.11em;color:#3c757b}.stage-pick small{color:#9eb1b2;font-size:10px;letter-spacing:.04em}
-.level-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;background:white;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;padding:9px}.level-picker button{height:37px;border-radius:8px;border:1px solid #eaf0ee;background:#f8fbfa;font-size:11px;font-weight:700}.level-picker button.active{border:1px solid var(--cyan);color:var(--deep)}.level-picker button.completed{background:#e7f5f1;color:var(--deep)}
-.paper{border:1px solid #e2ecea;background:white;border-radius:19px;box-shadow:0 9px 31px #21494709;padding:0 8px 9px;overflow:hidden}
-.dashboard{padding:14px 12px 11px;display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:10px;letter-spacing:.15em;color:#91a7a9;font-weight:770}.headline{margin-top:5px;font-weight:700;font-size:14px;letter-spacing:-.02em}.found{display:flex;align-items:baseline;gap:7px}.found b{font-size:31px;color:var(--deep);font-weight:650;letter-spacing:-.06em;font-variant-numeric:tabular-nums}.found small{font-size:9px;color:#8da5a7;font-weight:800;letter-spacing:.11em}
-.progress-row{display:flex;justify-content:space-between;font-size:10px;font-weight:690;color:#95a8a9;margin:0 13px 6px}.progress-row strong{font-variant-numeric:tabular-nums;color:#6e9496}.track{height:3px;background:#ebf3f0;margin:0 13px 10px;border-radius:4px;overflow:hidden}.bar{height:100%;width:0;background:#0b9aa0;transition:width .22s ease}
-.board{width:100%;aspect-ratio:360/440;border-radius:11px;border:1px solid #edf1ef;background:radial-gradient(ellipse 90% 84% at 50% 45%,#fff 0%,#fafdfe 80%,#f5faf9 100%);position:relative;overflow:hidden;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-.board svg{display:block;width:100%;height:100%;pointer-events:all;touch-action:none;user-select:none;-webkit-user-select:none}.board svg *{touch-action:none;pointer-events:none}
-.board .depth{position:absolute;left:14px;bottom:12px;display:flex;align-items:center;gap:5px;font-size:9px;color:#b0bfc0;letter-spacing:.07em;pointer-events:none}.board .depth svg{width:35px;height:35px;overflow:visible}.board .depth span{margin-left:2px}
-.board-top{position:absolute;top:13px;left:0;right:0;text-align:center;pointer-events:none}.instruction{font-size:10.5px;font-weight:760;letter-spacing:.095em;color:#6d9698}.sequence{display:flex;justify-content:center;gap:6px;margin-top:9px}.sequence i{display:block;width:5px;height:5px;background:#dceae8;border-radius:50%;transition:background .15s,transform .15s}.sequence i.active{background:#119aa2;transform:scale(1.28)}
-.toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-5px);white-space:nowrap;border-radius:20px;background:#284d50de;color:white;padding:8px 13px;font-size:11px;font-weight:670;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:6}.toast.show{opacity:1;transform:translate(-50%,0)}
-.selection-line{stroke:#13a4a8;stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke}.selection-face{fill:#3cbeb7;fill-opacity:.09;stroke:#159ea6;stroke-width:1.9;vector-effect:non-scaling-stroke}.selected-ring{fill:none;stroke:#11a2a7;stroke-width:2;vector-effect:non-scaling-stroke}.selected-halo{fill:#a7e0da;fill-opacity:.20;stroke:none}.missing{fill:none;stroke:#c39362;stroke-width:2;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}.ghost-wire{fill:none;stroke:#c39362;stroke-width:1.9;stroke-dasharray:4 4;opacity:.78;vector-effect:non-scaling-stroke}.found-edge{stroke:#479da0;stroke-width:1.5;stroke-opacity:.52;vector-effect:non-scaling-stroke;stroke-linecap:round}.found-face{fill:#0b949b;fill-opacity:.025;stroke:none}.cube-flash{stroke:#0da9aa;stroke-width:2.8;stroke-linecap:round;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:trace .32s var(--ease) forwards;vector-effect:non-scaling-stroke}.dot{stroke:#fff;stroke-width:1.7;paint-order:stroke fill;transition:fill .2s}.dot.single{fill:#32474e}.dot.multi{fill:#0d969d}.dot.exhausted{fill:#bfcecd}.dot.selected{fill:#09848c}.dot.hint{fill:#b89565}.dot-shadow{fill:#4a818012;stroke:none}.axis-line{stroke:#e4edeb;stroke-width:1;vector-effect:non-scaling-stroke}.axis-floor{stroke:#eaf0ed;stroke-width:.8;vector-effect:non-scaling-stroke}.axis-corner{fill:#c5d5d2}
-@keyframes trace{to{stroke-dashoffset:0}}@keyframes pop{from{transform:scale(.6);opacity:.1}to{transform:scale(1);opacity:1}}
-.completion{position:absolute;left:13px;right:13px;bottom:25px;background:#fcfffeee;border:1px solid #cce8e0;box-shadow:0 15px 40px #22595123;border-radius:15px;padding:15px;z-index:7;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);transform:translateY(12px);opacity:0;transition:transform .23s ease,opacity .23s ease;pointer-events:none}
-.completion.show{opacity:1;transform:translateY(0);pointer-events:auto}.completion-title{font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--deep)}.completion-sub{font-size:10px;color:#8fa4a5;margin-top:5px}.completion-actions{display:grid;grid-template-columns:1fr 1.65fr;gap:9px;margin-top:13px}.completion-actions button{height:44px;border-radius:10px;font-size:12px;font-weight:760}.completion-actions .replay{background:#eaf5f3;color:#50797c}.completion-actions .next{background:#0e959d;color:white}
-.legendbar{padding:9px 10px 3px;display:flex;align-items:center;justify-content:space-between;gap:6px}.legend{display:flex;gap:10px;font-size:10px;font-weight:680;color:#74898c}.legend-item{display:flex;align-items:center;gap:5px}.mini-dot{width:9px;height:9px;border-radius:50%;background:#34484e;box-shadow:0 0 0 2px #e3eae9}.mini-dot.multi{background:#0c969d;box-shadow:0 0 0 2px #c7e7e2}.mini-dot.done{background:#bfcecd;box-shadow:0 0 0 2px #e9f1ef}
-.board-controls{display:flex;gap:6px}.board-controls button{height:34px;border:1px solid #e5eeec;background:#fafcfa;color:#69878b;font-weight:750;font-size:10px;border-radius:9px;padding:0 10px}.board-controls button:active{background:#e8f4f1}.board-controls button:disabled{opacity:.4}
-.guide{text-align:center;font-size:10px;color:#a3b3b4;letter-spacing:.02em;margin:14px 0 7px;font-weight:600}.credits{text-align:center;font-size:9px;letter-spacing:.085em;color:#bac5c5;padding-top:8px}
-@media(max-width:360px){.shell{padding-left:8px;padding-right:8px}.dashboard{padding-left:8px;padding-right:8px}.legend{gap:7px;font-size:9px}.board-controls button{padding:0 7px}.guide{margin-top:10px}}
+:root{color-scheme:light;--bg:#f6f9f8;--paper:#fff;--ink:#2a4249;--muted:#8da2a4;--cyan:#0b969d;--deep:#077c83;--line:#e4edeb;--tealsoft:#e5f4f1}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;-webkit-text-size-adjust:100%}body{-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;border:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:2px solid #53b8bd;outline-offset:3px}button:disabled{opacity:.35;cursor:default}[hidden]{display:none!important}
+.shell{max-width:472px;margin:0 auto;padding:calc(13px + env(safe-area-inset-top,0px)) 12px calc(20px + env(safe-area-inset-bottom,0px))}
+.brand{height:39px;display:flex;justify-content:space-between;align-items:flex-start;padding:5px 7px}.wordmark{display:flex;gap:10px;align-items:center;font-size:11px;letter-spacing:.16em;font-weight:850}.mark{width:15px;height:15px;position:relative;transform:rotate(-12deg);border:1.5px solid var(--cyan)}.mark:after{content:'';position:absolute;width:13px;height:13px;border:1px solid #94d4d2;left:4px;top:-5px}.version{font-size:9px;font-weight:750;letter-spacing:.1em;color:#abb8b9}
+.pager{display:grid;grid-template-columns:45px 1fr 45px;gap:9px;margin:0 0 10px}.pager button{height:42px;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #20404407}.arrow{font-size:22px;color:#85a1a2}.stage{font-size:11px;color:#507b80;letter-spacing:.12em;font-weight:800}.stage small{color:#9fb1b2;font-size:10px;letter-spacing:0}
+.picker{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;padding:10px;margin-bottom:10px;background:#fff;border:1px solid var(--line);border-radius:12px}.picker button{height:38px;background:#f8fbfa;border:1px solid #e9f0ee;border-radius:8px;font-size:11px;font-weight:700}.picker button.current{color:var(--deep);border-color:#25a6aa}.picker button.completed{background:#e8f5f1;color:var(--deep)}
+.paper{background:var(--paper);border:1px solid #e3ece9;border-radius:19px;padding:0 8px 12px;box-shadow:0 11px 35px #21494708;overflow:hidden}
+.dashboard{padding:15px 11px 10px;display:flex;justify-content:space-between;align-items:center}.overline{font-size:9px;letter-spacing:.145em;font-weight:800;color:#9baeb0}.subtitle{font-size:14px;letter-spacing:-.01em;font-weight:740;margin-top:4px}.found{display:flex;gap:6px;align-items:baseline}.found b{font-size:29px;color:var(--deep);font-weight:690;letter-spacing:-.06em;font-variant-numeric:tabular-nums}.found small{font-size:9px;letter-spacing:.1em;font-weight:780;color:#91a7a8}
+.progress{display:flex;justify-content:space-between;color:#96a9aa;font-size:10px;font-weight:680;margin:0 12px 7px}.progress b{color:#7c999a;font-variant-numeric:tabular-nums}.track{height:3px;background:#eaf2ef;border-radius:5px;margin:0 12px 10px;overflow:hidden}.fill{height:100%;width:0;background:#11a1a5;transition:width .18s}
+.board{position:relative;width:100%;aspect-ratio:360/450;background:radial-gradient(ellipse 80% 83% at 49% 46%,#fff 0%,#fcfefd 76%,#f5faf9 100%);border-radius:11px;border:1px solid #e8f0ee;overflow:hidden;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.board svg{display:block;width:100%;height:100%;touch-action:none}.board svg *{pointer-events:none;touch-action:none}
+.headline{position:absolute;top:15px;left:0;right:0;text-align:center;pointer-events:none;letter-spacing:.11em;font-size:10px;font-weight:730;color:#789fa1}.hintline{position:absolute;left:15px;bottom:12px;color:#acc0c0;font-size:9px;font-weight:680;letter-spacing:.08em;pointer-events:none}
+.floor{stroke:#e8efec;stroke-width:.8;fill:none;vector-effect:non-scaling-stroke}.floor-outer{stroke:#dae8e3;stroke-width:1;fill:none;vector-effect:non-scaling-stroke}.axis-pt{fill:#bbceca}
+.found-edge{stroke:#729da0;stroke-width:1.5;stroke-opacity:.55;stroke-linecap:round;vector-effect:non-scaling-stroke}.found-edge.giant{stroke:#b19872;stroke-opacity:.6}
+.ghost-face{fill:#14b5b1;fill-opacity:.055;stroke:none}.ghost-face.ready{fill:#12bbaa;fill-opacity:.125}.ghost-edge{stroke:#0d9299;stroke-width:1.75;stroke-linejoin:round;stroke-linecap:round;fill:none;opacity:.80;vector-effect:non-scaling-stroke}.ghost-edge.back{opacity:.35;stroke-dasharray:2.5 4}.ghost-edge.ready{stroke:#008b82;stroke-width:2.6;opacity:1}.ghost-handle{fill:#fff;stroke:#0a9b9c;stroke-width:2.1;vector-effect:non-scaling-stroke}.ghost-cross{stroke:#109c9e;stroke-width:1.2;vector-effect:non-scaling-stroke;stroke-linecap:round}.ghost-flash{fill:none;stroke:#17a6a2;stroke-width:2.2;stroke-dasharray:120;stroke-dashoffset:120;vector-effect:non-scaling-stroke;animation:trace .39s ease-out forwards}
+.dot{stroke:#fff;stroke-width:1.4;vector-effect:non-scaling-stroke}.dot.single{fill:#304951}.dot.multi{fill:#079ba3}.dot.exhausted{fill:#c0cecb}.dot.hinted{fill:#bf9b6d}
+@keyframes trace{to{stroke-dashoffset:0}}
+.depth{position:absolute;top:102px;right:9px;width:46px;height:264px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:3;touch-action:none;user-select:none;-webkit-user-select:none}
+.depth-name{font-size:9px;letter-spacing:.105em;font-weight:800;color:#879fa1;pointer-events:none}.depth-index{font-size:10px;font-weight:730;color:#0a8f95;letter-spacing:.02em;pointer-events:none;margin:7px 0}
+.depth-track{width:34px;flex:1;position:relative;display:flex;justify-content:center;touch-action:none;cursor:ns-resize;padding:15px 0}
+.depth-track:before{content:'';height:100%;width:2px;border-radius:3px;background:linear-gradient(180deg,#9dcdc8,#d8e9e6);display:block}
+.depth-thumb{position:absolute;left:50%;top:50%;width:22px;height:22px;background:white;border:2px solid #0b9a9f;border-radius:50%;box-shadow:0 2px 9px #1f717322;transform:translate(-50%,-50%);pointer-events:none;transition:top .09s}
+.depth-ticks{position:absolute;inset:15px 0;pointer-events:none}.depth-ticks i{position:absolute;display:block;width:8px;height:1px;left:12px;background:#bdd9d4;transform:translateY(-50%)}
+.depth button{width:28px;height:28px;flex-shrink:0;border-radius:9px;border:1px solid #e1efec;background:#fbfdfc;color:#108c91;font-weight:700;font-size:17px;line-height:1;box-shadow:0 1px 3px #1b47450b}
+.toast{position:absolute;top:49px;left:50%;transform:translate(-50%,-5px);padding:8px 14px;color:white;background:#2c5556e8;border-radius:30px;font-size:11px;font-weight:680;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s,transform .18s;z-index:6}.toast.show{opacity:1;transform:translate(-50%,0)}
+.completion{position:absolute;left:14px;right:14px;bottom:23px;background:#ffffffef;backdrop-filter:blur(13px);-webkit-backdrop-filter:blur(13px);border:1px solid #c7e5de;border-radius:15px;padding:16px;box-shadow:0 16px 40px #0d555022;z-index:7;opacity:0;transform:translateY(12px);transition:opacity .26s,transform .26s;pointer-events:none}.completion.show{opacity:1;transform:none;pointer-events:auto}.complete-title{font-size:13px;letter-spacing:.06em;font-weight:820;color:var(--deep)}.complete-sub{font-size:10px;margin-top:5px;color:#7e9a9a}.complete-actions{display:grid;grid-template-columns:1fr 1.65fr;gap:9px;margin-top:15px}.complete-actions button{height:44px;border-radius:10px;font-size:12px;font-weight:750}.replay{background:#eff6f3;color:#577e7b}.next{background:#0a979b;color:#fff}
+.shape-control{display:grid;grid-template-columns:39px minmax(0,1fr) 39px;align-items:center;gap:7px;margin:10px 3px 0;background:#f7faf9;border:1px solid #e9f1ef;border-radius:12px;padding:6px}.shape-control button{height:39px;border-radius:9px;background:#fff;border:1px solid #e0edeb;color:#39898b;font-size:22px;font-weight:450;line-height:1}.shape-center{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0}.shape-tag{font-size:9px;color:#8fa5a7;font-weight:760;letter-spacing:.13em}.shape-name{font-size:12px;color:#2b777b;font-weight:800;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+.footer{display:flex;align-items:center;justify-content:space-between;padding:11px 8px 0}.legend{display:flex;gap:9px;color:#779093;font-size:10px;font-weight:690}.legend-item{display:flex;gap:5px;align-items:center}.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;background:#344c52;box-shadow:0 0 0 2px #e6edec}.legend i.multi{background:#0c9ca3;box-shadow:0 0 0 2px #cce9e5}.legend i.done{background:#c0cecb;box-shadow:0 0 0 2px #eaf0ed}.actions{display:flex;gap:5px}.actions button{height:32px;border-radius:9px;background:#f9fbfa;border:1px solid var(--line);font-size:10px;font-weight:740;color:#67878a;padding:0 9px}
+.guide{text-align:center;padding:13px 0 0;font-size:10px;color:#9aadaf;font-weight:610;line-height:1.7}.credit{text-align:center;margin-top:10px;color:#c2cecc;font-size:9px;letter-spacing:.1em;font-weight:620}
+@media(max-width:360px){.shell{padding-left:8px;padding-right:8px}.paper{padding-left:5px;padding-right:5px}.dashboard{padding-left:8px;padding-right:8px}.depth{right:3px}.legend{gap:6px;font-size:9px}.actions button{padding:0 7px}.guide{font-size:9px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
-</head>
-<body>
+</style></head><body>
 <div class="shell">
-  <header class="brand"><div class="brand-name"><span class="mark"></span>CUBE SNAP</div><div class="brand-ver">3D EXPERIMENT · V0.1</div></header>
-  <nav class="pager"><button class="arrow" id="previous" aria-label="Previous stage">‹</button><button class="stage-pick" id="selectStage" aria-expanded="false">STAGE <span id="stageNum">01</span> <small>/ 24 ▾</small></button><button class="arrow" id="advance" aria-label="Next stage">›</button></nav>
-  <div class="level-picker" id="picker" hidden></div>
-  <main class="paper">
-    <div class="dashboard"><div><div class="eyebrow">FIND THE HIDDEN CUBES</div><div class="headline" id="subtitle">First cube</div></div><div class="found"><b id="foundCount">0</b><small>FOUND</small></div></div>
-    <div class="progress-row"><span>POINTS CLEARED</span><strong id="pointsProgress">0 / 8</strong></div><div class="track"><div class="bar" id="progressBar"></div></div>
-    <div class="board" id="boardWrap">
-      <svg id="canvas" viewBox="0 0 360 440" role="img" aria-label="Three-dimensional point cloud. Drag to orbit, tap four corners of one cube.">
-        <g id="gridLayer"></g><g id="foundLayer"></g><g id="previewLayer"></g><g id="dotLayer"></g><g id="effectLayer"></g>
-      </svg>
-      <div class="board-top"><div class="instruction" id="instruction">TAP A CORNER POINT</div><div class="sequence" id="sequence"><i></i><i></i><i></i><i></i></div></div>
-      <div class="toast" id="toast" aria-live="polite"></div>
-      <div class="depth" aria-hidden="true"><svg viewBox="0 0 42 42"><path d="M18 32L18 6" stroke="#9fc9c4" stroke-width="1.5"/><path d="M18 32L38 22" stroke="#c3cecb" stroke-width="1.5"/><path d="M18 32L4 21" stroke="#a8d1cf" stroke-width="1.5"/><circle cx="18" cy="32" r="2" fill="#93c8c4"/></svg><span>DRAG TO ORBIT</span></div>
-      <div class="completion" id="completion" hidden><div class="completion-title">STAGE <span id="completeNum">01</span> COMPLETE</div><div class="completion-sub" id="completeSub">ALL CUBES FOUND</div><div class="completion-actions"><button class="replay" id="replay">REPLAY</button><button class="next" id="next">NEXT ›</button></div></div>
-    </div>
-    <div class="legendbar"><div class="legend"><span class="legend-item"><i class="mini-dot"></i>1×</span><span class="legend-item"><i class="mini-dot multi"></i>2×+</span><span class="legend-item"><i class="mini-dot done"></i>DONE</span></div><div class="board-controls"><button id="undo" disabled>UNDO</button><button id="hint">HINT</button><button id="sound" aria-pressed="true">SOUND ON</button></div></div>
-  </main>
-  <p class="guide">DRAG TO ROTATE · TAP POINTS · PINCH TO ZOOM</p>
-  <div class="credits">8 POINTS · 12 EDGES · 6 FACES · 1 CUBE</div>
+<header class="brand"><div class="wordmark"><span class="mark"></span>CUBE SNAP</div><div class="version">SPATIAL EDITION · V0.2</div></header>
+<nav class="pager"><button id="prevStage" class="arrow" aria-label="Previous stage">‹</button><button id="stageButton" class="stage" aria-expanded="false">STAGE <span id="stageNum">01</span> <small>/ 24 ▾</small></button><button id="nextStage" class="arrow" aria-label="Next stage">›</button></nav>
+<div class="picker" id="picker" hidden></div>
+<main class="paper"><div class="dashboard"><div><div class="overline">FIND EVERY HIDDEN CUBE</div><div class="subtitle" id="subtitle">THE FIRST CUBE</div></div><div class="found"><b id="found">0</b><small>FOUND</small></div></div>
+<div class="progress"><span>POINTS CLEARED</span><b id="cleared">0 / 8</b></div><div class="track"><div class="fill" id="fill"></div></div>
+<div class="board" id="board"><svg id="scene" viewBox="0 0 360 450" aria-label="A three-dimensional puzzle scene. Drag the wireframe cube to position it. Drag empty space to turn the view."><g id="floorLayer"></g><g id="foundLayer"></g><g id="ghostLayer"></g><g id="dotsLayer"></g><g id="effectsLayer"></g></svg>
+<div class="headline" id="boardHint">DRAG THE CUBE INTO THE DOTS</div><div class="hintline">DRAG EMPTY SPACE TO ROTATE</div>
+<div class="depth" id="depth"><div class="depth-name">DEPTH</div><button id="depthUp" aria-label="Go one depth layer higher">⌃</button><div class="depth-track" id="depthTrack" aria-label="Depth slider"><div class="depth-ticks" id="depthTicks"></div><div class="depth-thumb" id="depthThumb"></div></div><button id="depthDown" aria-label="Go one depth layer lower">⌄</button><div class="depth-index" id="depthIndex">1 / 1</div></div>
+<div class="toast" id="toast" aria-live="polite"></div>
+<div class="completion" id="completion" hidden><div class="complete-title">STAGE <span id="completeStage">01</span> COMPLETE</div><div class="complete-sub" id="completeSub">EVERY CUBE DISCOVERED</div><div class="complete-actions"><button class="replay" id="replay">REPLAY</button><button class="next" id="next">NEXT ›</button></div></div>
 </div>
-<script>
+<div class="shape-control"><button id="shapePrev" aria-label="Previous cube shape">‹</button><div class="shape-center"><div class="shape-tag">CUBE FORM <span id="formPos">1 / 1</span></div><div class="shape-name" id="formName">STRAIGHT · 3</div></div><button id="shapeNext" aria-label="Next cube shape">›</button></div>
+<div class="footer"><div class="legend"><span class="legend-item"><i></i>1×</span><span class="legend-item"><i class="multi"></i>2×+</span><span class="legend-item"><i class="done"></i>DONE</span></div><div class="actions"><button id="hint">HINT</button><button id="sound" aria-pressed="true">SOUND ON</button></div></div>
+</main><div class="guide">DRAG CUBE TO MOVE · SLIDE DEPTH · DRAG SPACE TO ORBIT</div><div class="credit">8 VERTICES · 12 EDGES · 6 FACES</div>
+</div><script>
 (()=>{'use strict';
 const $=id=>document.getElementById(id),SVG='http://www.w3.org/2000/svg';
 const vec=(x,y,z)=>[x,y,z],add=(a,b)=>a.map((x,i)=>x+b[i]),sub=(a,b)=>a.map((x,i)=>x-b[i]),dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),len2=a=>dot(a,a),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],key=p=>p.join(','),canonical=pts=>pts.map(key).sort().join('|'),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
@@ -110,105 +104,163 @@ function enumerate(pts){const set=new Set(pts.map(key)),all=new Map(),n=pts.leng
  return [...all.entries()].map(([id,ps])=>({id,points:ps}));
 }
 const LEVELS=SPECS.map((s,i)=>{const points=new Map();for(const [x,y,z,n,k] of s.c){for(const p of cubePts([x,y,z],basis(k,n)))points.set(key(p),p)}const pts=[...points.values()];const solutions=enumerate(pts);const degree=new Map(pts.map(p=>[key(p),0]));for(const cube of solutions)for(const p of cube.points)degree.set(key(p),degree.get(key(p))+1);return {title:s.n,points:pts,solutions,degree,number:i+1}});
-const savedKey='cube_snap_exp_v01';let saved={stage:0,done:{},sound:true};try{const raw=JSON.parse(localStorage.getItem(savedKey)||'null');if(raw&&typeof raw==='object')saved={...saved,...raw}}catch(_){}
-const persist=()=>{try{localStorage.setItem(savedKey,JSON.stringify(saved))}catch(_){}};
-let stage=0,level,found=new Set(),selected=[],degree,used=new Map(),hint=null,previewMissing=null,previewTimeout=null,flash=null,flashTimeout=null,completionTimeout=null;
-let yaw=.72,pitch=-.42,zoom=1,sceneCenter=[0,0,0],radius=1,unit=1,projection=new Map(),pointers=new Map(),drag=null,pinch=null,raf=0,lastTap=0;
-let audio=null;const sound=type=>{if(!saved.sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{});if(audio.state!=='running')return;const specs={tap:[410,.022,.048],step:[500,.027,.065],found:[590,.055,.15],finish:[660,.07,.22],error:[275,.019,.07]};const[p,g,d]=specs[type]||specs.tap,t=audio.currentTime;const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.setValueAtTime(p,t);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(g,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+d);osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+d+.016);osc.onended=()=>{osc.disconnect();gain.disconnect()}}catch(_){}};
-function el(name,attrs={}){const e=document.createElementNS(SVG,name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e}
-function line(a,b,cls,extra={}){return el('line',{x1:a.x.toFixed(2),y1:a.y.toFixed(2),x2:b.x.toFixed(2),y2:b.y.toFixed(2),class:cls,...extra})}
-function polygon(points,cls,extra={}){return el('polygon',{points:points.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' '),class:cls,...extra})}
-function circle(p,r,cls,extra={}){return el('circle',{cx:p.x.toFixed(2),cy:p.y.toFixed(2),r,class:cls,...extra})}
-function computeView(){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),base=unit*zoom;
- return p=>{const q=sub(p,sceneCenter),x=cy*q[0]-sy*q[2],a=sy*q[0]+cy*q[2],y=cp*q[1]-sp*a,z=sp*q[1]+cp*a,fac=(radius*5)/(radius*5-z);return{x:180+x*base*fac,y:216-y*base*fac,z,fac}};
-}
-function pointsProjection(){const project=computeView();projection=new Map(level.points.map(p=>[key(p),project(p)]));return project}
-function worldBox(){let xs=level.points.map(p=>p[0]),ys=level.points.map(p=>p[1]),zs=level.points.map(p=>p[2]);const mins=[Math.min(...xs),Math.min(...ys),Math.min(...zs)],maxs=[Math.max(...xs),Math.max(...ys),Math.max(...zs)];return{mins,maxs}}
-function drawGrid(project){const g=$('gridLayer'),f=document.createDocumentFragment(),{mins,maxs}=worldBox();const bottom=mins[1],offset=1;
- // A discreet spatial ground plane: visually conveys the third dimension without a full box.
- for(let x=mins[0];x<=maxs[0];x+=3)f.append(line(project([x,bottom-offset,mins[2]-offset]),project([x,bottom-offset,maxs[2]+offset]),'axis-floor'));
- for(let z=mins[2];z<=maxs[2];z+=3)f.append(line(project([mins[0]-offset,bottom-offset,z]),project([maxs[0]+offset,bottom-offset,z]),'axis-floor'));
- const corners=[[mins[0],bottom-offset,mins[2]-offset],[maxs[0]+offset,bottom-offset,mins[2]-offset],[maxs[0]+offset,bottom-offset,maxs[2]+offset],[mins[0],bottom-offset,maxs[2]+offset]];
- for(let i=0;i<4;i++)f.append(line(project(corners[i]),project(corners[(i+1)%4]),'axis-line'));
- g.replaceChildren(f);
-}
-function renderFound(project){const f=document.createDocumentFragment();for(const sq of level.solutions){if(!found.has(sq.id))continue;
- // Re-orient edge list from an arbitrary cube corner by finding actual edge length.
- const ps=sq.points,side=Math.min(...ps.flatMap((p,i)=>ps.slice(i+1).map(q=>len2(sub(p,q)))));
- const mids=[];for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if(len2(sub(ps[i],ps[j]))===side)mids.push([ps[i],ps[j]]);
- // Faces are represented by four mutually coplanar corners with square edge length.
- const faceSets=new Set(),faces=[];
- for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)for(let k=j+1;k<8;k++)for(let l=k+1;l<8;l++){
-  const group=[ps[i],ps[j],ps[k],ps[l]],dists=[];for(let a=0;a<4;a++)for(let b=a+1;b<4;b++)dists.push(len2(sub(group[a],group[b])));dists.sort((a,b)=>a-b);if(dists[0]===side&&dists[3]===side&&dists[4]===side*2&&dists[5]===side*2){let c=group.reduce((t,p)=>add(t,p),[0,0,0]).map(x=>x/4);group.sort((p,q)=>{const aa=sub(p,c),bb=sub(q,c);const u=sub(group[0],c),v=sub(group[1],c);return 0});faces.push(group);}
+
+// A cube is mathematically encoded by its eight unique integer-grid vertices.
+// Orientations are derived from solutions, not from hardcoded answer coordinates.
+function normalized(P){const lo=[0,1,2].map(j=>Math.min(...P.map(p=>p[j])));return P.map(p=>p.map((v,j)=>v-lo[j]));}
+function shapeSignature(P){return canonical(normalized(P))}
+const shapeMap=new Map();
+for(let i=0;i<LEVELS.length;i++)for(const cube of LEVELS[i].solutions){const id=shapeSignature(cube.points);if(!shapeMap.has(id)){
+ const ps=normalized(cube.points);const ext=[0,1,2].map(j=>Math.max(...ps.map(p=>p[j])));
+ const edgeLen=Math.min(...ps.flatMap((p,k)=>ps.slice(k+1).map(q=>len2(sub(p,q)))));
+ const edges=[];for(let a=0;a<8;a++)for(let b=a+1;b<8;b++)if(len2(sub(ps[a],ps[b]))===edgeLen)edges.push([a,b]);
+ const faces=[];for(let a=0;a<8;a++)for(let b=a+1;b<8;b++)for(let c=b+1;c<8;c++)for(let d=c+1;d<8;d++){
+  const ix=[a,b,c,d],ds=[];for(let u=0;u<4;u++)for(let v=u+1;v<4;v++)ds.push(len2(sub(ps[ix[u]],ps[ix[v]])));ds.sort((u,v)=>u-v);
+  if(ds[0]===edgeLen&&ds[3]===edgeLen&&ds[4]===2*edgeLen&&ds[5]===2*edgeLen)faces.push(ix);
  }
- // Found cubes stay as subtle wireframes. Filled faces are not needed to understand them.
- for(const [a,b] of mids)f.append(line(project(a),project(b),'found-edge'));
- }
- $('foundLayer').replaceChildren(f);
+ shapeMap.set(id,{id,ps,ext,edges,faces,side:Math.sqrt(edgeLen),first:i});
+ }}
+const SHAPES=[...shapeMap.values()].sort((a,b)=>a.first-b.first||a.side-b.side);
+// Introduce variants gradually; never restrict a mathematically valid solution.
+const STORE='cube_snap_spatial_v02';let saved={stage:0,done:{},sound:true};try{const obj=JSON.parse(localStorage.getItem(STORE)||'null');if(obj&&typeof obj==='object')saved={...saved,...obj}}catch(_){}
+const persist=()=>{try{localStorage.setItem(STORE,JSON.stringify(saved))}catch(_){}};
+let stage=-1,level,found=new Set(),used=new Map(),camera={yaw:.76,pitch:-.49,zoom:1},sceneCenter=[0,0,0],viewScale=35,radius=4,projection=new Map(),ghost=[0,0,0],shape=SHAPES[0],allowed=SHAPES,drag=null,pointers=new Map(),raf=0,flash=null,flashTimer=null,toastTimer=null,finishTimer=null,ringHint=null,clickLast=0,audio=null,voice=null;
+let boundsMin=[0,0,0],boundsMax=[0,0,0],hitArea=[];
+function persistFound(){saved.done[String(stage)]=[...found];saved.stage=stage;persist()}
+function validLevel(){return level.solutions.length>0&&level.points.every(p=>level.degree.get(key(p))>0)}
+const shapeWorld=(s,at)=>s.ps.map(p=>add(p,at));
+function clampGhost(pos){return pos.map((v,j)=>clamp(v,boundsMin[j]-1,Math.max(boundsMin[j]-1,boundsMax[j]-shape.ext[j]+1)))}
+function integerOrigin(){return clampGhost(ghost.map(Math.round)).map(Math.round)}
+function sizeBox(){const ps=level.points;boundsMin=[0,1,2].map(j=>Math.min(...ps.map(p=>p[j])));boundsMax=[0,1,2].map(j=>Math.max(...ps.map(p=>p[j])));
+ sceneCenter=boundsMin.map((v,i)=>(v+boundsMax[i])/2);const ex=boundsMax.map((v,i)=>v-boundsMin[i]);radius=Math.max(2.2,Math.hypot(...ex)/2);viewScale=clamp(167/(radius*1.43),17,74);
 }
-function renderSelection(project){const f=document.createDocumentFragment();const ps=selected.map(k=>level.points.find(p=>key(p)===k));
- const P=ps.map(project);
- if(ps.length>=2)f.append(line(P[0],P[1],'selection-line'));
- if(ps.length>=3){const d=add(ps[1],sub(ps[2],ps[0]));f.append(polygon([project(ps[0]),project(ps[1]),project(d),project(ps[2])],'selection-face'));}
- if(previewMissing){const {pts}=previewMissing;for(const [a,b]of E)f.append(line(project(pts[a]),project(pts[b]),'ghost-wire'));for(const p of previewMissing.missing)f.append(circle(project(p),7,'missing'));}
- for(const p of ps){const q=project(p);f.append(circle(q,10,'selected-halo'));f.append(circle(q,7.2,'selected-ring'));}
- if(hint){const p=level.points.find(p=>key(p)===hint);if(p){const q=project(p);f.append(circle(q,12.5,'selected-ring',{stroke:'#b8965f','stroke-dasharray':'2 4'}));}}
- $('previewLayer').replaceChildren(f);
+const xy=(p)=>{const q=sub(p,sceneCenter),ca=Math.cos(camera.yaw),sa=Math.sin(camera.yaw),cp=Math.cos(camera.pitch),sp=Math.sin(camera.pitch);
+ const x=ca*q[0]-sa*q[2],t=sa*q[0]+ca*q[2],y=cp*q[1]-sp*t,z=sp*q[1]+cp*t,fac=clamp((radius*5)/(radius*5-z),.58,1.65);
+ return {x:176+x*viewScale*camera.zoom*fac,y:235-y*viewScale*camera.zoom*fac,z,fac};
+};
+function e(name,attrs={}){const el=document.createElementNS(SVG,name);for(const[k,v]of Object.entries(attrs))el.setAttribute(k,v);return el}
+function drawLine(a,b,cls,attrs={}){return e('line',{x1:a.x.toFixed(2),y1:a.y.toFixed(2),x2:b.x.toFixed(2),y2:b.y.toFixed(2),class:cls,...attrs})}
+function drawPoly(points,cls,attrs={}){return e('polygon',{points:points.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' '),class:cls,...attrs})}
+function drawCircle(p,r,cls,attrs={}){return e('circle',{cx:p.x.toFixed(2),cy:p.y.toFixed(2),r,class:cls,...attrs})}
+function hull(points){const arr=[...points].sort((a,b)=>a.x-b.x||a.y-b.y);const cross2=(a,b,c)=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);const lower=[],upper=[];
+ for(const p of arr){while(lower.length>=2&&cross2(lower[lower.length-2],lower[lower.length-1],p)<=0)lower.pop();lower.push(p)}for(const p of arr.reverse()){while(upper.length>=2&&cross2(upper[upper.length-2],upper[upper.length-1],p)<=0)upper.pop();upper.push(p)}lower.pop();upper.pop();return [...lower,...upper];}
+function isInside(p,pts){if(pts.length<3)return false;let sign=0;for(let i=0;i<pts.length;i++){const a=pts[i],b=pts[(i+1)%pts.length],z=(b.x-a.x)*(p.y-a.y)-(b.y-a.y)*(p.x-a.x);if(Math.abs(z)<1)continue;if(!sign)sign=Math.sign(z);else if(Math.sign(z)!==sign)return false}return true}
+function ghostState(){const origin=integerOrigin(),pts=shapeWorld(shape,origin),id=canonical(pts);return {origin,pts,id,matching:level.solutions.find(s=>s.id===id),ready:level.solutions.some(s=>s.id===id&&!found.has(s.id)),precise:Math.sqrt(len2(sub(ghost,origin)))<=.76}}
+function drawFloor(){const g=document.createDocumentFragment(),y=boundsMin[1]-1.35,x0=boundsMin[0]-1,x1=boundsMax[0]+1,z0=boundsMin[2]-1,z1=boundsMax[2]+1;
+ for(let x=Math.floor(x0);x<=Math.ceil(x1);x++){const a=xy([x,y,z0]),b=xy([x,y,z1]);g.append(drawLine(a,b,'floor'))}
+ for(let z=Math.floor(z0);z<=Math.ceil(z1);z++){const a=xy([x0,y,z]),b=xy([x1,y,z]);g.append(drawLine(a,b,'floor'))}
+ const outer=[[x0,y,z0],[x1,y,z0],[x1,y,z1],[x0,y,z1]].map(xy);for(let i=0;i<4;i++)g.append(drawLine(outer[i],outer[(i+1)%4],'floor-outer'));
+ $('floorLayer').replaceChildren(g);
 }
-function renderDots(){const f=document.createDocumentFragment();const pts=[...level.points].sort((a,b)=>projection.get(key(a)).z-projection.get(key(b)).z);
- for(const p of pts){const k=key(p),q=projection.get(k),d=degree.get(k),usedN=used.get(k)||0,r=clamp(4.1*q.fac,3.15,6.7);f.append(circle(q,r+2.4,'dot-shadow'));f.append(circle(q,r,'dot '+(usedN>=d?'exhausted':d>1?'multi':'single')+(selected.includes(k)?' selected':'')));}
- $('dotLayer').replaceChildren(f);
+function cubeEdges(P){const d=Math.min(...P.flatMap((p,i)=>P.slice(i+1).map(q=>len2(sub(p,q)))));const result=[];for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++)if(len2(sub(P[i],P[j]))===d)result.push([P[i],P[j]]);return result}
+function drawFound(){const g=document.createDocumentFragment();for(const s of level.solutions){if(!found.has(s.id))continue;const huge=Math.sqrt(len2(sub(s.points[0],s.points[1])))>4;for(const[a,b] of cubeEdges(s.points))g.append(drawLine(xy(a),xy(b),'found-edge'+(huge?' giant':'')))}$('foundLayer').replaceChildren(g)}
+function ghostDisplay(){const r=integerOrigin();const v=ghost.map((n,i)=>Math.abs(n-r[i])<.21?r[i]:n);return v}
+function drawGhost(){const state=ghostState(),pos=ghostDisplay(),ps=shapeWorld(shape,pos),proj=ps.map(xy),center=xy(add(pos,shape.ext.map(a=>a/2)));
+ const g=document.createDocumentFragment(),faceRows=shape.faces.map(face=>{const nodes=face.map(i=>proj[i]);const avg=nodes.reduce((a,p)=>a+p.z,0)/4;const center2={x:nodes.reduce((a,p)=>a+p.x,0)/4,y:nodes.reduce((a,p)=>a+p.y,0)/4};const sorted=[...nodes].sort((a,b)=>Math.atan2(a.y-center2.y,a.x-center2.x)-Math.atan2(b.y-center2.y,b.x-center2.x));return {sorted,avg}}).sort((a,b)=>a.avg-b.avg);
+ for(const {sorted} of faceRows)g.append(drawPoly(sorted,'ghost-face'+(state.ready&&state.precise?' ready':'')));
+ const side=shape.ps.map((p,i)=>proj[i]);
+ for(const [a,b] of shape.edges){const av=side[a],bv=side[b];g.append(drawLine(av,bv,'ghost-edge'+(state.ready&&state.precise?' ready':'')+(av.z+bv.z<0?' back':'')))}
+ g.append(drawCircle(center,9.2,'ghost-handle'));
+ for(const [x1,y1,x2,y2]of [[-4,0,4,0],[0,-4,0,4]])g.append(e('line',{x1:center.x+x1,y1:center.y+y1,x2:center.x+x2,y2:center.y+y2,class:'ghost-cross'}));
+ $('ghostLayer').replaceChildren(g);hitArea=hull(proj);
+ $('boardHint').textContent=state.ready&&state.precise?'RELEASE TO SNAP':stage<5?'DRAG THE CUBE INTO THE DOTS':'ALIGN ALL 8 CORNERS';
 }
-function renderFlash(project){const layer=$('effectLayer');if(!flash){layer.replaceChildren();return;}const f=document.createDocumentFragment(),ps=flash.points,side=Math.min(...ps.flatMap((p,i)=>ps.slice(i+1).map(q=>len2(sub(p,q)))));for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if(len2(sub(ps[i],ps[j]))===side)f.append(line(project(ps[i]),project(ps[j]),'cube-flash',{pathLength:100}));layer.replaceChildren(f)}
-function render(){raf=0;if(!level)return;const project=pointsProjection();drawGrid(project);renderFound(project);renderSelection(project);renderDots();renderFlash(project)}
-const schedule=()=>{if(!raf)raf=requestAnimationFrame(render)};
-const statusMessages=['TAP A CORNER POINT','TAP AN EDGE POINT','FIND A RIGHT ANGLE','ADD THE THIRD EDGE'];
-function updateInstruction(){const i=Math.min(selected.length,3);$('instruction').textContent=statusMessages[i];const seq=[...$('sequence').children];seq.forEach((e,n)=>e.classList.toggle('active',n<selected.length));$('undo').disabled=selected.length===0;}
-function refresh(){const cleared=[...degree].filter(([k,n])=>(used.get(k)||0)>=n).length;const done=cleared===level.points.length;
- $('foundCount').textContent=found.size;$('pointsProgress').textContent=`${cleared} / ${level.points.length}`;$('progressBar').style.width=`${cleared/level.points.length*100}%`;
- $('completeNum').textContent=String(stage+1).padStart(2,'0');$('completeSub').textContent=`${found.size} CUBE${found.size===1?'':'S'} DISCOVERED`;$('next').textContent=stage===LEVELS.length-1?'STAGE 01 ›':'NEXT ›';
- if(done){saved.done[String(stage)]=[...found];persist();clearTimeout(completionTimeout);completionTimeout=setTimeout(()=>{if(stage===level.number-1){$('completion').hidden=false;requestAnimationFrame(()=>$('completion').classList.add('show'));}},420)}
- else{$('completion').hidden=true;$('completion').classList.remove('show')}
- updateInstruction();updatePicker();schedule();
+function drawDots(){const g=document.createDocumentFragment(),ordered=[...level.points].sort((a,b)=>xy(a).z-xy(b).z);projection=new Map();for(const p of ordered){const q=xy(p),id=key(p),deg=level.degree.get(id),n=used.get(id)||0;projection.set(id,q);
+ const type=n>=deg?'exhausted':deg>1?'multi':'single';let r=clamp(4.8*q.fac,3.3,6.2);if(ringHint&&ringHint===id){g.append(drawCircle(q,r+8,'dot hinted',{fill:'none',stroke:'#b69b6e','stroke-width':1.9,'stroke-dasharray':'3 3'}))}g.append(drawCircle(q,r,'dot '+type));}
+ $('dotsLayer').replaceChildren(g);
 }
-let toastTimeout=null;function message(t){const d=$('toast');d.textContent=t;d.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>d.classList.remove('show'),1200)}
-function resetSelection(){selected=[];previewMissing=null;clearTimeout(previewTimeout);updateInstruction();schedule()}
-function isPerpEqual(a,b){return len2(a)===len2(b)&&dot(a,b)===0&&len2(a)>0}
-function enterPoint(p){if(!p||($('completion').hidden===false))return;const k=key(p);if(selected.includes(k)){const at=selected.indexOf(k);selected=selected.slice(0,at+1);message('SELECT A DIFFERENT POINT');sound('tap');updateInstruction();schedule();return;}
- if(selected.length===0){selected=[k];hint=null;sound('tap');updateInstruction();schedule();return;}
- if(selected.length===1){selected.push(k);sound('tap');updateInstruction();schedule();return;}
- const origin=level.points.find(q=>key(q)===selected[0]);const first=level.points.find(q=>key(q)===selected[1]);const a=sub(first,origin),b=sub(p,origin);
- if(selected.length===2){if(!isPerpEqual(a,b)||!level.points.some(q=>key(q)===key(add(first,b)))){message('FIND A SQUARE FACE');sound('error');return;}selected.push(k);sound('step');updateInstruction();schedule();return;}
- const second=level.points.find(q=>key(q)===selected[2]),c=sub(second,origin);
- if(!isPerpEqual(a,b)||!isPerpEqual(c,b)){message('THREE RIGHT ANGLES');sound('error');return;}
- const pts=cubePts(origin,[a,c,b]),id=canonical(pts),existing=level.solutions.find(s=>s.id===id);
- if(found.has(id)){message('ALREADY DISCOVERED');resetSelection();sound('tap');return;}
- if(existing){found.add(id);for(const v of existing.points)used.set(key(v),(used.get(key(v))||0)+1);flash=existing;clearTimeout(flashTimeout);flashTimeout=setTimeout(()=>{flash=null;schedule()},480);sound(found.size===level.solutions.length?'finish':'found');resetSelection();refresh();message('CUBE FOUND!');}
- else{const available=new Set(level.points.map(key)),missing=pts.filter(q=>!available.has(key(q)));previewMissing={pts,missing};clearTimeout(previewTimeout);previewTimeout=setTimeout(()=>{previewMissing=null;schedule()},950);message('SOME CORNERS ARE MISSING');sound('error');schedule();}
+function drawFlash(){const g=document.createDocumentFragment();if(flash)for(const[a,b]of cubeEdges(flash.points))g.append(drawLine(xy(a),xy(b),'ghost-flash',{pathLength:120}));$('effectsLayer').replaceChildren(g)}
+function draw(){raf=0;if(stage<0)return;drawFloor();drawFound();drawGhost();drawDots();drawFlash();updateDepth()}
+function schedule(){if(!raf)raf=requestAnimationFrame(draw)}
+let voiceType=null,voiceEnd=0,voiceGain=null,resumePromise=null,pendingSound=null;
+function sound(type){if(!saved.sound)return;const now=performance.now();if(type==='tick'&&now-clickLast<68)return;if(type==='tick')clickLast=now;
+ try{if(!audio){const A=window.AudioContext||window.webkitAudioContext;audio=new A({latencyHint:'interactive'})}if(audio.state!=='running'){pendingSound={type,when:now};if(!resumePromise){resumePromise=audio.resume().then(()=>{resumePromise=null;const queued=pendingSound;pendingSound=null;if(queued&&saved.sound&&performance.now()-queued.when<(queued.type==='tick'?210:1300)){clickLast=-Infinity;sound(queued.type)}}).catch(()=>{resumePromise=null})}return;}const specs={tick:[360,.042,.039],form:[465,.053,.075],depth:[410,.043,.053],found:[540,.072,.145],complete:[620,.089,.21],soft:[420,.036,.05]};const[f,vol,d]=specs[type]||specs.soft,t=audio.currentTime;
+ if(type==='tick'&&voiceType&&voiceType!=='tick'&&t<voiceEnd)return;
+ if(voiceGain){try{voiceGain.gain.cancelScheduledValues(t);voiceGain.gain.setTargetAtTime(.0001,t,.003)}catch(_){}}
+ const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.value=f;gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(vol,t+.006);gain.gain.exponentialRampToValueAtTime(.0001,t+d);osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+d+.017);voiceType=type;voiceEnd=t+d;voiceGain=gain;osc.onended=()=>{if(voiceGain===gain){voiceGain=null;voiceType=null}osc.disconnect();gain.disconnect()};
+ }catch(_){}}
+let messageTimer;function message(t){const el=$('toast');el.textContent=t;el.classList.add('show');clearTimeout(messageTimer);messageTimer=setTimeout(()=>el.classList.remove('show'),1000)}
+function refresh(){const exhausted=level.points.filter(p=>(used.get(key(p))||0)>=level.degree.get(key(p))).length;
+ $('found').textContent=found.size;$('cleared').textContent=`${exhausted} / ${level.points.length}`;$('fill').style.width=`${100*exhausted/level.points.length}%`;
+ const won=found.size===level.solutions.length&&exhausted===level.points.length;
+ $('completeStage').textContent=String(stage+1).padStart(2,'0');$('completeSub').textContent=`${found.size} CUBE${found.size===1?'':'S'} FOUND`;
+ $('next').textContent=stage===LEVELS.length-1?'STAGE 01 ›':'NEXT ›';
+ clearTimeout(finishTimer);if(won){finishTimer=setTimeout(()=>{$('completion').hidden=false;requestAnimationFrame(()=>$('completion').classList.add('show'))},390)}else{$('completion').hidden=true;$('completion').classList.remove('show')}
+ drawPicker();schedule();
 }
-function pickPoint(q){let best=null,dmin=Infinity;for(const p of level.points){const s=projection.get(key(p)),d=Math.hypot(s.x-q.x,s.y-q.y);if(d<dmin){dmin=d;best=p}}return dmin<=clamp(14+4*zoom,14,21)?best:null}
-function undo(){if(selected.length){selected.pop();previewMissing=null;hint=null;updateInstruction();schedule();sound('tap')}}
-function hintPoint(){const remaining=level.solutions.find(s=>!found.has(s.id));if(!remaining)return;const candidates=remaining.points.filter(p=>degree.get(key(p))===1),list=candidates.length?candidates:remaining.points;hint=key(list[0]);message('START FROM THIS POINT');schedule();setTimeout(()=>{hint=null;schedule()},2000)}
-function updatePicker(){if(!level)return;const p=$('picker');p.replaceChildren();for(let i=0;i<LEVELS.length;i++){const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0');b.className=(i===stage?'active ':'')+(Array.isArray(saved.done[String(i)])?'completed':'');b.addEventListener('click',()=>{load(i);p.hidden=true;$('selectStage').setAttribute('aria-expanded','false')});p.append(b)}}
-function load(i){clearTimeout(completionTimeout);clearTimeout(flashTimeout);clearTimeout(previewTimeout);stage=(i+LEVELS.length)%LEVELS.length;level=LEVELS[stage];selected=[];previewMissing=null;flash=null;hint=null;found=new Set();degree=level.degree;used=new Map(level.points.map(p=>[key(p),0]));
- const ids=new Set(level.solutions.map(s=>s.id));for(const id of saved.done[String(stage)]||[])if(ids.has(id))found.add(id);
+function trySnap(){const s=ghostState();ghost=s.origin;
+ if(!s.precise){schedule();return false}
+ if(s.matching&&found.has(s.id)){message('ALREADY FOUND');sound('soft');schedule();return false}
+ if(!s.ready){sound('soft');schedule();return false}
+ found.add(s.id);for(const p of s.matching.points)used.set(key(p),(used.get(key(p))||0)+1);persistFound();flash=s.matching;clearTimeout(flashTimer);flashTimer=setTimeout(()=>{flash=null;schedule()},480);
+ const won=found.size===level.solutions.length;sound(won?'complete':'found');message(won?'STAGE COMPLETE':'CUBE FOUND');
+ // After success, move the free cube slightly away so its old position doesn't obstruct the next puzzle.
+ ghost=clampGhost(ghost.map((v,i)=>v+(i===0?-1:i===1?1:0)));refresh();return true;
+}
+function updateDepth(){const min=Math.round(boundsMin[2]-1),max=Math.round(Math.max(boundsMin[2]-1,boundsMax[2]-shape.ext[2]+1));const z=clamp(Math.round(ghost[2]),min,max),n=Math.max(1,max-min+1),index=z-min;
+ $('depthIndex').textContent=`${index+1} / ${n}`;$('depthUp').disabled=z>=max;$('depthDown').disabled=z<=min;
+ const ratio=n===1?.5:1-index/(n-1);$('depthThumb').style.top=`${15+ratio*calcTrackHeight()}px`;
+ const ticks=$('depthTicks');ticks.replaceChildren();for(let i=0;i<n;i++){const mark=document.createElement('i');mark.style.top=`${n===1?50:(i*100/(n-1))}%`;ticks.append(mark)}
+}
+function calcTrackHeight(){return Math.max(0,($('depthTrack').getBoundingClientRect().height||150)-30)}
+function setDepth(z){const prev=integerOrigin()[2];ghost[2]=z;ghost=clampGhost(ghost);if(Math.round(ghost[2])!==prev)sound('depth');schedule()}
+function changeShape(diff){const ix=allowed.indexOf(shape),next=allowed[(ix+diff+allowed.length)%allowed.length];if(next===shape)return;const center=add(ghost,shape.ext.map(v=>v/2));shape=next;ghost=clampGhost(center.map((x,j)=>Math.round(x-shape.ext[j]/2)));updateForm();sound('form');schedule()}
+function updateForm(){const index=allowed.indexOf(shape),isStraight=shape.ps.some(p=>shape.ext.every(t=>t===shape.side));const label=isStraight?`STRAIGHT · ${Math.round(shape.side)}`:`TILTED · ${String.fromCharCode(65+SHAPES.filter(q=>q.side===3&&q.first>=8).indexOf(shape))}`;
+ $('formPos').textContent=`${index+1} / ${allowed.length}`;$('formName').textContent=label;$('shapePrev').disabled=allowed.length===1;$('shapeNext').disabled=allowed.length===1;
+}
+function drawPicker(){const p=$('picker');p.replaceChildren();for(let i=0;i<LEVELS.length;i++){const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0');b.className=(i===stage?'current ':'')+(Array.isArray(saved.done[String(i)])&&saved.done[String(i)].length===LEVELS[i].solutions.length?'completed':'');b.addEventListener('click',()=>{load(i);p.hidden=true;$('stageButton').setAttribute('aria-expanded','false')});p.append(b)}}
+function load(i){clearTimeout(finishTimer);clearTimeout(flashTimer);if(raf)cancelAnimationFrame(raf);raf=0;
+ stage=(i+LEVELS.length)%LEVELS.length;level=LEVELS[stage];found=new Set();used=new Map(level.points.map(p=>[key(p),0]));const valid=new Set(level.solutions.map(s=>s.id));for(const id of saved.done[String(stage)]||[])if(valid.has(id))found.add(id);
  for(const s of level.solutions)if(found.has(s.id))for(const p of s.points)used.set(key(p),(used.get(key(p))||0)+1);
- const mins=[0,1,2].map(j=>Math.min(...level.points.map(p=>p[j]))),maxs=[0,1,2].map(j=>Math.max(...level.points.map(p=>p[j])));sceneCenter=mins.map((v,j)=>(v+maxs[j])/2);radius=Math.max(...level.points.map(p=>Math.sqrt(len2(sub(p,sceneCenter)))));unit=clamp(150/(radius*1.26),11,80);zoom=1;yaw=.66+(stage%4)*.21;pitch=-.34-(stage%3)*.13;
- $('stageNum').textContent=String(stage+1).padStart(2,'0');$('subtitle').textContent=level.title;$('completion').hidden=true;$('completion').classList.remove('show');$('picker').hidden=true;$('selectStage').setAttribute('aria-expanded','false');saved.stage=stage;persist();refresh();}
-$('previous').addEventListener('click',()=>load(stage-1));$('advance').addEventListener('click',()=>load(stage+1));$('selectStage').addEventListener('click',()=>{$('picker').hidden=!$('picker').hidden;$('selectStage').setAttribute('aria-expanded',String(!$('picker').hidden))});$('undo').addEventListener('click',undo);$('hint').addEventListener('click',hintPoint);$('sound').addEventListener('click',()=>{saved.sound=!saved.sound;$('sound').textContent=saved.sound?'SOUND ON':'SOUND OFF';$('sound').setAttribute('aria-pressed',String(saved.sound));persist();if(saved.sound)sound('tap')});$('replay').addEventListener('click',()=>{delete saved.done[String(stage)];persist();load(stage)});$('next').addEventListener('click',()=>{load(stage+1);window.scrollTo(0,0)});
-const canvas=$('canvas');function coord(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*360/r.width,y:(e.clientY-r.top)*440/r.height,px:e.clientX,py:e.clientY}}
-function startPinch(){const a=[...pointers.values()];if(a.length<2)return;pinch={dist:Math.hypot(a[0].px-a[1].px,a[0].py-a[1].py),zoom};drag=null}
-canvas.addEventListener('pointerdown',e=>{if(!pointers.size&&(!$('completion').hidden))return;e.preventDefault();try{canvas.setPointerCapture(e.pointerId)}catch(_){ }const p=coord(e);pointers.set(e.pointerId,p);if(pointers.size===1){drag={id:e.pointerId,p,old:p,moved:false,when:performance.now()}}else startPinch();},{passive:false});
-canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();const p=coord(e),previous=pointers.get(e.pointerId);pointers.set(e.pointerId,p);if(pointers.size>=2){const a=[...pointers.values()];if(!pinch)startPinch();const d=Math.hypot(a[0].px-a[1].px,a[0].py-a[1].py);if(pinch&&pinch.dist>0)zoom=clamp(pinch.zoom*d/pinch.dist,.6,2.3);schedule();return;}if(!drag)return;const dx=p.px-previous.px,dy=p.py-previous.py;if(Math.hypot(p.px-drag.p.px,p.py-drag.p.py)>7)drag.moved=true;if(drag.moved){yaw+=dx*.009;pitch=clamp(pitch-dy*.008,-1.5,1.5);schedule()}},{passive:false});
-function pointerUp(e,cancel=false){if(!pointers.has(e.pointerId))return;e.preventDefault();const p=coord(e),wasDrag=drag,pn=pointers.size;pointers.delete(e.pointerId);if(pn===1&&wasDrag&&!cancel&&!wasDrag.moved&&performance.now()-wasDrag.when<700){const point=pickPoint(p);if(point)enterPoint(point)}if(pointers.size===1){const[a,b]=[...pointers.entries()][0];drag={id:a,p:b,old:b,moved:true,when:performance.now()};pinch=null;}else{drag=null;pinch=null;}schedule()}
-canvas.addEventListener('pointerup',e=>pointerUp(e),{passive:false});canvas.addEventListener('pointercancel',e=>pointerUp(e,true),{passive:false});canvas.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))pointerUp(e,true)});canvas.addEventListener('contextmenu',e=>e.preventDefault());
-for(const evt of ['gesturestart','gesturechange','gestureend'])document.addEventListener(evt,e=>{if($('boardWrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
-window.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace')undo();if(e.key==='ArrowLeft')load(stage-1);if(e.key==='ArrowRight')load(stage+1)});
-$('sound').textContent=saved.sound?'SOUND ON':'SOUND OFF';$('sound').setAttribute('aria-pressed',String(saved.sound));
-// Developer-only non-mutating state inspection and exhaustive deterministic cube verification.
-window.__CUBE_SNAP_TEST__={summary:()=>LEVELS.map((l,i)=>({stage:i+1,dots:l.points.length,cubes:l.solutions.length,allPointsUsed:[...l.degree.values()].every(n=>n>0)})),state:()=>({stage:stage+1,points:level.points.length,solutions:level.solutions.length,found:found.size,selected:selected.length,won:found.size===level.solutions.length}),load,solveCurrent:()=>{for(const cube of level.solutions){if(!found.has(cube.id)){found.add(cube.id);for(const p of cube.points)used.set(key(p),(used.get(key(p))||0)+1)}}refresh();return found.size}};
-load(Number.isInteger(saved.stage)?saved.stage:0);
+ allowed=SHAPES.filter(s=>s.first<=stage);shape=allowed[0];sizeBox();ghost=clampGhost(boundsMin.map(v=>v-1));camera={yaw:.65+(stage%4)*.11,pitch:-.42-(stage%3)*.09,zoom:1};
+ flash=null;ringHint=null;pointers.clear();drag=null;hitArea=[];
+ $('stageNum').textContent=String(stage+1).padStart(2,'0');$('subtitle').textContent=level.title;$('completion').hidden=true;$('completion').classList.remove('show');$('picker').hidden=true;$('stageButton').setAttribute('aria-expanded','false');$('boardHint').textContent='DRAG THE CUBE INTO THE DOTS';
+ saved.stage=stage;persist();updateForm();refresh();}
+function hint(){if(found.size===level.solutions.length)return;const target=level.solutions.find(s=>!found.has(s.id));const spare=target.points.find(p=>level.degree.get(key(p))===1)||target.points[0];ringHint=key(spare);message('LOOK AROUND THIS DOT');schedule();setTimeout(()=>{ringHint=null;schedule()},2300)}
+$('prevStage').addEventListener('click',()=>load(stage-1));$('nextStage').addEventListener('click',()=>load(stage+1));$('stageButton').addEventListener('click',()=>{$('picker').hidden=!$('picker').hidden;$('stageButton').setAttribute('aria-expanded',String(!$('picker').hidden))});
+$('shapePrev').addEventListener('click',()=>changeShape(-1));$('shapeNext').addEventListener('click',()=>changeShape(1));$('depthUp').addEventListener('click',()=>setDepth(Math.round(ghost[2])+1));$('depthDown').addEventListener('click',()=>setDepth(Math.round(ghost[2])-1));
+$('replay').addEventListener('click',()=>{delete saved.done[String(stage)];persist();load(stage)});$('next').addEventListener('click',()=>{load(stage+1);scrollTo(0,0)});$('hint').addEventListener('click',hint);$('sound').addEventListener('click',()=>{saved.sound=!saved.sound;persistentSound();if(saved.sound)sound('soft')});
+function persistentSound(){$('sound').textContent=saved.sound?'SOUND ON':'SOUND OFF';$('sound').setAttribute('aria-pressed',String(saved.sound));persist()}
+function toPoint(ev){const r=$('scene').getBoundingClientRect();return{x:(ev.clientX-r.left)*360/r.width,y:(ev.clientY-r.top)*450/r.height,screenX:ev.clientX,screenY:ev.clientY}}
+function localBasis(){const anchor=add(ghost,shape.ext.map(x=>x/2)),p=xy(anchor),a=xy(add(anchor,[.1,0,0])),b=xy(add(anchor,[0,.1,0]));return [ [(a.x-p.x)*10,(b.x-p.x)*10],[(a.y-p.y)*10,(b.y-p.y)*10] ]}
+function dragMove(start,p){const A=start.basis,dx=p.x-start.p.x,dy=p.y-start.p.y,d=A[0][0]*A[1][1]-A[0][1]*A[1][0];let wx=0,wy=0;
+ if(Math.abs(d)>15){wx=(dx*A[1][1]-dy*A[0][1])/d;wy=(dy*A[0][0]-dx*A[1][0])/d}
+ else{wx=dx/(viewScale*camera.zoom||1);wy=-dy/(viewScale*camera.zoom||1)}
+ const prev=integerOrigin();ghost=clampGhost([start.orig[0]+wx,start.orig[1]+wy,start.orig[2]]);
+ const next=integerOrigin();if(prev[0]!==next[0]||prev[1]!==next[1])sound('tick');schedule();
+}
+const canvas=$('scene');
+canvas.addEventListener('pointerdown',ev=>{if(!$('completion').hidden)return;ev.preventDefault();try{canvas.setPointerCapture(ev.pointerId)}catch(_){ }
+ const p=toPoint(ev);pointers.set(ev.pointerId,p);sound('soft');if(pointers.size===1){const onGhost=isInside(p,hitArea)||Math.hypot(p.x-xy(add(ghost,shape.ext.map(v=>v/2))).x,p.y-xy(add(ghost,shape.ext.map(v=>v/2))).y)<24;
+ drag={type:onGhost?'cube':'orbit',p,prev:p,orig:[...ghost],basis:localBasis(),moved:false};}else{const a=[...pointers.values()];drag={type:'pinch',dist:Math.hypot(a[0].screenX-a[1].screenX,a[0].screenY-a[1].screenY),zoom:camera.zoom};}
+},{passive:false});
+canvas.addEventListener('pointermove',ev=>{if(!pointers.has(ev.pointerId))return;ev.preventDefault();const p=toPoint(ev),last=pointers.get(ev.pointerId);pointers.set(ev.pointerId,p);if(!drag)return;
+ if(pointers.size>=2){if(drag.type!=='pinch'){const a=[...pointers.values()];drag={type:'pinch',dist:Math.hypot(a[0].screenX-a[1].screenX,a[0].screenY-a[1].screenY),zoom:camera.zoom}}const a=[...pointers.values()],d=Math.hypot(a[0].screenX-a[1].screenX,a[0].screenY-a[1].screenY);camera.zoom=clamp(drag.zoom*d/Math.max(1,drag.dist),.65,2.2);schedule();return}
+ if(drag.type==='cube'){dragMove(drag,p);drag.moved||=Math.hypot(p.screenX-drag.p.screenX,p.screenY-drag.p.screenY)>6}
+ else if(drag.type==='orbit'){const dx=p.screenX-last.screenX,dy=p.screenY-last.screenY;if(Math.hypot(p.screenX-drag.p.screenX,p.screenY-drag.p.screenY)>5)drag.moved=true;if(drag.moved){camera.yaw+=dx*.009;camera.pitch=clamp(camera.pitch-dy*.007,-1.25,-.14);schedule()}}
+ },{passive:false});
+function pointerEnd(ev,cancel=false){if(!pointers.has(ev.pointerId))return;ev.preventDefault();const before=pointers.size;const mode=drag?.type,wasMoved=drag?.moved;pointers.delete(ev.pointerId);
+ if(before===1&&mode==='cube'&&!cancel){if(wasMoved)trySnap();else{const s=ghostState();if(s.ready){ghost=s.origin;trySnap()}}}
+ if(pointers.size===1){const v=[...pointers.values()][0];drag={type:'orbit',p:v,prev:v,moved:true}}else drag=null;schedule();}
+canvas.addEventListener('pointerup',ev=>pointerEnd(ev),{passive:false});canvas.addEventListener('pointercancel',ev=>pointerEnd(ev,true),{passive:false});canvas.addEventListener('lostpointercapture',ev=>{if(pointers.has(ev.pointerId))pointerEnd(ev,true)});
+canvas.addEventListener('contextmenu',ev=>ev.preventDefault());
+const depthTrack=$('depthTrack');let depthPid=null;
+function slideDepth(ev){const r=depthTrack.getBoundingClientRect(),rate=clamp((ev.clientY-r.top-15)/Math.max(1,r.height-30),0,1);const min=Math.round(boundsMin[2]-1),max=Math.round(Math.max(boundsMin[2]-1,boundsMax[2]-shape.ext[2]+1));setDepth(Math.round(max-rate*(max-min)))}
+depthTrack.addEventListener('pointerdown',ev=>{ev.preventDefault();ev.stopPropagation();depthPid=ev.pointerId;try{depthTrack.setPointerCapture(ev.pointerId)}catch(_){}slideDepth(ev)});
+depthTrack.addEventListener('pointermove',ev=>{if(ev.pointerId!==depthPid)return;ev.preventDefault();slideDepth(ev)});
+for(const evName of ['pointerup','pointercancel','lostpointercapture'])depthTrack.addEventListener(evName,ev=>{if(ev.pointerId===depthPid)depthPid=null});
+for(const name of ['gesturestart','gesturechange','gestureend'])document.addEventListener(name,ev=>{if($('board').contains(ev.target)&&ev.cancelable)ev.preventDefault()},{passive:false});
+window.addEventListener('keydown',ev=>{if(ev.key==='ArrowRight')changeShape(1);if(ev.key==='ArrowLeft')changeShape(-1);if(ev.key==='ArrowUp')setDepth(Math.round(ghost[2])+1);if(ev.key==='ArrowDown')setDepth(Math.round(ghost[2])-1)});
+// Deterministic API for geometric correctness, reachability, and interaction tests.
+window.__CUBE_SNAP_TEST__={summary:()=>LEVELS.map((l,i)=>({stage:i+1,dots:l.points.length,cubes:l.solutions.length,allPointsUsed:[...l.degree.values()].every(n=>n>0),reachable:l.solutions.every(s=>{const t=shapeSignature(s.points),so=SHAPES.find(g=>g.id===t);return !!so&&so.first<=i})})),
+ state:()=>({stage:stage+1,found:found.size,actual:level.solutions.length,shape:allowed.indexOf(shape),shapeCount:allowed.length,ghost:[...ghost],ready:ghostState().ready,won:found.size===level.solutions.length}),load,
+ setShape:(i)=>{if(i<0||i>=allowed.length)return false;shape=allowed[i];ghost=clampGhost(ghost);updateForm();schedule();return true},
+ setGhost:(x,y,z)=>{ghost=clampGhost([x,y,z]);schedule();return ghostState().ready},
+ getShapes:()=>allowed.map(s=>({id:s.id,side:s.side,first:s.first,ext:s.ext})),
+ getSolutions:()=>level.solutions.map(s=>({id:s.id,points:s.points.map(p=>[...p])})),
+ solveCurrent:()=>{for(const s of level.solutions){if(!found.has(s.id)){found.add(s.id);for(const p of s.points)used.set(key(p),(used.get(key(p))||0)+1)}}persistFound();refresh();return found.size},
+ insertAllWithGhost:()=>{for(const cube of level.solutions){if(found.has(cube.id))continue;const t=shapeSignature(cube.points),ix=allowed.findIndex(s=>s.id===t);if(ix<0)throw Error('Unreachable shape');shape=allowed[ix];const lo=[0,1,2].map(j=>Math.min(...cube.points.map(p=>p[j])));ghost=lo;const st=ghostState();if(!st.ready)throw Error('Cannot align '+cube.id);if(!trySnap())throw Error('Failed to snap '+cube.id);}return found.size}
+};
+persistentSound();load(Number.isInteger(saved.stage)?saved.stage:0);
 })();
-</script>
-</body>
-</html>
+</script></body></html>
