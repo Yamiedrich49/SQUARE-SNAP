@@ -201,7 +201,7 @@ body.low-motion *,body.low-motion *::before,body.low-motion *::after{animation:n
 .completion-symbol svg path{stroke-width:2;}
 .completion-eyebrow{font-size:11px;letter-spacing:.13em;font-weight:790;color:#2c6269;}
 .completion-sub{font-size:10px;margin-top:4px;color:#84999b;font-weight:560;}
-.completion-actions{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:9px;margin-top:12px;}
+.completion-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.6fr);gap:9px;margin-top:12px;}
 .completion-actions button{height:45px;min-width:0;border-radius:11px;font-size:12px;font-weight:720;touch-action:manipulation;}
 .completion-next{background:#0d9299;color:white;box-shadow:0 3px 10px rgba(13,146,153,.16);}
 .completion-next:active{background:#087c83;transform:scale(.985);}
@@ -247,8 +247,8 @@ body.low-motion .completion-panel{transition:none;}
         <div class="completion-eyebrow">STAGE <span id="winStage">001</span> COMPLETE</div>
         <div class="completion-sub" id="winSub">ALL SQUARES FOUND</div>
         <div class="completion-actions">
-          <button type="button" class="completion-next" id="next">NEXT <span aria-hidden="true">›</span></button>
           <button type="button" class="completion-retry" id="retry">REPLAY</button>
+          <button type="button" class="completion-next" id="next">NEXT <span aria-hidden="true">›</span></button>
         </div>
       </div>
     </div>
