@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#f7f9f8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>CUBE SNAP — a 3D SQUARE SNAP experiment</title>
+<style>
+:root{--paper:#fff;--bg:#f7f9f8;--ink:#2a4248;--muted:#8aa0a4;--cyan:#0c969d;--deep:#087e85;--line:#e4eeec;--gold:#b98e58;--ease:cubic-bezier(.2,.7,.15,1)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;color:var(--ink);-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent}button{font:inherit;cursor:pointer;color:inherit;border:0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}button:focus-visible{outline:3px solid #79c9c6;outline-offset:3px}[hidden]{display:none!important}
+.shell{max-width:472px;margin:0 auto;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(14px + env(safe-area-inset-bottom,0px))}
+.brand{display:flex;align-items:center;justify-content:space-between;padding:4px 7px 15px}.brand-name{display:flex;align-items:center;gap:10px;font-weight:830;font-size:12px;letter-spacing:.16em}.mark{width:18px;height:18px;position:relative;transform:rotate(-14deg)}.mark:before,.mark:after{content:'';position:absolute;width:13px;height:13px;border:1.7px solid var(--cyan);border-radius:1px}.mark:after{transform:translate(4px,-4px);opacity:.48}.brand-ver{font-size:9px;color:#a5b3b5;font-weight:750;letter-spacing:.12em}
+.pager{display:grid;grid-template-columns:46px 1fr 46px;gap:8px;margin-bottom:9px}.pager button{height:43px;border-radius:12px;border:1px solid #e2eae8;background:white;box-shadow:0 2px 7px #31585a08}.pager button:active{transform:scale(.97);background:#eaf5f4}.pager .arrow{font-size:23px;color:#76979a}.stage-pick{font-size:12px;font-weight:780;letter-spacing:.11em;color:#3c757b}.stage-pick small{color:#9eb1b2;font-size:10px;letter-spacing:.04em}
+.level-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;background:white;border:1px solid var(--line);border-radius:12px;margin-bottom:10px;padding:9px}.level-picker button{height:37px;border-radius:8px;border:1px solid #eaf0ee;background:#f8fbfa;font-size:11px;font-weight:700}.level-picker button.active{border:1px solid var(--cyan);color:var(--deep)}.level-picker button.completed{background:#e7f5f1;color:var(--deep)}
+.paper{border:1px solid #e2ecea;background:white;border-radius:19px;box-shadow:0 9px 31px #21494709;padding:0 8px 9px;overflow:hidden}
+.dashboard{padding:14px 12px 11px;display:flex;justify-content:space-between;align-items:center;gap:10px}.eyebrow{font-size:10px;letter-spacing:.15em;color:#91a7a9;font-weight:770}.headline{margin-top:5px;font-weight:700;font-size:14px;letter-spacing:-.02em}.found{display:flex;align-items:baseline;gap:7px}.found b{font-size:31px;color:var(--deep);font-weight:650;letter-spacing:-.06em;font-variant-numeric:tabular-nums}.found small{font-size:9px;color:#8da5a7;font-weight:800;letter-spacing:.11em}
+.progress-row{display:flex;justify-content:space-between;font-size:10px;font-weight:690;color:#95a8a9;margin:0 13px 6px}.progress-row strong{font-variant-numeric:tabular-nums;color:#6e9496}.track{height:3px;background:#ebf3f0;margin:0 13px 10px;border-radius:4px;overflow:hidden}.bar{height:100%;width:0;background:#0b9aa0;transition:width .22s ease}
+.board{width:100%;aspect-ratio:360/440;border-radius:11px;border:1px solid #edf1ef;background:radial-gradient(ellipse 90% 84% at 50% 45%,#fff 0%,#fafdfe 80%,#f5faf9 100%);position:relative;overflow:hidden;touch-action:none;overscroll-behavior:contain;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.board svg{display:block;width:100%;height:100%;pointer-events:all;touch-action:none;user-select:none;-webkit-user-select:none}.board svg *{touch-action:none;pointer-events:none}
+.board .depth{position:absolute;left:14px;bottom:12px;display:flex;align-items:center;gap:5px;font-size:9px;color:#b0bfc0;letter-spacing:.07em;pointer-events:none}.board .depth svg{width:35px;height:35px;overflow:visible}.board .depth span{margin-left:2px}
+.board-top{position:absolute;top:13px;left:0;right:0;text-align:center;pointer-events:none}.instruction{font-size:10.5px;font-weight:760;letter-spacing:.095em;color:#6d9698}.sequence{display:flex;justify-content:center;gap:6px;margin-top:9px}.sequence i{display:block;width:5px;height:5px;background:#dceae8;border-radius:50%;transition:background .15s,transform .15s}.sequence i.active{background:#119aa2;transform:scale(1.28)}
+.toast{position:absolute;left:50%;top:64px;transform:translate(-50%,-5px);white-space:nowrap;border-radius:20px;background:#284d50de;color:white;padding:8px 13px;font-size:11px;font-weight:670;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;z-index:6}.toast.show{opacity:1;transform:translate(-50%,0)}
+.selection-line{stroke:#13a4a8;stroke-width:2;stroke-linecap:round;vector-effect:non-scaling-stroke}.selection-face{fill:#3cbeb7;fill-opacity:.09;stroke:#159ea6;stroke-width:1.9;vector-effect:non-scaling-stroke}.selected-ring{fill:none;stroke:#11a2a7;stroke-width:2;vector-effect:non-scaling-stroke}.selected-halo{fill:#a7e0da;fill-opacity:.20;stroke:none}.missing{fill:none;stroke:#c39362;stroke-width:2;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}.ghost-wire{fill:none;stroke:#c39362;stroke-width:1.9;stroke-dasharray:4 4;opacity:.78;vector-effect:non-scaling-stroke}.found-edge{stroke:#479da0;stroke-width:1.5;stroke-opacity:.52;vector-effect:non-scaling-stroke;stroke-linecap:round}.found-face{fill:#0b949b;fill-opacity:.025;stroke:none}.cube-flash{stroke:#0da9aa;stroke-width:2.8;stroke-linecap:round;fill:none;stroke-dasharray:100;stroke-dashoffset:100;animation:trace .32s var(--ease) forwards;vector-effect:non-scaling-stroke}.dot{stroke:#fff;stroke-width:1.7;paint-order:stroke fill;transition:fill .2s}.dot.single{fill:#32474e}.dot.multi{fill:#0d969d}.dot.exhausted{fill:#bfcecd}.dot.selected{fill:#09848c}.dot.hint{fill:#b89565}.dot-shadow{fill:#4a818012;stroke:none}.axis-line{stroke:#e4edeb;stroke-width:1;vector-effect:non-scaling-stroke}.axis-floor{stroke:#eaf0ed;stroke-width:.8;vector-effect:non-scaling-stroke}.axis-corner{fill:#c5d5d2}
+@keyframes trace{to{stroke-dashoffset:0}}@keyframes pop{from{transform:scale(.6);opacity:.1}to{transform:scale(1);opacity:1}}
+.completion{position:absolute;left:13px;right:13px;bottom:25px;background:#fcfffeee;border:1px solid #cce8e0;box-shadow:0 15px 40px #22595123;border-radius:15px;padding:15px;z-index:7;backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);transform:translateY(12px);opacity:0;transition:transform .23s ease,opacity .23s ease;pointer-events:none}
+.completion.show{opacity:1;transform:translateY(0);pointer-events:auto}.completion-title{font-size:13px;font-weight:800;letter-spacing:.06em;color:var(--deep)}.completion-sub{font-size:10px;color:#8fa4a5;margin-top:5px}.completion-actions{display:grid;grid-template-columns:1fr 1.65fr;gap:9px;margin-top:13px}.completion-actions button{height:44px;border-radius:10px;font-size:12px;font-weight:760}.completion-actions .replay{background:#eaf5f3;color:#50797c}.completion-actions .next{background:#0e959d;color:white}
+.legendbar{padding:9px 10px 3px;display:flex;align-items:center;justify-content:space-between;gap:6px}.legend{display:flex;gap:10px;font-size:10px;font-weight:680;color:#74898c}.legend-item{display:flex;align-items:center;gap:5px}.mini-dot{width:9px;height:9px;border-radius:50%;background:#34484e;box-shadow:0 0 0 2px #e3eae9}.mini-dot.multi{background:#0c969d;box-shadow:0 0 0 2px #c7e7e2}.mini-dot.done{background:#bfcecd;box-shadow:0 0 0 2px #e9f1ef}
+.board-controls{display:flex;gap:6px}.board-controls button{height:34px;border:1px solid #e5eeec;background:#fafcfa;color:#69878b;font-weight:750;font-size:10px;border-radius:9px;padding:0 10px}.board-controls button:active{background:#e8f4f1}.board-controls button:disabled{opacity:.4}
+.guide{text-align:center;font-size:10px;color:#a3b3b4;letter-spacing:.02em;margin:14px 0 7px;font-weight:600}.credits{text-align:center;font-size:9px;letter-spacing:.085em;color:#bac5c5;padding-top:8px}
+@media(max-width:360px){.shell{padding-left:8px;padding-right:8px}.dashboard{padding-left:8px;padding-right:8px}.legend{gap:7px;font-size:9px}.board-controls button{padding:0 7px}.guide{margin-top:10px}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="brand"><div class="brand-name"><span class="mark"></span>CUBE SNAP</div><div class="brand-ver">3D EXPERIMENT · V0.1</div></header>
+  <nav class="pager"><button class="arrow" id="previous" aria-label="Previous stage">‹</button><button class="stage-pick" id="selectStage" aria-expanded="false">STAGE <span id="stageNum">01</span> <small>/ 24 ▾</small></button><button class="arrow" id="advance" aria-label="Next stage">›</button></nav>
+  <div class="level-picker" id="picker" hidden></div>
+  <main class="paper">
+    <div class="dashboard"><div><div class="eyebrow">FIND THE HIDDEN CUBES</div><div class="headline" id="subtitle">First cube</div></div><div class="found"><b id="foundCount">0</b><small>FOUND</small></div></div>
+    <div class="progress-row"><span>POINTS CLEARED</span><strong id="pointsProgress">0 / 8</strong></div><div class="track"><div class="bar" id="progressBar"></div></div>
+    <div class="board" id="boardWrap">
+      <svg id="canvas" viewBox="0 0 360 440" role="img" aria-label="Three-dimensional point cloud. Drag to orbit, tap four corners of one cube.">
+        <g id="gridLayer"></g><g id="foundLayer"></g><g id="previewLayer"></g><g id="dotLayer"></g><g id="effectLayer"></g>
+      </svg>
+      <div class="board-top"><div class="instruction" id="instruction">TAP A CORNER POINT</div><div class="sequence" id="sequence"><i></i><i></i><i></i><i></i></div></div>
+      <div class="toast" id="toast" aria-live="polite"></div>
+      <div class="depth" aria-hidden="true"><svg viewBox="0 0 42 42"><path d="M18 32L18 6" stroke="#9fc9c4" stroke-width="1.5"/><path d="M18 32L38 22" stroke="#c3cecb" stroke-width="1.5"/><path d="M18 32L4 21" stroke="#a8d1cf" stroke-width="1.5"/><circle cx="18" cy="32" r="2" fill="#93c8c4"/></svg><span>DRAG TO ORBIT</span></div>
+      <div class="completion" id="completion" hidden><div class="completion-title">STAGE <span id="completeNum">01</span> COMPLETE</div><div class="completion-sub" id="completeSub">ALL CUBES FOUND</div><div class="completion-actions"><button class="replay" id="replay">REPLAY</button><button class="next" id="next">NEXT ›</button></div></div>
+    </div>
+    <div class="legendbar"><div class="legend"><span class="legend-item"><i class="mini-dot"></i>1×</span><span class="legend-item"><i class="mini-dot multi"></i>2×+</span><span class="legend-item"><i class="mini-dot done"></i>DONE</span></div><div class="board-controls"><button id="undo" disabled>UNDO</button><button id="hint">HINT</button><button id="sound" aria-pressed="true">SOUND ON</button></div></div>
+  </main>
+  <p class="guide">DRAG TO ROTATE · TAP POINTS · PINCH TO ZOOM</p>
+  <div class="credits">8 POINTS · 12 EDGES · 6 FACES · 1 CUBE</div>
+</div>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),SVG='http://www.w3.org/2000/svg';
+const vec=(x,y,z)=>[x,y,z],add=(a,b)=>a.map((x,i)=>x+b[i]),sub=(a,b)=>a.map((x,i)=>x-b[i]),dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),len2=a=>dot(a,a),cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]],key=p=>p.join(','),canonical=pts=>pts.map(key).sort().join('|'),clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const E=[[0,1],[0,2],[0,3],[1,4],[1,5],[2,4],[2,6],[3,5],[3,6],[4,7],[5,7],[6,7]];
+const F=[[0,1,4,2],[0,1,5,3],[0,2,6,3],[7,4,1,5],[7,4,2,6],[7,5,3,6]];
+const A=s=>[[s,0,0],[0,s,0],[0,0,s]];
+const T=[[2,2,1],[2,-1,-2],[-1,2,-2]];
+const U=[[1,2,2],[2,1,-2],[2,-2,1]];
+const perm=(v,i)=>i===0?v:i===1?[v[1],v[2],v[0]]:[v[2],v[0],v[1]];
+function basis(kind,s){if(kind==='A')return A(s);if(kind==='T')return T.map(v=>perm(v,0));if(kind==='U')return U.map(v=>perm(v,1));if(kind==='V')return T.map(v=>perm(v,2));if(kind==='W')return T.map(v=>perm(v,1).map((c,j)=>j===1?-c:c));return A(s)}
+function cubePts(origin,axes){const[a,b,c]=axes;return[origin,add(origin,a),add(origin,b),add(origin,c),add(add(origin,a),b),add(add(origin,a),c),add(add(origin,b),c),add(add(add(origin,a),b),c)];}
+// All coordinates are actual 3D integer lattice positions. Every point belongs to a real cube.
+// Tuples are [x,y,z, side, basis family]. The final solutions are always re-enumerated.
+const SPECS=[
+ {n:'THE FIRST CUBE',c:[[0,0,0,3,'A']]},
+ {n:'SHARED FACE',c:[[0,0,0,3,'A'],[3,0,0,3,'A']]},
+ {n:'SHARED EDGE',c:[[0,0,0,3,'A'],[3,3,0,3,'A']]},
+ {n:'ONE CORNER',c:[[0,0,0,3,'A'],[3,3,3,3,'A']]},
+ {n:'THREE IN A ROW',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[6,0,0,3,'A']]},
+ {n:'A CUBE INSIDE',c:[[0,0,0,4,'A'],[1,1,1,2,'A']]},
+ {n:'THE LETTER L',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[3,3,0,3,'A']]},
+ {n:'THREE DIRECTIONS',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[0,0,3,3,'A']]},
+ {n:'TURN THE SPACE',c:[[0,0,0,3,'A'],[0,0,0,3,'T']]},
+ {n:'THREE ORIENTATIONS',c:[[0,0,0,3,'A'],[0,0,0,3,'T'],[0,0,0,3,'U']]},
+ {n:'CROSSED CORNERS',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[3,0,0,3,'U']]},
+ {n:'ALONG THE Z AXIS',c:[[0,0,0,3,'A'],[0,0,3,3,'A'],[0,0,6,3,'A']]},
+ {n:'TURNED & STACKED',c:[[0,0,0,3,'A'],[0,3,0,3,'A'],[0,0,0,3,'V']]},
+ {n:'TWIN TWISTS',c:[[0,0,0,3,'T'],[3,3,-3,3,'U']]},
+ {n:'NESTED & SHARED',c:[[0,0,0,4,'A'],[1,1,1,2,'A'],[4,0,0,4,'A']]},
+ {n:'THE 3D CORNER',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[0,0,3,3,'A'],[3,3,3,3,'A']]},
+ {n:'INTERSECTIONS',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[3,3,0,3,'A'],[0,0,0,3,'T']]},
+ {n:'HIDDEN DIRECTIONS',c:[[0,0,0,3,'T'],[0,0,0,3,'U'],[0,0,0,3,'V']]},
+ {n:'TWO SCALES',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[1,1,1,2,'A']]},
+ {n:'THROUGH THE CENTER',c:[[0,0,0,4,'A'],[1,1,1,2,'A'],[0,0,0,3,'T'],[4,0,0,3,'V']]},
+ {n:'THE LONG CORRIDOR',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[6,0,0,3,'A'],[3,0,3,3,'A'],[3,3,3,3,'A']]},
+ {n:'MANY CORNERS',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[0,0,3,3,'A'],[3,3,0,3,'A'],[3,0,3,3,'A']]},
+ {n:'A DIFFERENT ANGLE',c:[[0,0,0,3,'T'],[0,0,0,3,'U'],[0,0,0,3,'V'],[0,0,0,3,'W']]},
+ {n:'THE FINAL STRUCTURE',c:[[0,0,0,3,'A'],[3,0,0,3,'A'],[0,3,0,3,'A'],[0,0,3,3,'A'],[3,3,0,3,'A'],[3,0,3,3,'A'],[0,0,0,3,'T']]}
+];
+function enumerate(pts){const set=new Set(pts.map(key)),all=new Map(),n=pts.length;
+ for(let i=0;i<n;i++){
+  const p=pts[i],groups=new Map();
+  for(let j=0;j<n;j++)if(i!==j){const v=sub(pts[j],p),m=len2(v);if(!groups.has(m))groups.set(m,[]);groups.get(m).push(v)}
+  for(const vectors of groups.values())for(let a=0;a<vectors.length;a++)for(let b=a+1;b<vectors.length;b++){
+   const x=vectors[a],y=vectors[b];if(dot(x,y)!==0)continue;
+   for(let c=b+1;c<vectors.length;c++){
+    const z=vectors[c];if(dot(x,z)!==0||dot(y,z)!==0)continue;
+    const vs=cubePts(p,[x,y,z]);if(vs.every(q=>set.has(key(q))))all.set(canonical(vs),vs);
+   }
+  }
+ }
+ return [...all.entries()].map(([id,ps])=>({id,points:ps}));
+}
+const LEVELS=SPECS.map((s,i)=>{const points=new Map();for(const [x,y,z,n,k] of s.c){for(const p of cubePts([x,y,z],basis(k,n)))points.set(key(p),p)}const pts=[...points.values()];const solutions=enumerate(pts);const degree=new Map(pts.map(p=>[key(p),0]));for(const cube of solutions)for(const p of cube.points)degree.set(key(p),degree.get(key(p))+1);return {title:s.n,points:pts,solutions,degree,number:i+1}});
+const savedKey='cube_snap_exp_v01';let saved={stage:0,done:{},sound:true};try{const raw=JSON.parse(localStorage.getItem(savedKey)||'null');if(raw&&typeof raw==='object')saved={...saved,...raw}}catch(_){}
+const persist=()=>{try{localStorage.setItem(savedKey,JSON.stringify(saved))}catch(_){}};
+let stage=0,level,found=new Set(),selected=[],degree,used=new Map(),hint=null,previewMissing=null,previewTimeout=null,flash=null,flashTimeout=null,completionTimeout=null;
+let yaw=.72,pitch=-.42,zoom=1,sceneCenter=[0,0,0],radius=1,unit=1,projection=new Map(),pointers=new Map(),drag=null,pinch=null,raf=0,lastTap=0;
+let audio=null;const sound=type=>{if(!saved.sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume().catch(()=>{});if(audio.state!=='running')return;const specs={tap:[410,.022,.048],step:[500,.027,.065],found:[590,.055,.15],finish:[660,.07,.22],error:[275,.019,.07]};const[p,g,d]=specs[type]||specs.tap,t=audio.currentTime;const osc=audio.createOscillator(),gain=audio.createGain();osc.type='sine';osc.frequency.setValueAtTime(p,t);gain.gain.setValueAtTime(.0001,t);gain.gain.exponentialRampToValueAtTime(g,t+.008);gain.gain.exponentialRampToValueAtTime(.0001,t+d);osc.connect(gain);gain.connect(audio.destination);osc.start(t);osc.stop(t+d+.016);osc.onended=()=>{osc.disconnect();gain.disconnect()}}catch(_){}};
+function el(name,attrs={}){const e=document.createElementNS(SVG,name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e}
+function line(a,b,cls,extra={}){return el('line',{x1:a.x.toFixed(2),y1:a.y.toFixed(2),x2:b.x.toFixed(2),y2:b.y.toFixed(2),class:cls,...extra})}
+function polygon(points,cls,extra={}){return el('polygon',{points:points.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join(' '),class:cls,...extra})}
+function circle(p,r,cls,extra={}){return el('circle',{cx:p.x.toFixed(2),cy:p.y.toFixed(2),r,class:cls,...extra})}
+function computeView(){const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch),base=unit*zoom;
+ return p=>{const q=sub(p,sceneCenter),x=cy*q[0]-sy*q[2],a=sy*q[0]+cy*q[2],y=cp*q[1]-sp*a,z=sp*q[1]+cp*a,fac=(radius*5)/(radius*5-z);return{x:180+x*base*fac,y:216-y*base*fac,z,fac}};
+}
+function pointsProjection(){const project=computeView();projection=new Map(level.points.map(p=>[key(p),project(p)]));return project}
+function worldBox(){let xs=level.points.map(p=>p[0]),ys=level.points.map(p=>p[1]),zs=level.points.map(p=>p[2]);const mins=[Math.min(...xs),Math.min(...ys),Math.min(...zs)],maxs=[Math.max(...xs),Math.max(...ys),Math.max(...zs)];return{mins,maxs}}
+function drawGrid(project){const g=$('gridLayer'),f=document.createDocumentFragment(),{mins,maxs}=worldBox();const bottom=mins[1],offset=1;
+ // A discreet spatial ground plane: visually conveys the third dimension without a full box.
+ for(let x=mins[0];x<=maxs[0];x+=3)f.append(line(project([x,bottom-offset,mins[2]-offset]),project([x,bottom-offset,maxs[2]+offset]),'axis-floor'));
+ for(let z=mins[2];z<=maxs[2];z+=3)f.append(line(project([mins[0]-offset,bottom-offset,z]),project([maxs[0]+offset,bottom-offset,z]),'axis-floor'));
+ const corners=[[mins[0],bottom-offset,mins[2]-offset],[maxs[0]+offset,bottom-offset,mins[2]-offset],[maxs[0]+offset,bottom-offset,maxs[2]+offset],[mins[0],bottom-offset,maxs[2]+offset]];
+ for(let i=0;i<4;i++)f.append(line(project(corners[i]),project(corners[(i+1)%4]),'axis-line'));
+ g.replaceChildren(f);
+}
+function renderFound(project){const f=document.createDocumentFragment();for(const sq of level.solutions){if(!found.has(sq.id))continue;
+ // Re-orient edge list from an arbitrary cube corner by finding actual edge length.
+ const ps=sq.points,side=Math.min(...ps.flatMap((p,i)=>ps.slice(i+1).map(q=>len2(sub(p,q)))));
+ const mids=[];for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if(len2(sub(ps[i],ps[j]))===side)mids.push([ps[i],ps[j]]);
+ // Faces are represented by four mutually coplanar corners with square edge length.
+ const faceSets=new Set(),faces=[];
+ for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)for(let k=j+1;k<8;k++)for(let l=k+1;l<8;l++){
+  const group=[ps[i],ps[j],ps[k],ps[l]],dists=[];for(let a=0;a<4;a++)for(let b=a+1;b<4;b++)dists.push(len2(sub(group[a],group[b])));dists.sort((a,b)=>a-b);if(dists[0]===side&&dists[3]===side&&dists[4]===side*2&&dists[5]===side*2){let c=group.reduce((t,p)=>add(t,p),[0,0,0]).map(x=>x/4);group.sort((p,q)=>{const aa=sub(p,c),bb=sub(q,c);const u=sub(group[0],c),v=sub(group[1],c);return 0});faces.push(group);}
+ }
+ // Found cubes stay as subtle wireframes. Filled faces are not needed to understand them.
+ for(const [a,b] of mids)f.append(line(project(a),project(b),'found-edge'));
+ }
+ $('foundLayer').replaceChildren(f);
+}
+function renderSelection(project){const f=document.createDocumentFragment();const ps=selected.map(k=>level.points.find(p=>key(p)===k));
+ const P=ps.map(project);
+ if(ps.length>=2)f.append(line(P[0],P[1],'selection-line'));
+ if(ps.length>=3){const d=add(ps[1],sub(ps[2],ps[0]));f.append(polygon([project(ps[0]),project(ps[1]),project(d),project(ps[2])],'selection-face'));}
+ if(previewMissing){const {pts}=previewMissing;for(const [a,b]of E)f.append(line(project(pts[a]),project(pts[b]),'ghost-wire'));for(const p of previewMissing.missing)f.append(circle(project(p),7,'missing'));}
+ for(const p of ps){const q=project(p);f.append(circle(q,10,'selected-halo'));f.append(circle(q,7.2,'selected-ring'));}
+ if(hint){const p=level.points.find(p=>key(p)===hint);if(p){const q=project(p);f.append(circle(q,12.5,'selected-ring',{stroke:'#b8965f','stroke-dasharray':'2 4'}));}}
+ $('previewLayer').replaceChildren(f);
+}
+function renderDots(){const f=document.createDocumentFragment();const pts=[...level.points].sort((a,b)=>projection.get(key(a)).z-projection.get(key(b)).z);
+ for(const p of pts){const k=key(p),q=projection.get(k),d=degree.get(k),usedN=used.get(k)||0,r=clamp(4.1*q.fac,3.15,6.7);f.append(circle(q,r+2.4,'dot-shadow'));f.append(circle(q,r,'dot '+(usedN>=d?'exhausted':d>1?'multi':'single')+(selected.includes(k)?' selected':'')));}
+ $('dotLayer').replaceChildren(f);
+}
+function renderFlash(project){const layer=$('effectLayer');if(!flash){layer.replaceChildren();return;}const f=document.createDocumentFragment(),ps=flash.points,side=Math.min(...ps.flatMap((p,i)=>ps.slice(i+1).map(q=>len2(sub(p,q)))));for(let i=0;i<8;i++)for(let j=i+1;j<8;j++)if(len2(sub(ps[i],ps[j]))===side)f.append(line(project(ps[i]),project(ps[j]),'cube-flash',{pathLength:100}));layer.replaceChildren(f)}
+function render(){raf=0;if(!level)return;const project=pointsProjection();drawGrid(project);renderFound(project);renderSelection(project);renderDots();renderFlash(project)}
+const schedule=()=>{if(!raf)raf=requestAnimationFrame(render)};
+const statusMessages=['TAP A CORNER POINT','TAP AN EDGE POINT','FIND A RIGHT ANGLE','ADD THE THIRD EDGE'];
+function updateInstruction(){const i=Math.min(selected.length,3);$('instruction').textContent=statusMessages[i];const seq=[...$('sequence').children];seq.forEach((e,n)=>e.classList.toggle('active',n<selected.length));$('undo').disabled=selected.length===0;}
+function refresh(){const cleared=[...degree].filter(([k,n])=>(used.get(k)||0)>=n).length;const done=cleared===level.points.length;
+ $('foundCount').textContent=found.size;$('pointsProgress').textContent=`${cleared} / ${level.points.length}`;$('progressBar').style.width=`${cleared/level.points.length*100}%`;
+ $('completeNum').textContent=String(stage+1).padStart(2,'0');$('completeSub').textContent=`${found.size} CUBE${found.size===1?'':'S'} DISCOVERED`;$('next').textContent=stage===LEVELS.length-1?'STAGE 01 ›':'NEXT ›';
+ if(done){saved.done[String(stage)]=[...found];persist();clearTimeout(completionTimeout);completionTimeout=setTimeout(()=>{if(stage===level.number-1){$('completion').hidden=false;requestAnimationFrame(()=>$('completion').classList.add('show'));}},420)}
+ else{$('completion').hidden=true;$('completion').classList.remove('show')}
+ updateInstruction();updatePicker();schedule();
+}
+let toastTimeout=null;function message(t){const d=$('toast');d.textContent=t;d.classList.add('show');clearTimeout(toastTimeout);toastTimeout=setTimeout(()=>d.classList.remove('show'),1200)}
+function resetSelection(){selected=[];previewMissing=null;clearTimeout(previewTimeout);updateInstruction();schedule()}
+function isPerpEqual(a,b){return len2(a)===len2(b)&&dot(a,b)===0&&len2(a)>0}
+function enterPoint(p){if(!p||($('completion').hidden===false))return;const k=key(p);if(selected.includes(k)){const at=selected.indexOf(k);selected=selected.slice(0,at+1);message('SELECT A DIFFERENT POINT');sound('tap');updateInstruction();schedule();return;}
+ if(selected.length===0){selected=[k];hint=null;sound('tap');updateInstruction();schedule();return;}
+ if(selected.length===1){selected.push(k);sound('tap');updateInstruction();schedule();return;}
+ const origin=level.points.find(q=>key(q)===selected[0]);const first=level.points.find(q=>key(q)===selected[1]);const a=sub(first,origin),b=sub(p,origin);
+ if(selected.length===2){if(!isPerpEqual(a,b)||!level.points.some(q=>key(q)===key(add(first,b)))){message('FIND A SQUARE FACE');sound('error');return;}selected.push(k);sound('step');updateInstruction();schedule();return;}
+ const second=level.points.find(q=>key(q)===selected[2]),c=sub(second,origin);
+ if(!isPerpEqual(a,b)||!isPerpEqual(c,b)){message('THREE RIGHT ANGLES');sound('error');return;}
+ const pts=cubePts(origin,[a,c,b]),id=canonical(pts),existing=level.solutions.find(s=>s.id===id);
+ if(found.has(id)){message('ALREADY DISCOVERED');resetSelection();sound('tap');return;}
+ if(existing){found.add(id);for(const v of existing.points)used.set(key(v),(used.get(key(v))||0)+1);flash=existing;clearTimeout(flashTimeout);flashTimeout=setTimeout(()=>{flash=null;schedule()},480);sound(found.size===level.solutions.length?'finish':'found');resetSelection();refresh();message('CUBE FOUND!');}
+ else{const available=new Set(level.points.map(key)),missing=pts.filter(q=>!available.has(key(q)));previewMissing={pts,missing};clearTimeout(previewTimeout);previewTimeout=setTimeout(()=>{previewMissing=null;schedule()},950);message('SOME CORNERS ARE MISSING');sound('error');schedule();}
+}
+function pickPoint(q){let best=null,dmin=Infinity;for(const p of level.points){const s=projection.get(key(p)),d=Math.hypot(s.x-q.x,s.y-q.y);if(d<dmin){dmin=d;best=p}}return dmin<=clamp(14+4*zoom,14,21)?best:null}
+function undo(){if(selected.length){selected.pop();previewMissing=null;hint=null;updateInstruction();schedule();sound('tap')}}
+function hintPoint(){const remaining=level.solutions.find(s=>!found.has(s.id));if(!remaining)return;const candidates=remaining.points.filter(p=>degree.get(key(p))===1),list=candidates.length?candidates:remaining.points;hint=key(list[0]);message('START FROM THIS POINT');schedule();setTimeout(()=>{hint=null;schedule()},2000)}
+function updatePicker(){if(!level)return;const p=$('picker');p.replaceChildren();for(let i=0;i<LEVELS.length;i++){const b=document.createElement('button');b.textContent=String(i+1).padStart(2,'0');b.className=(i===stage?'active ':'')+(Array.isArray(saved.done[String(i)])?'completed':'');b.addEventListener('click',()=>{load(i);p.hidden=true;$('selectStage').setAttribute('aria-expanded','false')});p.append(b)}}
+function load(i){clearTimeout(completionTimeout);clearTimeout(flashTimeout);clearTimeout(previewTimeout);stage=(i+LEVELS.length)%LEVELS.length;level=LEVELS[stage];selected=[];previewMissing=null;flash=null;hint=null;found=new Set();degree=level.degree;used=new Map(level.points.map(p=>[key(p),0]));
+ const ids=new Set(level.solutions.map(s=>s.id));for(const id of saved.done[String(stage)]||[])if(ids.has(id))found.add(id);
+ for(const s of level.solutions)if(found.has(s.id))for(const p of s.points)used.set(key(p),(used.get(key(p))||0)+1);
+ const mins=[0,1,2].map(j=>Math.min(...level.points.map(p=>p[j]))),maxs=[0,1,2].map(j=>Math.max(...level.points.map(p=>p[j])));sceneCenter=mins.map((v,j)=>(v+maxs[j])/2);radius=Math.max(...level.points.map(p=>Math.sqrt(len2(sub(p,sceneCenter)))));unit=clamp(150/(radius*1.26),11,80);zoom=1;yaw=.66+(stage%4)*.21;pitch=-.34-(stage%3)*.13;
+ $('stageNum').textContent=String(stage+1).padStart(2,'0');$('subtitle').textContent=level.title;$('completion').hidden=true;$('completion').classList.remove('show');$('picker').hidden=true;$('selectStage').setAttribute('aria-expanded','false');saved.stage=stage;persist();refresh();}
+$('previous').addEventListener('click',()=>load(stage-1));$('advance').addEventListener('click',()=>load(stage+1));$('selectStage').addEventListener('click',()=>{$('picker').hidden=!$('picker').hidden;$('selectStage').setAttribute('aria-expanded',String(!$('picker').hidden))});$('undo').addEventListener('click',undo);$('hint').addEventListener('click',hintPoint);$('sound').addEventListener('click',()=>{saved.sound=!saved.sound;$('sound').textContent=saved.sound?'SOUND ON':'SOUND OFF';$('sound').setAttribute('aria-pressed',String(saved.sound));persist();if(saved.sound)sound('tap')});$('replay').addEventListener('click',()=>{delete saved.done[String(stage)];persist();load(stage)});$('next').addEventListener('click',()=>{load(stage+1);window.scrollTo(0,0)});
+const canvas=$('canvas');function coord(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*360/r.width,y:(e.clientY-r.top)*440/r.height,px:e.clientX,py:e.clientY}}
+function startPinch(){const a=[...pointers.values()];if(a.length<2)return;pinch={dist:Math.hypot(a[0].px-a[1].px,a[0].py-a[1].py),zoom};drag=null}
+canvas.addEventListener('pointerdown',e=>{if(!pointers.size&&(!$('completion').hidden))return;e.preventDefault();try{canvas.setPointerCapture(e.pointerId)}catch(_){ }const p=coord(e);pointers.set(e.pointerId,p);if(pointers.size===1){drag={id:e.pointerId,p,old:p,moved:false,when:performance.now()}}else startPinch();},{passive:false});
+canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;e.preventDefault();const p=coord(e),previous=pointers.get(e.pointerId);pointers.set(e.pointerId,p);if(pointers.size>=2){const a=[...pointers.values()];if(!pinch)startPinch();const d=Math.hypot(a[0].px-a[1].px,a[0].py-a[1].py);if(pinch&&pinch.dist>0)zoom=clamp(pinch.zoom*d/pinch.dist,.6,2.3);schedule();return;}if(!drag)return;const dx=p.px-previous.px,dy=p.py-previous.py;if(Math.hypot(p.px-drag.p.px,p.py-drag.p.py)>7)drag.moved=true;if(drag.moved){yaw+=dx*.009;pitch=clamp(pitch-dy*.008,-1.5,1.5);schedule()}},{passive:false});
+function pointerUp(e,cancel=false){if(!pointers.has(e.pointerId))return;e.preventDefault();const p=coord(e),wasDrag=drag,pn=pointers.size;pointers.delete(e.pointerId);if(pn===1&&wasDrag&&!cancel&&!wasDrag.moved&&performance.now()-wasDrag.when<700){const point=pickPoint(p);if(point)enterPoint(point)}if(pointers.size===1){const[a,b]=[...pointers.entries()][0];drag={id:a,p:b,old:b,moved:true,when:performance.now()};pinch=null;}else{drag=null;pinch=null;}schedule()}
+canvas.addEventListener('pointerup',e=>pointerUp(e),{passive:false});canvas.addEventListener('pointercancel',e=>pointerUp(e,true),{passive:false});canvas.addEventListener('lostpointercapture',e=>{if(pointers.has(e.pointerId))pointerUp(e,true)});canvas.addEventListener('contextmenu',e=>e.preventDefault());
+for(const evt of ['gesturestart','gesturechange','gestureend'])document.addEventListener(evt,e=>{if($('boardWrap').contains(e.target)&&e.cancelable)e.preventDefault()},{passive:false});
+window.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Backspace')undo();if(e.key==='ArrowLeft')load(stage-1);if(e.key==='ArrowRight')load(stage+1)});
+$('sound').textContent=saved.sound?'SOUND ON':'SOUND OFF';$('sound').setAttribute('aria-pressed',String(saved.sound));
+// Developer-only non-mutating state inspection and exhaustive deterministic cube verification.
+window.__CUBE_SNAP_TEST__={summary:()=>LEVELS.map((l,i)=>({stage:i+1,dots:l.points.length,cubes:l.solutions.length,allPointsUsed:[...l.degree.values()].every(n=>n>0)})),state:()=>({stage:stage+1,points:level.points.length,solutions:level.solutions.length,found:found.size,selected:selected.length,won:found.size===level.solutions.length}),load,solveCurrent:()=>{for(const cube of level.solutions){if(!found.has(cube.id)){found.add(cube.id);for(const p of cube.points)used.set(key(p),(used.get(key(p))||0)+1)}}refresh();return found.size}};
+load(Number.isInteger(saved.stage)?saved.stage:0);
+})();
+</script>
+</body>
+</html>
