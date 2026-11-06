@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f5f8f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SQUARE SNAP — 500 PUZZLES v9.0</title>
+<title>SQUARE SNAP — 500 PUZZLES v9.1</title>
 <style>
 :root{color-scheme:light;--paper:#fff;--bg:#f5f8f7;--ink:#293f46;--muted:#83979c;--cyan:#0c9ba4;--cyan-deep:#087f88;--grid:#e8efef;--silk:#d8e6e5;--gold:#c79b65}
 *{box-sizing:border-box}
@@ -254,7 +254,7 @@ body.low-motion .completion-panel{transition:none;}
     </div>
   </div>
   <div class="legendbar"><div class="legend"><span class="legenditem" aria-label="Point in one square"><i class="mini-dot"></i>1×</span><span class="legenditem" aria-label="Point in two or more squares"><i class="mini-dot multi"></i>2×+</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="Turn sound off">SOUND ON</button><button id="hint" class="control" type="button">HINT</button><button id="settings" class="control ellipsis" type="button" aria-label="Settings" aria-expanded="false">···</button></div></div>
-  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v9.0</span></div>
+  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v9.1</span></div>
 
 </section>
 <p class="guide" id="guide">DRAG ANYWHERE TO MOVE · PINCH & TWIST</p>
@@ -348,15 +348,10 @@ function magnetCenter(){
 function drawFrame(){
  frame=0;if(!level)return;
  const view=magnetCenter(),v=vertices(view,shape),hidden=stampHidden||win();
- // During a single-finger drag, emit only when a DIFFERENT neutral lattice
- // position catches. Nothing is tied to the answer-point geometry.
- if(!hidden&&pointers.size===1&&single){
-  const touch=[...pointers.values()][0];
-  if(dist(touch,single.p)>.06&&snapLock){
-   const cell=key(snapLock.x,snapLock.y);
-   if(cell!==lastMoveGrid){lastMoveGrid=cell;audioEvent('move');}
-  }
- }
+ // Movement sounds are emitted when the nearest geometric grid position
+ // changes, not when a short-lived magnetic lock happens to be sampled by
+ // the animation frame. Thin late-game grids otherwise become almost silent.
+ // This never uses solution positions or the valid-square test.
  stamp.setAttribute('points',asPoints(v));
  stampUnderlay.setAttribute('points',asPoints(v));
  stamp.setAttribute('visibility',hidden?'hidden':'visible');
@@ -500,7 +495,16 @@ function startSingle(){const [p]=pointers.values();single={p:{...p},c:{...center
 }
 function startDual(){lastMoveGrid=null;const [a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};dual={mid,center:{...center},angle:Math.atan2(b.y-a.y,b.x-a.x),length:Math.max(.001,dist(a,b)),shape:{...shape}};single=null;}
 function contactsChanged(){if(pointers.size>=2){if(!dual)startDual();const[a,b]=[...pointers.values()],mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2},angle=Math.atan2(b.y-a.y,b.x-a.x),len=smallStamp(dual.shape)?Math.max(.01,Math.hypot(dual.shape.a,dual.shape.b)+(dist(a,b)-dual.length)*.78):Math.hypot(dual.shape.a,dual.shape.b)*clamp(dist(a,b)/dual.length,.15,14),turn=Math.atan2(dual.shape.b,dual.shape.a)+angle-dual.angle;const next=nearestShape(len,turn);if(next.a!==shape.a||next.b!==shape.b)changeShape(next);center=clampCenter({x:dual.center.x+mid.x-dual.mid.x,y:dual.center.y+mid.y-dual.mid.y},shape);
- }else if(pointers.size===1&&single){const [p]=pointers.values();center=clampCenter({x:single.c.x+(p.x-single.p.x)*moveRatio(),y:single.c.y+(p.y-single.p.y)*moveRatio()},shape);}requestDraw();}
+ }else if(pointers.size===1&&single){
+  const [p]=pointers.values();
+  center=clampCenter({x:single.c.x+(p.x-single.p.x)*moveRatio(),y:single.c.y+(p.y-single.p.y)*moveRatio()},shape);
+  // Count grid crossings during the input event itself: rAF can skip a
+  // fleeting snapLock when a finger moves quickly across a dense board.
+  if(!stampHidden&&dist(p,single.p)>.06){
+   const snapped=snapCenter(center,shape),cell=key(snapped.x,snapped.y);
+   if(cell!==lastMoveGrid){lastMoveGrid=cell;audioEvent('move');}
+  }
+ }requestDraw();}
 // Touch-to-respawn: the previous square may be so large that clampCenter()
 // forces its center back to the old place, even when a different spot is tapped.
 // Choose the closest-to-previous legal shape that CAN actually live under this
