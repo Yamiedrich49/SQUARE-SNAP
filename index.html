@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f5f8f7">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>SQUARE SNAP — 500 PUZZLES v9.2</title>
+<title>SQUARE SNAP — 500 PUZZLES v9.3</title>
 <style>
 :root{color-scheme:light;--paper:#fff;--bg:#f5f8f7;--ink:#293f46;--muted:#83979c;--cyan:#0c9ba4;--cyan-deep:#087f88;--grid:#e8efef;--silk:#d8e6e5;--gold:#c79b65}
 *{box-sizing:border-box}
@@ -254,7 +254,7 @@ body.low-motion .completion-panel{transition:none;}
     </div>
   </div>
   <div class="legendbar"><div class="legend"><span class="legenditem" aria-label="Point in one square"><i class="mini-dot"></i>1×</span><span class="legenditem" aria-label="Point in two or more squares"><i class="mini-dot multi"></i>2×+</span></div><div class="controls"><button id="sound" class="control sound-toggle" type="button" aria-pressed="true" aria-label="Turn sound off">SOUND ON</button><button id="hint" class="control" type="button">HINT</button><button id="settings" class="control ellipsis" type="button" aria-label="Settings" aria-expanded="false">···</button></div></div>
-  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v9.2</span></div>
+  <div class="options" id="options" hidden><button type="button" id="moveClicks" aria-pressed="true">MOVE TICKS ON</button><button type="button" id="motion" aria-pressed="false">MOTION ON</button><button type="button" id="reset">RESET</button><span class="version-check">v9.3</span></div>
 
 </section>
 <p class="guide" id="guide">DRAG ANYWHERE TO MOVE · PINCH & TWIST</p>
@@ -356,7 +356,7 @@ function drawFrame(){
  stampUnderlay.setAttribute('points',asPoints(v));
  stamp.setAttribute('visibility',hidden?'hidden':'visible');
  stampUnderlay.setAttribute('visibility',hidden?'hidden':'visible');
- const snapped=snapCenter(center,shape),sv=vertices(snapped,shape);
+ const snapped=snapCenter(view,shape),sv=vertices(snapped,shape);
  const valid=sv.every(p=>dots.has(key(p.x,p.y)))&&!found.has(sqKey(sv));
  readyNow=valid&&!!snapLock&&!stampHidden&&!win();
  stamp.classList.toggle('ready',readyNow);
@@ -544,7 +544,7 @@ function inputStart(id,p){
  requestDraw();
 }
 function inputMove(items){let updated=false;for(const[id,p]of items)if(pointers.has(id)){pointers.set(id,p);updated=true;}if(updated)contactsChanged();}
-function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;lastMoveGrid=null;const lock=magnetCenter();const eligible=!!snapLock&&dist(lock,snapCenter(center,shape))<.01;center=snapCenter(center,shape);snapLock=null;if(!cancel&&eligible)foundSquare();}requestDraw();}
+function inputEnd(ids,cancel=false){let changed=false;for(const id of ids)changed=pointers.delete(id)||changed;if(!changed)return;if(pointers.size>=2)startDual();else if(pointers.size===1)startSingle();else{single=null;dual=null;lastMoveGrid=null;/* Preserve the lattice center visibly held by the magnetic lock on release. */const view=magnetCenter(),landing=snapCenter(view,shape);const eligible=!!snapLock&&dist(view,landing)<.01;center=eligible?landing:snapCenter(center,shape);snapLock=null;if(!cancel&&eligible)foundSquare();}requestDraw();}
 function stopHint(){clearTimeout(hintTimeout);hintPoint=null;hintLayer.replaceChildren();}
 function showHint(){if(win()){toast('ALREADY COMPLETE');return;}const rest=level.points.filter(p=>!exhausted(key(...p)));const singles=rest.filter(p=>degreeOf(key(...p))===1),pool=singles.length?singles:rest;if(!pool.length)return;const p=pool[(found.size+lv)%pool.length];stopHint();hintPoint=p;const[x,y]=xy({x:p[0],y:p[1]});hintLayer.append(node('circle',{cx:x,cy:y,r:17,class:'hint-ring'}));toast('TRY THIS POINT');hintTimeout=setTimeout(stopHint,2900);}
 function load(i,saveOld=true){hideCompletion();if(lv>=0&&saveOld)save();cancelAnimationFrame(frame);frame=0;clearTimeout(fxTimeout);clearTimeout(toastTimeout);stopHint();fx.replaceChildren();foundLayer.classList.remove('celebrate');$('toast').classList.remove('show');pointers.clear();single=null;dual=null;snapLock=null;lastMoveGrid=null;stampHidden=false;
